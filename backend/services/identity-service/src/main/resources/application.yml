@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: identity-service
+  threads:
+    virtual:
+      enabled: true # backend/CLAUDE.md: every service doing blocking I/O runs on virtual threads
+  datasource:
+    url: ${DBFORGE_IDENTITY_DB_URL:jdbc:postgresql://localhost:5432/dbforge_identity}
+    username: ${DBFORGE_IDENTITY_DB_USER:dbforge}
+    password: ${DBFORGE_IDENTITY_DB_PASSWORD:dbforge}
+  flyway:
+    enabled: true
+
+server:
+  port: ${PORT:8081}
+
+dbforge:
+  security:
+    jwt:
+      secret: ${DBFORGE_JWT_SECRET:} # required - HS256, >= 32 bytes. Never commit a real value.
+  identity:
+    access-token-ttl: PT15M
+    refresh-token-ttl: P30D
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html

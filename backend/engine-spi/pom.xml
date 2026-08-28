@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.dbforge</groupId>
+    <artifactId>backend</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>engine-spi</artifactId>
+  <packaging>jar</packaging>
+
+  <name>DBForge :: engine-spi</name>
+  <description>
+    DatabaseEngineAdapter and the model types every engine adapter
+    (adapter-postgres, adapter-mongodb, and any future engine) speaks in.
+    HARD RULE: no org.springframework import, ever - not even in test
+    scope, so this module can be embedded in the sandbox agent and
+    tools/dataset-cli without dragging in a DI container. common-core is
+    the one allowed dependency: it is equally framework-free and this
+    module reuses its CdmValue model for result rows rather than
+    reinventing a second canonical value type.
+  </description>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.dbforge</groupId>
+        <artifactId>platform-bom</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.dbforge</groupId>
+      <artifactId>common-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <!-- Test-scope only, and common-testing itself has zero Spring dependencies -
+           see its pom.xml - so this does not compromise the hard rule above. -->
+      <groupId>com.dbforge</groupId>
+      <artifactId>common-testing</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>

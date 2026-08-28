@@ -1,0 +1,21 @@
+<!--
+  Shared structured-logging fragment. A service's own logback-spring.xml
+  includes this instead of redefining the console appender:
+
+    <include resource="dbforge/logback-json-base.xml"/>
+    <root level="INFO"><appender-ref ref="JSON_CONSOLE"/></root>
+
+  Every field a log aggregator needs to correlate a line back to a
+  request is here: correlationId and userId come from MDC (see MdcKeys),
+  service/environment come from Spring properties.
+-->
+<included>
+  <appender name="JSON_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+      <includeMdcKeyName>correlationId</includeMdcKeyName>
+      <includeMdcKeyName>userId</includeMdcKeyName>
+      <customFields>{"service":"${spring.application.name:-unknown-service}"}</customFields>
+      <timestampPattern>yyyy-MM-dd'T'HH:mm:ss.SSSXXX</timestampPattern>
+    </encoder>
+  </appender>
+</included>

@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.dbforge</groupId>
+  <artifactId>backend</artifactId>
+  <version>0.1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <name>DBForge :: Backend Reactor</name>
+  <description>
+    Java 21 / Spring Boot 3.3 Maven reactor for DBForge (DB Arena).
+    See CLAUDE.md at the repo root and in this directory before adding modules.
+  </description>
+
+  <!--
+    Modules are added one milestone at a time, matching backend/CLAUDE.md's
+    table - do not add a directory here before its milestone starts. So far:
+      B01: platform-bom, platform-common/*, engine-spi
+      B14: services/* (identity-service, api-gateway)
+
+    engine-adapters/* and tools/* are still unstarted (B04/B05/B02).
+  -->
+  <modules>
+    <module>platform-bom</module>
+    <module>platform-common</module>
+    <module>engine-spi</module>
+    <module>services</module>
+  </modules>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <maven.compiler.release>21</maven.compiler.release>
+    <java.version>21</java.version>
+
+    <!-- Pinned here once; platform-bom imports these as dependencyManagement.
+         Nothing outside platform-bom should hard-code a version - see rule
+         "platform-bom ... import this, pin nothing locally" in CLAUDE.md. -->
+    <spring-boot.version>3.3.5</spring-boot.version>
+    <spring-cloud.version>2023.0.3</spring-cloud.version>
+    <testcontainers.version>1.20.3</testcontainers.version>
+    <archunit.version>1.3.0</archunit.version>
+    <jqwik.version>1.9.1</jqwik.version>
+    <jsqlparser.version>4.9</jsqlparser.version>
+    <avro.version>1.12.0</avro.version>
+    <mongodb-driver.version>5.2.0</mongodb-driver.version>
+    <flyway.version>10.20.1</flyway.version>
+    <mongock.version>5.4.4</mongock.version>
+    <opentelemetry.version>1.42.1</opentelemetry.version>
+    <logstash-logback-encoder.version>8.0</logstash-logback-encoder.version>
+    <springdoc-openapi.version>2.6.0</springdoc-openapi.version>
+
+    <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
+    <maven-surefire-plugin.version>3.5.1</maven-surefire-plugin.version>
+    <maven-failsafe-plugin.version>3.5.1</maven-failsafe-plugin.version>
+    <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
+
+    <!-- Definition-of-done coverage gates from CLAUDE.md.
+         Default here is the 80% services floor; the comparator, statement
+         classifier and type-mapping modules override this to 0.95 locally
+         when they exist (B10, B08, B03). -->
+    <coverage.instruction.minimum>0.80</coverage.instruction.minimum>
+  </properties>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>${maven-compiler-plugin.version}</version>
+          <configuration>
+            <release>${maven.compiler.release}</release>
+            <parameters>true</parameters>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>${maven-surefire-plugin.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-failsafe-plugin</artifactId>
+          <version>${maven-failsafe-plugin.version}</version>
+          <executions>
+            <execution>
+              <goals>
+                <goal>integration-test</goal>
+                <goal>verify</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.jacoco</groupId>
+          <artifactId>jacoco-maven-plugin</artifactId>
+          <version>${jacoco-maven-plugin.version}</version>
+          <executions>
+            <execution>
+              <id>jacoco-prepare-agent</id>
+              <goals><goal>prepare-agent</goal></goals>
+            </execution>
+            <execution>
+              <id>jacoco-report</id>
+              <phase>verify</phase>
+              <goals><goal>report</goal></goals>
+            </execution>
+            <execution>
+              <id>jacoco-check</id>
+              <phase>verify</phase>
+              <goals><goal>check</goal></goals>
+              <configuration>
+                <rules>
+                  <rule>
+                    <element>BUNDLE</element>
+                    <limits>
+                      <limit>
+                        <counter>INSTRUCTION</counter>
+                        <value>COVEREDRATIO</value>
+                        <minimum>${coverage.instruction.minimum}</minimum>
+                      </limit>
+                    </limits>
+                  </rule>
+                </rules>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <!-- NOT declared under <plugins> below - only an actual runnable
+               Spring Boot app module (services/*) opts into this, in its
+               own pom, with the repackage execution. A library module
+               (platform-common/*, engine-spi) must never repackage. -->
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-maven-plugin</artifactId>
+          <version>${spring-boot.version}</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+
+    <!-- Declared (not just managed) here so every module inherits execution,
+         not just configuration - packaging=pom aggregator modules simply
+         have nothing for these to act on. -->
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+</project>
