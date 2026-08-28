@@ -126,7 +126,7 @@ for a human reader. Full rationale belongs in code comments or ADRs, not here.
 | B13 | catalog-service | 🟡 partial (code written, not `mvn verify`-green — see Session Log) | B01 |
 | B14 | identity-service + api-gateway | 🟡 partial (code written, not `mvn verify`-green — see Session Log) | B01 |
 | B15 | user-service | 🔴 not started | B01 |
-| B16 | ai-assistant-service — ContextBuilder first | 🔴 not started | B13 |
+| B16 | ai-assistant-service — ContextBuilder first | 🟡 partial (code written, not `mvn verify`-green — see Session Log) | B13 |
 | B17 | gamification-service | 🔴 not started | B11 |
 | B18 | ingestion-service | 🔴 not started | B02, B04, B05 |
 | B19 | sandbox-manager + Helm/K8s | 🔴 not started | B07, B09 |
@@ -399,3 +399,143 @@ TABLE` column definitions from) and B05 (MongoDB materializer — now has `Mongo
 to build document-shaping logic from). Also unblocks B10 (result comparator) per the
 table's dependency on B03, though B10 also depends on B09/B00-adjacent execution
 machinery that doesn't exist yet.
+
+### [2026-08-28] M16 — ai-assistant-service (graduated hints)
+
+**Status:** 🟡 partial (see Carried forward)
+
+**Built:**
+- `services/ai-assistant-service` (new, added to `services/pom.xml`) — one endpoint, `POST
+  /api/v1/ai/problems/{slug}/hint`, returning a graduated, non-solution-revealing hint
+  (`HintLevel`: `CONCEPT` → `APPROACH` → `NEAR_MISS`, chosen explicitly by the learner per
+  request — no server-side hint history/auto-escalation yet, see Carried forward). Not in
+  api-gateway's `PublicPaths` allowlist, so every call needs a valid access token
+  (`@CurrentUser AuthenticatedUser`, non-optional) both for cost control (an LLM call has a
+  real per-request cost) and to give every hint a resolvable requester for future
+  rate-limiting.
+- `client.CatalogServiceClient` — an OpenFeign client (`GET /api/v1/catalog/problems/{slug}`)
+  calling catalog-service directly, not through api-gateway (hard rule #2: cross-service
+  reads go through Feign; this is a service-to-service call, the gateway is for external
+  clients). First real Feign use in this reactor — identity-service and api-gateway's own
+  inter-service calls so far used a hand-rolled `RestClient` (M14), not Feign.
+- `dataset.DatasetContextLoader` — loads a problem's `datasets/<slug>/dataset.yaml` via
+  tools/dataset-cli's existing `CdmDatasetLoader` (a new *library* dependency on
+  `dataset-cli`, not a service-to-service one — hard rule #2 only forbids one service
+  module depending on another; `dataset-cli` lives under `tools/`). Missing or unparseable
+  dataset.yaml degrades gracefully (schema section omitted from the hint context) rather
+  than failing the request — a problem with no authored dataset yet is an expected state,
+  not a bug.
+- `context.AiContextBuilder` — the actual implementation of hard rule #5: `MAX_SAMPLE_ROWS_PER_ENTITY
+  = 10` is a `public static final int`, not a config value, not a constructor parameter, not
+  read from any request. Truncates the problem statement, the learner's query, and the
+  learner's pasted error/result text to fixed character caps so the whole context stays
+  compact regardless of how much a learner pastes in.
+- `prompt.HintPromptBuilder` — builds a dense, non-prose system+user prompt: explicit rules
+  (never write a complete runnable final query, never claim/invent a "reference solution",
+  reference only the given schema/rows/query, plain text, hard word limit) plus a
+  level-specific guide (CONCEPT/APPROACH/NEAR_MISS), and a compact single-line-per-item
+  rendering of the `HintContext` (schema as `entity(col:TYPE FLAGS, ...)`, sample rows as
+  raw maps, no markdown tables).
+- `provider` package — `AiCompletionClient` interface; `GroqCompletionClient` (primary,
+  Groq's OpenAI-compatible `/chat/completions`, default model `llama-3.3-70b-versatile`) and
+  `GeminiCompletionClient` (fallback, Gemini's `generateContent` REST endpoint, default model
+  `gemini-3-flash-preview`) — both plain JDK `HttpClient` + Jackson, no AI SDK dependency,
+  same "plain driver, not a framework" posture identity-service (plain JDBC) and
+  catalog-service (plain Mongo driver) already established. `FallbackAiCompletionGateway`
+  tries Groq first, falls back to Gemini on any `AiProviderException` (not configured,
+  timeout, non-2xx, unparseable response), throws `AiUnavailableException` (502) only if
+  both fail.
+- `guard.OutputGuard` — the actual enforcement of "output must be within the output range":
+  `HARD_MAX_CHARS = 1200` is applied to whatever the provider returns, after the fact,
+  regardless of provider or prompt — a model ignoring the prompt's word limit is a "when",
+  not an "if", so this is a real guarantee, not just a request.
+- `service.HintService` — sequences the above: catalog lookup → dataset lookup → context
+  build → prompt build → fallback gateway → output guard → response. No business logic
+  anywhere else.
+- api-gateway: added a new `/api/v1/ai` route to `dbforge.gateway.routes` (`application.yml`
+  only — no `PublicPaths` change, so it inherits "auth required" by default).
+
+**Key decisions:**
+- Scope narrowed to exactly one feature (context-aware graduated hints) per the human's
+  explicit choice this session, out of a broader menu (mistake explainer, next-problem
+  recommender, concept chat) - those remain open, not started, not designed.
+- Built now, on top of catalog-service (B13) alone, rather than waiting for B09–B12
+  (execution-service/submission-service/result comparator) to exist — per the human's
+  explicit choice. Consequence: the hint endpoint has no access to real query-execution
+  output or pass/fail state; `errorOrResultText` is whatever the learner pastes in by hand.
+  This is a request-shape decision, not a throwaway one — once execution-service exists, its
+  real error/result output can be passed into that same field with no API change, only a
+  richer caller.
+- Groq primary / Gemini fallback, not a config-driven provider list — per the human's
+  explicit instruction. `FallbackAiCompletionGateway`'s constructor takes the two concrete
+  clients by name (not a `List<AiCompletionClient>` with an `@Order`), so "Groq is primary"
+  is a compile-time-visible fact, not an ordering that depends on Spring bean registration.
+- Model defaults (`llama-3.3-70b-versatile` for Groq, `gemini-3-flash-preview` for Gemini)
+  were chosen from each provider's own current-as-of-2026-08 model documentation
+  (console.groq.com/docs/models; ai.google.dev/gemini-api/docs/gemini-3), not invented -
+  both are overridable per-environment via `dbforge.ai.groq.model` / `dbforge.ai.gemini.model`
+  with no code change needed if either provider ships a newer default later.
+- No reference-solution field exists anywhere in `HintContext` - not because one was removed,
+  but because none exists yet anywhere in this system (B12/problem-validator would be what
+  introduces one). The prompt's "never reveal a reference solution" rule is written to hold
+  once one does exist, not just written for today's actual data shape.
+- `datasets-root` is a relative path (`../../../datasets` by default) assuming the process
+  cwd is this module's own directory - same category of assumption M02 flagged about
+  Surefire's working directory, unverified end-to-end without a real run.
+
+**Deviations from docs:** none beyond M01's standing note (docs/01-04 still don't exist).
+
+**Tests:** 25 test methods across 5 test classes: `AiContextBuilderTest` (row-cap
+enforcement pinned at exactly 10, truncation of long statement/query, every `CdmValue`
+variant renders as plain text, missing dataset degrades gracefully), `HintPromptBuilderTest`
+(system prompt names the level/word limit/forbids a full solution and a claimed reference
+solution, user prompt includes/omits sections correctly), `OutputGuardTest` (hard-cap
+truncation and flagging, exact-boundary case, whitespace stripping),
+`FallbackAiCompletionGatewayTest` (Mockito - primary-succeeds, falls-back-on-failure,
+both-fail-throws, Gemini never called when Groq succeeds), and `HintControllerIntegrationTest`
+(`@SpringBootTest` + `MockMvc`, no Testcontainers needed - this service has no database of
+its own; fakes catalog-service, Groq, and Gemini each as a plain JDK `HttpServer`, same
+pattern api-gateway's `ReverseProxyIntegrationTest` and catalog-service's
+`ProblemControllerIntegrationTest` already established - covering the happy path via Groq,
+the Gemini fallback path, the both-providers-down 502, no-token 401, unknown-slug 404, and
+blank-learner-query 422). Same standing network limitation as every prior milestone: `mvn
+-T1C verify` could not be run (no route to Maven Central). This milestone's main sources
+depend on Spring/Feign/Jackson, so - like M13/M14 and unlike M01–M03 - none of it could be
+javac-verified standalone; all hand-reviewed. Highest reconstructed-from-memory risk areas,
+flagged for the closest look at `mvn verify` time: `feign.FeignException.NotFound` as the
+exact type thrown for a 404 response (this is the first real Feign use in the reactor - M14's
+own inter-service call used a hand-rolled `RestClient`, not Feign); the exact Groq
+`/chat/completions` and Gemini `generateContent` request/response JSON shapes (built from
+each provider's documented API format, not tested against the real APIs - no network access
+to either from this sandbox); and `@ConfigurationProperties`-nested-class binding for
+`AiProviderProperties.Groq`/`Gemini`.
+
+**Carried forward:**
+- Run `mvn -T1C verify` on a machine with real internet access - same standing note as every
+  prior milestone, now covering ai-assistant-service and its Feign/Jackson/HTTP-client code.
+  Give the Feign 404 handling and both provider clients' JSON shapes the closest look (see
+  Tests).
+- No hint-history or auto-escalation - the learner picks `HintLevel` explicitly every call;
+  a "give me the next level" endpoint or session-scoped hint tracking is future work, not
+  this milestone.
+- No rate limiting or per-user cost control on the hint endpoint beyond requiring
+  authentication - an LLM call has a real cost per request; this needs addressing before any
+  real deployment, not just before scale.
+- `GlobalExceptionHandler` is now a **fourth** verbatim copy (identity-service, api-gateway,
+  catalog-service, ai-assistant-service). catalog-service's own Session Log already flagged
+  the third copy as overdue for a shared `common-web` extraction; still not done here -
+  retrofitting three already-shipped services was more than a "one milestone, no side
+  quests" session should take on. Do it the next time a fifth HTTP service needs this.
+- The other three AI-feature options from this session's menu (query mistake explainer,
+  personalized next-problem recommender, concept mini-tutor chat) are still fully open - not
+  started, not designed beyond the one-line option descriptions offered to the human.
+- Execution-grounded hints (using real query output instead of learner-pasted text) are
+  blocked on B09/B11 (execution-service/submission-service) - `HintCommand.errorOrResultText`
+  is shaped to accept that input with no API change once those exist.
+- No precision/scale-aware rendering for `CdmValue.Decimal` sample rows beyond
+  `toBigDecimal().toPlainString()` - fine for the values in the one sample dataset that
+  exists (`datasets/two-sum`), unexercised against anything with unusual scale.
+
+**Unblocks:** nothing new per the table's dependency graph (B16 depended only on B13, already
+done) - but this is the first working slice of the AI-assistant surface the frontend
+(frontend/CLAUDE.md) or any future feature in this area can build against.

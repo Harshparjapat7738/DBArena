@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.dbforge</groupId>
+    <artifactId>services</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>ai-assistant-service</artifactId>
+  <packaging>jar</packaging>
+
+  <name>DBForge :: ai-assistant-service</name>
+  <description>
+    ContextBuilder-first slice of B16: graduated, non-solution-revealing
+    hints for a learner working a catalog problem. Reads problem metadata
+    from catalog-service over OpenFeign (hard rule #2 - cross-service
+    reads go through Feign, never a direct dependency on another service
+    module) and dataset schema/sample rows from datasets/*/dataset.yaml
+    via tools/dataset-cli's existing CdmDatasetLoader (a library
+    dependency, not a service - no hard-rule-#2 concern). Calls an LLM
+    provider (Groq primary, Gemini fallback) through a small hand-rolled
+    HTTP client - no AI SDK dependency, same "plain driver, no framework
+    beyond what's declared" posture identity-service (plain JDBC) and
+    catalog-service (plain Mongo driver) already established.
+  </description>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.dbforge</groupId>
+        <artifactId>platform-bom</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.dbforge</groupId>
+      <artifactId>common-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.dbforge</groupId>
+      <artifactId>common-security</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.dbforge</groupId>
+      <artifactId>common-observability</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.dbforge</groupId>
+      <artifactId>engine-spi</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!-- Library dependency on a tools/* module, not a service - reuses
+         CdmDatasetLoader's YAML -> CdmDataset parsing rather than
+         duplicating it. Not a hard-rule-#2 violation: that rule forbids
+         one *service* module depending on another; dataset-cli lives
+         under tools/, not services/. -->
+    <dependency>
+      <groupId>com.dbforge</groupId>
+      <artifactId>dataset-cli</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-validation</artifactId>
+    </dependency>
+
+    <!-- Hard rule #2: cross-service reads go through OpenFeign. Version
+         comes from spring-cloud-dependencies, imported by platform-bom -
+         nothing to pin locally. -->
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-openfeign</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springdoc</groupId>
+      <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>repackage</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

@@ -151,15 +151,20 @@ forward on each:
   token. (B13)
 - **M14** — `identity-service` + `api-gateway` (registration/login/refresh-rotation/
   logout behind a reverse-proxy gateway). (B14)
+- **M16** — `ai-assistant-service`: one endpoint, graduated non-solution-revealing hints
+  (CONCEPT/APPROACH/NEAR_MISS) for a catalog problem, Groq primary / Gemini fallback,
+  first real Feign use in the reactor. (B16)
 
-**M13 and M14 were built out of the milestone table's numeric order** (B13/B14 depend
-only on B01, so they were picked directly rather than waiting on B02–B12). Per the
-human's explicit instruction, **all work from here on follows the milestone table's
+**M13, M14, and M16 were all built out of the milestone table's numeric order** (each
+depends only on already-done milestones, so each was picked directly rather than waiting
+on the full B02–B12 chain — M16 specifically per the human's explicit "start AI
+implementation now" instruction, the same kind of deliberate, explicit override M13/M14
+were). Outside of an explicit override like these, **work follows the milestone table's
 numeric order strictly**: the next milestone is always the lowest-numbered `🔴 not
 started` row whose dependencies are already ✅/🟡, and a session never re-does a
 milestone that's already 🟡 partial or ✅ complete — check backend/CLAUDE.md's table
 first, every time, before starting anything. Right now that means **B04 — Postgres
-materializer + introspection** is next; B13/B14 stay done and are not revisited until
+materializer + introspection** is next; B13/B14/B16 stay done and are not revisited until
 their own carried-forward items call for it.
 
 Most importantly: **`mvn -T1C verify` has not been run successfully in any environment
@@ -171,9 +176,10 @@ one exception: they compiled clean under plain `javac --release 21` this session
 zero-external-jars trick M01 used) and a real bug was caught that way before it shipped
 (see backend/CLAUDE.md's M02 entry). M03's `typemap` package (also zero external dependencies) compiled clean the same way, with
 no bugs caught this time - the two mappers are small total switches with no branching logic
-to get wrong. Everything else - tools/dataset-cli's Jackson-based code, and all of M13/M14
-- is hand-reviewed only, not compiler-verified; give catalog-service's Mongock package the
-closest look first among those (flagged in its own Javadoc).
+to get wrong. Everything else - tools/dataset-cli's Jackson-based code, all of M13/M14, and
+now M16 - is hand-reviewed only, not compiler-verified; give catalog-service's Mongock
+package and M16's Feign/HTTP-provider code the closest look first among those (each flagged
+in its own milestone's Session Log Tests section).
 
 Work the remaining milestones in the order given in `docs/04-claude-build-playbook.md`
 §3 once that doc exists; until then, `backend/CLAUDE.md`'s own milestone table is the
