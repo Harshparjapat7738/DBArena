@@ -10,21 +10,19 @@
     <version>0.1.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>services</artifactId>
+  <artifactId>tools</artifactId>
   <packaging>pom</packaging>
 
-  <name>DBForge :: Services (aggregator)</name>
+  <name>DBForge :: Tools (aggregator)</name>
   <description>
-    One Spring Boot application per module. Hard rule: no service module
-    may depend on another - cross-service reads go through OpenFeign,
-    writes through Kafka events (common-events). Add a new service here
-    only when its milestone starts.
+    Standalone CLIs, not Spring Boot services - dataset-cli (author/validate
+    CDM datasets, B02) and, later, problem-validator (B12, the cross-engine
+    reference-solution gate). Add a new tool here only when its milestone
+    starts.
   </description>
 
   <modules>
-    <module>identity-service</module>
-    <module>api-gateway</module>
-    <module>catalog-service</module>
+    <module>dataset-cli</module>
   </modules>
 
   <dependencyManagement>

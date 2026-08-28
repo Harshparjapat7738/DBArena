@@ -22,12 +22,8 @@ class ModelValidationTest {
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
-    @Test
-    void datasetDescriptorRejectsBadSchemaVersion() {
-        assertThatThrownBy(() -> new DatasetDescriptor("ds-1", "Sales", 0))
-                .isInstanceOf(IllegalArgumentException.class);
-        assertThat(new DatasetDescriptor("ds-1", "Sales", 1).schemaVersion()).isEqualTo(1);
-    }
+    // DatasetDescriptor was replaced by com.dbforge.engine.spi.cdm.CdmDataset
+    // in M02 - see that package's CdmModelTest for its coverage.
 
     @Test
     void statementRequestRejectsNonPositiveTimeout() {

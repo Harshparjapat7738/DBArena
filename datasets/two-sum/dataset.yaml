@@ -1,0 +1,96 @@
+# Canonical Dataset Model source for the "two-sum" practice problem.
+# Validate with: mvn -pl backend/tools/dataset-cli exec:java -Dexec.args="validate ../../datasets/two-sum/dataset.yaml"
+# (from backend/) - see backend/CLAUDE.md's Commands section.
+#
+# Deliberately exercises every CdmType variant (BOOLEAN, INTEGER, DECIMAL,
+# TEXT, TIMESTAMP, JSON), a primary key, and a nullable foreign key, so it
+# doubles as dataset-cli's end-to-end fixture.
+
+datasetId: two-sum
+name: Two Sum
+schemaVersion: 1
+
+entities:
+  - name: numbers
+    columns:
+      - name: id
+        type: INTEGER
+        nullable: false
+        primaryKey: true
+      - name: value
+        type: INTEGER
+        nullable: false
+      - name: weight
+        type: DECIMAL
+        nullable: true
+      - name: label
+        type: TEXT
+        nullable: true
+      - name: is_active
+        type: BOOLEAN
+        nullable: false
+    foreignKeys: []
+    seedRows:
+      - id: 1
+        value: 2
+        weight: 1.50
+        label: "a"
+        is_active: true
+      - id: 2
+        value: 7
+        weight: 3.25
+        label: "b"
+        is_active: true
+      - id: 3
+        value: 11
+        weight: null
+        label: null
+        is_active: false
+      - id: 4
+        value: 15
+        weight: 0.75
+        label: "d"
+        is_active: true
+
+  - name: queries
+    columns:
+      - name: id
+        type: INTEGER
+        nullable: false
+        primaryKey: true
+      - name: target
+        type: INTEGER
+        nullable: false
+      - name: matched_number_id
+        type: INTEGER
+        nullable: true
+      - name: created_at
+        type: TIMESTAMP
+        nullable: false
+      - name: metadata
+        type: JSON
+        nullable: true
+    foreignKeys:
+      - columnName: matched_number_id
+        referencesEntity: numbers
+        referencesColumn: id
+    seedRows:
+      - id: 1
+        target: 9
+        matched_number_id: 1
+        created_at: "2026-01-01T00:00:00Z"
+        metadata:
+          source: seed
+          note: matches numbers.id=1 and numbers.id=2 (2 + 7 = 9)
+      - id: 2
+        target: 26
+        matched_number_id: 4
+        created_at: "2026-01-02T12:30:00Z"
+        metadata: null
+      - id: 3
+        target: 100
+        matched_number_id: null
+        created_at: "2026-01-03T08:15:00Z"
+        metadata:
+          source: seed
+          note: no match in this small dataset - matched_number_id is nullable

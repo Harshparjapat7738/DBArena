@@ -23,12 +23,14 @@ bound to a session, result grid, execution log).
 rather than silently deviating. If something is underspecified, ask — do not fill the
 gap with a plausible guess.
 
-**Status as of 2026-08-28: none of the four docs above exist yet.** M01 and M14 (below)
-were started anyway, on the human's explicit instruction, using only the detail already
-present in the four `CLAUDE.md` files. Do not assume docs/01-04 will match what M01/M14
-built — read backend/CLAUDE.md's Session Log for what was actually decided, and treat
-these four docs as still needed before milestones that need CDM/API/security detail
-beyond what's already in the `CLAUDE.md` files (B02 onward, most immediately).
+**Status as of 2026-08-28: none of the four docs above exist yet.** M01, M14, M13, and M02
+(below) were started anyway, on the human's explicit instruction, using only the detail
+already present in the four `CLAUDE.md` files. Do not assume docs/01-04 will match what
+was actually built — read backend/CLAUDE.md's Session Log for what was actually decided,
+and treat these four docs as still needed before milestones that need detail beyond
+what's already in the `CLAUDE.md` files and what M02 itself designed (see that milestone's
+Session Log entry - it's the one that had to invent the CDM shape docs/02 was meant to
+define, in the absence of that doc).
 
 ---
 
@@ -44,9 +46,9 @@ docs/       Architecture and planning
 scripts/    Dev utilities
 ```
 
-`datasets/`, `deploy/`, `docs/`, `scripts/` don't exist yet — they're created by the
-milestones that need them (B02 for `datasets/`, B19 for `deploy/`, and `docs/` whenever
-someone writes docs/01-04).
+`deploy/`, `docs/`, `scripts/` don't exist yet — they're created by the milestones that
+need them (B19 for `deploy/`, `docs/` whenever someone writes docs/01-04). `datasets/`
+now exists (M02) with one sample: `datasets/two-sum/`.
 
 ---
 
@@ -134,29 +136,44 @@ verdicts or a sandbox escape.
 
 ## Current phase
 
-**Phase 0 — Foundations.** Two milestones have been scaffolded in `backend/` so far —
+**Phase 0 — Foundations.** Four milestones have been scaffolded in `backend/` so far —
 see `backend/CLAUDE.md`'s Session Log for exactly what was built and what's carried
 forward on each:
 
-- **M01** — Maven reactor + `common-*` + `engine-spi`.
+- **M01** — Maven reactor + `common-*` + `engine-spi`. (B01)
+- **M02** — the Canonical Dataset Model (`engine-spi`'s new `cdm` package) + its
+  validator + `tools/dataset-cli` + a real sample dataset. (B02)
+- **M13** — `catalog-service` (public problem browsing + admin authoring, the first
+  service in the reactor to actually use MongoDB), plus a method-aware public-path
+  update to api-gateway so catalog browsing is public while writes still require a
+  token. (B13)
 - **M14** — `identity-service` + `api-gateway` (registration/login/refresh-rotation/
-  logout behind a reverse-proxy gateway).
+  logout behind a reverse-proxy gateway). (B14)
+
+**M13 and M14 were built out of the milestone table's numeric order** (B13/B14 depend
+only on B01, so they were picked directly rather than waiting on B02–B12). Per the
+human's explicit instruction, **all work from here on follows the milestone table's
+numeric order strictly**: the next milestone is always the lowest-numbered `🔴 not
+started` row whose dependencies are already ✅/🟡, and a session never re-does a
+milestone that's already 🟡 partial or ✅ complete — check backend/CLAUDE.md's table
+first, every time, before starting anything. Right now that means **B03 — type mapping
+(`CdmType` → Postgres/Mongo)** is next; B13/B14 stay done and are not revisited until
+their own carried-forward items call for it.
 
 Most importantly: **`mvn -T1C verify` has not been run successfully in any environment
-either session had network access to** (Maven Central was unreachable from both the
-cloud sandbox and the linked device's Cowork VM, both times). Run it yourself before
+any of these sessions had network access to** (Maven Central was unreachable from both
+the cloud sandbox and the linked device's Cowork VM, every time). Run it yourself before
 trusting the build — opening the project in IntelliJ (`.idea/` is already here) will do
-this automatically — and fix whatever it surfaces. M14 depends on more third-party APIs
-reconstructed from memory than M01 did (see backend/CLAUDE.md's M14 entry for the two
-flagged spots), so give it the closer look.
+this automatically — and fix whatever it surfaces. M02's `engine-spi` additions are the
+one exception: they compiled clean under plain `javac --release 21` this session (same
+zero-external-jars trick M01 used) and a real bug was caught that way before it shipped
+(see backend/CLAUDE.md's M02 entry). Everything else - tools/dataset-cli's Jackson-based
+code, and all of M13/M14 - is hand-reviewed only, not compiler-verified; give
+catalog-service's Mongock package the closest look first among those (flagged in its own
+Javadoc).
 
 Work the remaining milestones in the order given in `docs/04-claude-build-playbook.md`
 §3 once that doc exists; until then, `backend/CLAUDE.md`'s own milestone table is the
-order of record. Do not start a milestone whose dependencies are not yet ✅.
+order of record, and (per the instruction above) that order is now followed strictly.
 
-Next up: close out M01's and M14's carried-forward items (`mvn verify` green, fix
-whatever it surfaces on both), then either **M02 — CDM model + validator
-(`dataset-cli`)** or another B01-only-dependent milestone (B13 catalog-service, B15
-user-service, B07 sandbox agent, B08 statement classifier) — ask the human which, per
-this file's own "ask, don't guess" rule.
-</content>
+Next up: **B03 — type mapping (`CdmType` → Postgres/Mongo)**.

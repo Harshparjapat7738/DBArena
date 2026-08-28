@@ -20,14 +20,17 @@
     table - do not add a directory here before its milestone starts. So far:
       B01: platform-bom, platform-common/*, engine-spi
       B14: services/* (identity-service, api-gateway)
+      B13: services/catalog-service
+      B02: tools/dataset-cli (+ the CDM model, added into engine-spi)
 
-    engine-adapters/* and tools/* are still unstarted (B04/B05/B02).
+    engine-adapters/* is still unstarted (B04/B05).
   -->
   <modules>
     <module>platform-bom</module>
     <module>platform-common</module>
     <module>engine-spi</module>
     <module>services</module>
+    <module>tools</module>
   </modules>
 
   <properties>
@@ -57,6 +60,7 @@
     <maven-surefire-plugin.version>3.5.1</maven-surefire-plugin.version>
     <maven-failsafe-plugin.version>3.5.1</maven-failsafe-plugin.version>
     <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
+    <exec-maven-plugin.version>3.4.1</exec-maven-plugin.version>
 
     <!-- Definition-of-done coverage gates from CLAUDE.md.
          Default here is the 80% services floor; the comparator, statement
@@ -138,6 +142,14 @@
           <groupId>org.springframework.boot</groupId>
           <artifactId>spring-boot-maven-plugin</artifactId>
           <version>${spring-boot.version}</version>
+        </plugin>
+        <plugin>
+          <!-- Also NOT under <plugins> below - only tools/* (plain CLIs,
+               not Spring Boot apps) opts in, per backend/CLAUDE.md's
+               "mvn -pl backend/tools/dataset-cli exec:java" command. -->
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>exec-maven-plugin</artifactId>
+          <version>${exec-maven-plugin.version}</version>
         </plugin>
       </plugins>
     </pluginManagement>

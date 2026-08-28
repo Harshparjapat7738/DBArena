@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.dbforge</groupId>
+    <artifactId>tools</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>dataset-cli</artifactId>
+  <packaging>jar</packaging>
+
+  <name>DBForge :: dataset-cli</name>
+  <description>
+    Reads an authored dataset.yaml, converts it into the Canonical Dataset
+    Model (engine-spi's com.dbforge.engine.spi.cdm package), and validates
+    it with CdmDatasetValidator. Deliberately a plain CLI, not a Spring
+    Boot app - it's a fast-starting local tool an author runs repeatedly
+    while writing YAML, and it has no need of DI, web, or persistence.
+    generate/materialize subcommands (turning a validated CdmDataset into
+    real Postgres/Mongo data) belong to B04/B05's engine adapters, not
+    here - see backend/CLAUDE.md M02 Session Log "Carried forward".
+  </description>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.dbforge</groupId>
+        <artifactId>platform-bom</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.dbforge</groupId>
+      <artifactId>common-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.dbforge</groupId>
+      <artifactId>engine-spi</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <!-- Version managed transitively: platform-bom imports spring-boot-dependencies,
+         which imports jackson-bom - nothing to pin locally, same "pin nothing
+         outside platform-bom" rule as every other module. -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <artifactId>jackson-dataformat-yaml</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <configuration>
+          <mainClass>com.dbforge.tools.datasetcli.DatasetCli</mainClass>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

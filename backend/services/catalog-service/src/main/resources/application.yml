@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: catalog-service
+  threads:
+    virtual:
+      enabled: true # backend/CLAUDE.md: every service doing blocking I/O runs on virtual threads
+
+server:
+  port: ${PORT:8083}
+
+dbforge:
+  security:
+    jwt:
+      secret: ${DBFORGE_JWT_SECRET:} # must match every backend service's secret - same signer, many verifiers
+  catalog:
+    mongo-uri: ${DBFORGE_CATALOG_MONGO_URI:mongodb://localhost:27017}
+    mongo-database: ${DBFORGE_CATALOG_MONGO_DATABASE:dbforge_catalog}
+
+# Mongock (Mongo migrations - see ChangeLog001CreateProblemsIndexes's Javadoc
+# for why this block carries above-average reconstructed-API risk).
+mongock:
+  migration-scan-package:
+    - com.dbforge.services.catalog.mongock
+  mongo-db:
+    uri: ${DBFORGE_CATALOG_MONGO_URI:mongodb://localhost:27017}
+    database: ${DBFORGE_CATALOG_MONGO_DATABASE:dbforge_catalog}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.dbforge</groupId>
+    <artifactId>services</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>catalog-service</artifactId>
+  <packaging>jar</packaging>
+
+  <name>DBForge :: catalog-service</name>
+  <description>
+    Problem/dataset catalog: browse, filter, and (as an admin) author
+    problems. MongoDB is the store here (root CLAUDE.md: "MongoDB -
+    primary metadata store"), reached through the plain Mongo sync driver
+    rather than Spring Data MongoDB - same "no ORM, stay close to records"
+    posture identity-service (B14) took with plain JDBC over Postgres, and
+    avoids introducing a framework beyond what root CLAUDE.md's stack list
+    already names. Owns its own Mongo database; no other service may read
+    it directly (hard rule #2) - they call this service's API.
+  </description>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.dbforge</groupId>
+        <artifactId>platform-bom</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.dbforge</groupId>
+      <artifactId>common-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.dbforge</groupId>
+      <artifactId>common-security</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.dbforge</groupId>
+      <artifactId>common-observability</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-validation</artifactId>
+    </dependency>
+
+    <!-- Plain Mongo sync driver - deliberately not spring-boot-starter-data-mongodb.
+         See class-level Javadoc on MongoConfig for why. -->
+    <dependency>
+      <groupId>org.mongodb</groupId>
+      <artifactId>mongodb-driver-sync</artifactId>
+    </dependency>
+
+    <!-- Mongock: index/migration management for MongoDB, the Mongo
+         counterpart to Flyway (per backend/CLAUDE.md "Conventions"). -->
+    <dependency>
+      <groupId>io.mongock</groupId>
+      <artifactId>mongock-springboot</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.mongock</groupId>
+      <artifactId>mongodb-sync-v4-driver</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springdoc</groupId>
+      <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.dbforge</groupId>
+      <artifactId>common-testing</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>repackage</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

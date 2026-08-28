@@ -1,6 +1,6 @@
 package com.dbforge.engine.spi;
 
-import com.dbforge.engine.spi.model.DatasetDescriptor;
+import com.dbforge.engine.spi.cdm.CdmDataset;
 import com.dbforge.engine.spi.model.ExecutionResult;
 import com.dbforge.engine.spi.model.ExplainPlan;
 import com.dbforge.engine.spi.model.MaterializationResult;
@@ -30,9 +30,11 @@ public interface DatabaseEngineAdapter {
      * Materializes a fresh copy of {@code dataset} into a new session.
      * For Postgres this is expected to be a cheap template-database clone
      * after the first materialization (see {@link #templateClone}); for
-     * Mongo, document shaping happens here.
+     * Mongo, document shaping happens here. {@code dataset} is expected to
+     * already be valid - see {@link com.dbforge.engine.spi.cdm.CdmDatasetValidator}
+     * - an adapter is not required to re-validate it.
      */
-    MaterializationResult materialize(DatasetDescriptor dataset);
+    MaterializationResult materialize(CdmDataset dataset);
 
     /**
      * Clones an already-materialized template session into a new,

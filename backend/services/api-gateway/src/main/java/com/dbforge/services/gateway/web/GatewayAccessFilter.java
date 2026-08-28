@@ -34,7 +34,7 @@ public class GatewayAccessFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         String path = request.getRequestURI();
 
-        if (PublicPaths.isPublic(path) || CurrentUserContext.get().isPresent()) {
+        if (PublicPaths.isPublic(request.getMethod(), path) || CurrentUserContext.get().isPresent()) {
             chain.doFilter(request, response);
             return;
         }
