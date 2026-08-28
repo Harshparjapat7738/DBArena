@@ -1,0 +1,28 @@
+@import "tailwindcss";
+@import "@dbforge/ui/theme/tailwind-theme.css";
+
+/* Extra scan roots: Tailwind v4's automatic content detection won't reach
+   into a sibling workspace package on its own. */
+@source "../../../../packages/ui/src";
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+  }
+
+  ::selection {
+    background-color: var(--color-selection);
+  }
+
+  code,
+  pre,
+  kbd {
+    font-family: var(--font-mono);
+  }
+}

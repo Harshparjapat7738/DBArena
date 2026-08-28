@@ -1,6 +1,7 @@
 package com.dbforge.services.catalog.domain;
 
 import com.dbforge.common.core.id.TypedId;
+import com.dbforge.engine.spi.EngineType;
 
 import java.util.Set;
 
@@ -23,7 +24,7 @@ public record Problem(
         String statementMarkdown,
         Difficulty difficulty,
         Set<String> tags,
-        Set<EngineKind> allowedEngines,
+        Set<EngineType> allowedEngines,
         String datasetSlug,
         boolean published,
         long createdAtEpochMillis,

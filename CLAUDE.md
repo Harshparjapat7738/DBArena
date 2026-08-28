@@ -39,7 +39,6 @@ define, in the absence of that doc).
 ```
 backend/    Java 21 / Spring Boot / Maven reactor  (see backend/CLAUDE.md)
 frontend/   Next.js 15 + TypeScript pnpm workspace (see frontend/CLAUDE.md)
-ai/         Prompts, context schemas, eval harness  (see ai/CLAUDE.md)
 datasets/   Canonical Dataset Model descriptors + data
 deploy/     compose (local), Helm, Terraform, K8s manifests
 docs/       Architecture and planning

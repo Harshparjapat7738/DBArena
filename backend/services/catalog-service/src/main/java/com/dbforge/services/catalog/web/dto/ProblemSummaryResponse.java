@@ -1,7 +1,7 @@
 package com.dbforge.services.catalog.web.dto;
 
 import com.dbforge.services.catalog.domain.Difficulty;
-import com.dbforge.services.catalog.domain.EngineKind;
+import com.dbforge.engine.spi.EngineType;
 import com.dbforge.services.catalog.domain.Problem;
 
 import java.util.Set;
@@ -12,7 +12,7 @@ public record ProblemSummaryResponse(
         String title,
         Difficulty difficulty,
         Set<String> tags,
-        Set<EngineKind> allowedEngines) {
+        Set<EngineType> allowedEngines) {
 
     public static ProblemSummaryResponse from(Problem problem) {
         return new ProblemSummaryResponse(

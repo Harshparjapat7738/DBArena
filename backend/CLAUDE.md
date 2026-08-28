@@ -1,6 +1,6 @@
 # backend/ — Java 21 · Spring Boot 3.3 · Maven reactor
 
-Scope: everything server-side. Frontend lives in `../frontend`, prompt assets in `../ai`.
+Scope: everything server-side. Frontend lives in `../frontend`.
 
 ## Reactor layout
 
@@ -114,7 +114,7 @@ for a human reader. Full rationale belongs in code comments or ADRs, not here.
 | B01 | Maven reactor + common-* + engine-spi interfaces | 🟡 partial (code written, not `mvn verify`-green — see Session Log) | — |
 | B02 | CDM model + validator (`dataset-cli`) | 🟡 partial (code written, not `mvn verify`-green — see Session Log) | B01 |
 | B03 | Type mapping (`CdmType` → Postgres/Mongo) | 🟡 partial (code written, not `mvn verify`-green — see Session Log) | B01 |
-| B04 | Postgres materializer + introspection | 🔴 not started | B02, B03 |
+| B04 | Postgres materializer + introspection | 🟡 partial (code written, not `mvn verify`-green — see Session Log) | B02, B03 |
 | B05 | MongoDB materializer + document shaping | 🔴 not started | B02, B03 |
 | B06 | Cross-engine equivalence proof ⭐ | 🔴 not started | B04, B05 |
 | B07 | Sandbox agent (gRPC execute/cancel/kill) | 🔴 not started | B01 |
@@ -539,3 +539,239 @@ to either from this sandbox); and `@ConfigurationProperties`-nested-class bindin
 **Unblocks:** nothing new per the table's dependency graph (B16 depended only on B13, already
 done) - but this is the first working slice of the AI-assistant surface the frontend
 (frontend/CLAUDE.md) or any future feature in this area can build against.
+
+### [2026-08-28] Audit — full-repo review and fixes (backend + frontend)
+
+**Status:** ✅ complete (for the scope below - see Carried forward for what this pass
+deliberately did not attempt)
+
+**Scope note:** this was a full-repository audit-and-fix pass, not a numbered milestone -
+no B0x/M0x moved in the milestone table below as a result. Per root CLAUDE.md's "ask, don't
+guess" rule and this file's own "one milestone, follow the table's order" protocol, B04-B12
+and every other 🔴 not-started row were explicitly left alone: they need docs/02 (core
+engine design) which still doesn't exist, and building the execution engine, materializers,
+submission grading, or the frontend workbench from scratch in an audit pass would mean
+inventing architecture the docs are supposed to define. This pass fixed only concrete,
+already-identified gaps in what B01/B02/B03/B13/B14/B16 had already shipped, plus the
+equivalent pass over the frontend.
+
+**Fixed:**
+- **`platform-common/common-web`** (new module) - the shared RFC 7807 exception handler
+  M14, M13, and M16's Session Logs each flagged as "do it the next time a Nth HTTP service
+  needs it, not another copy-paste" (four verbatim copies existed: identity-service,
+  api-gateway, catalog-service, ai-assistant-service). Auto-configured via
+  `META-INF/spring/...AutoConfiguration.imports`, same mechanism as common-security's
+  `CommonSecurityAutoConfiguration` - no per-service `@Import` needed, just a pom dependency.
+  All four services' local `GlobalExceptionHandler.java` deleted; all four poms now depend
+  on `common-web`.
+- Closed a real bug while extracting it: `PageRequest`'s compact constructor throws a plain
+  `IllegalArgumentException` on an out-of-range `limit` (flagged in M13's Carried forward -
+  "a malformed `?limit=` query param currently surfaces as a raw 500"). `common-web`'s
+  handler now maps `IllegalArgumentException` → 400 `application/problem+json`, plus a
+  last-resort `Exception` → 500 fallback (logged server-side with the correlation id, never
+  leaking the message/stack trace to the client) so every failure mode across all four
+  services is RFC-7807-shaped, not just the ones each service's own handler happened to
+  cover.
+- **`EngineType`/`EngineKind` reconciliation** - flagged as open in M13, M02 ("Correction to
+  M13's note"), and M03's Session Logs, each deferred pending B02/B03 (now done). Added
+  `MYSQL` to `engine-spi.EngineType` (was POSTGRES/MONGODB only); deleted catalog-service's
+  locally-redeclared `EngineKind` enum; catalog-service now depends on `engine-spi` and
+  every file that referenced `EngineKind` (10 main-source files + 3 test files) uses
+  `EngineType` instead. JSON/Mongo wire representation is unchanged (`Enum.name()` values
+  are identical strings), so this is not an API-breaking change for the frontend's
+  api-client, which already declared the three-value `EngineKind` union it was matching
+  against.
+- **AI hint rate limiting** - closed the gap M16's Session Log flagged as needed "before any
+  real deployment, not just before scale": `HintRateLimiter` (new,
+  `ai-assistant-service/ratelimit`), a fixed-window per-user limiter
+  (`dbforge.ai.hint-rate-limit-per-hour`, default 30), enforced in `HintController` before
+  any of the expensive work (Feign call, dataset load, LLM call) runs. Deliberately
+  in-memory/single-instance, not Redis-backed - there's no Redis wiring or `deploy/`
+  compose config anywhere in this reactor yet to add it to; documented in
+  `HintRateLimiter`'s Javadoc as needing to become Redis-backed before this service is ever
+  run as more than one replica.
+- Removed a dangling doc reference: this file's own header said "prompt assets in `../ai`" -
+  stale after the human had that folder removed (its actual content, on inspection, was a
+  design README for prompt/eval assets that were never built - `ai-assistant-service`'s
+  prompts live in `HintPromptBuilder` instead; nothing was lost).
+
+**Key decisions:**
+- Did not add CORS configuration to api-gateway despite it being flagged twice
+  (M14 and M13 Carried forward) as needed - the frontend that exists today (auth, catalog,
+  AI hint panel, settings/themes) reaches the gateway through a same-origin BFF proxy
+  (`apps/web/src/app/api/proxy/[...path]`) specifically to avoid needing CORS at all, and
+  root/frontend CLAUDE.md name no other origin that needs to call this API directly. Adding
+  a CORS policy now would mean inventing an allowed-origins list nothing in the docs
+  specifies - left as Carried forward rather than guessed at.
+- Did not build a "preview my own draft" endpoint (M13 Carried forward) - no authoring UI
+  exists in frontend/CLAUDE.md's documented layout to consume it; would be speculative.
+- Did not touch the DECIMAL precision/scale ceiling gap (M03 Carried forward) or the
+  dataset-cli classpath-fixture gap (M02 Carried forward) - both are explicitly deferred in
+  their own Session Log entries pending B04/B05, which are still not started.
+
+**Frontend fixes** (see frontend/CLAUDE.md's own Status section for the full build state):
+- Added the three missing Next.js App Router special files that give every route real
+  loading/error states instead of a blank screen or the framework default: `app/error.tsx`
+  (root error boundary, retry action), `app/not-found.tsx` (on-brand 404 with a way back to
+  the catalog), `app/(app)/catalog/loading.tsx` and `app/(app)/catalog/[slug]/loading.tsx`
+  (skeleton fallbacks for the two server-rendered pages that fetch on the server before
+  first paint).
+
+**Deviations from docs:** none - every fix above stayed inside the shape root/backend
+CLAUDE.md already specify (RFC 7807 errors, CDM-owned engine enum, `common-*` module
+pattern); nothing here introduced a new framework, store, or architectural pattern.
+
+**Tests:** No new backend tests added - this pass touched cross-cutting infrastructure
+(exception mapping, an enum rename, a new rate limiter) rather than new business logic, and
+per the standing limitation on every prior entry, `mvn -T1C verify` still could not be run
+(no `mvn` binary reachable from either this sandbox or the linked device's shell this
+session). Every change was mechanical (a full-file grep confirmed zero remaining
+`EngineKind` references anywhere in source, and that every file using `EngineType` now
+imports `com.dbforge.engine.spi.EngineType`) and hand-reviewed twice, but is unverified by
+a compiler - treat `common-web`, the `EngineType` rename, and `HintRateLimiter` as the
+highest-risk-of-a-typo surface for the next `mvn verify` run, same posture as every prior
+milestone's Carried forward. Frontend fixes ARE compiler/build-verified: `pnpm install`,
+`typecheck`, `lint`, `test` (9 passing), and a full production `next build` all ran clean
+in this sandbox after the changes (npm registry is reachable here, unlike Maven Central).
+
+**Carried forward:**
+- Run `mvn -T1C verify` on a machine with real internet access - same standing note as
+  every prior entry, now also covering `common-web`, the `EngineType` rename in
+  catalog-service, and `HintRateLimiter`.
+- No CORS configuration on api-gateway (see Key decisions - deliberately not guessed at).
+- `HintRateLimiter` is in-memory/single-instance - swap for Redis-backed (INCR + EXPIRE)
+  before ai-assistant-service ever runs as more than one replica.
+- Everything already carried forward from M01/M02/M03/M13/M14/M16 that this pass didn't
+  touch (title search is still a naive regex, no "preview my own draft" endpoint, DECIMAL
+  precision/scale ceiling still unenforced, dataset-cli's classpath-fixture gap) remains
+  open exactly as those entries describe.
+- B04-B19 (everything 🔴 not started in the table below) - unchanged by this pass, still
+  blocked on docs/01-04 not existing and on being picked up one at a time, in order, per
+  this file's own session protocol.
+
+**Unblocks:** nothing new per the milestone table's dependency graph - this pass improved
+what B01/B02/B03/B13/B14/B16 already shipped rather than starting a new row. B04 (Postgres
+materializer + introspection) remains the next milestone in the table's order.
+
+### [2026-08-28] B04 — Postgres materializer + introspection
+
+**Status:** 🟡 partial (see Carried forward)
+
+**Built:**
+- `backend/pom.xml` — added `engine-adapters` to the reactor's `<modules>` (after
+  `engine-spi`, before `services`), the first module under it to actually exist.
+- `engine-adapters/pom.xml` (new) — aggregator, packaging=`pom`, one child so far
+  (`adapter-postgres`); `adapter-mongodb` (B05) stays a stub entry in the pom comment, not
+  a real module, until that milestone starts.
+- `engine-adapters/adapter-postgres` (new module) — the Postgres `DatabaseEngineAdapter`
+  implementation, plain JDBC (`org.postgresql:postgresql`), zero Spring dependency
+  (enforced by `PostgresAdapterArchitectureTest`, same ArchUnit pattern as
+  `EngineSpiArchitectureTest`):
+  - `PostgresEngineAdapter` — implements all 7 `DatabaseEngineAdapter` methods.
+    `materialize` generates a `dbforge_<ulid>` database name, creates it from
+    `template0` with `LC_COLLATE`/`LC_CTYPE` pinned to `C` (hard rule #9), then delegates
+    DDL + seeding to `PostgresMaterializer`. `templateClone` issues `CREATE DATABASE ...
+    TEMPLATE ...` for a fast per-session copy. `introspect` delegates to
+    `PostgresIntrospector`. `execute` runs a `StatementRequest` as-is (no AST validation —
+    that's B08's job, strictly upstream per `StatementRequest`'s own Javadoc) and returns a
+    normal query failure as `ExecutionResult.failure(...)` data, never an exception, per
+    the interface contract. `explain` runs `EXPLAIN <statement>` and joins the plan text.
+    `release` does `DROP DATABASE IF EXISTS ... WITH (FORCE)` (PG13+, disconnects
+    lingering sessions first) and is idempotent.
+  - `PostgresConnectionFactory` — opens one short-lived JDBC `Connection` per call, no
+    pooling (pooling is a concern for whichever service configures this adapter later —
+    owning a pool here would pull a framework dependency into a hard-rule-#1 module).
+  - `PostgresMaterializer` — runs `PostgresDdlBuilder`'s DDL, then batched
+    `PreparedStatement` inserts per entity via `CdmValueJdbcCodec`.
+  - `PostgresIntrospector` — reads back the live schema via `information_schema` (not the
+    `CdmDataset` that was asked for), so a later milestone (B06, cross-engine equivalence)
+    can prove what was actually created.
+  - `PostgresDdlBuilder` — pure `CdmDataset` → DDL text, no JDBC, unit-testable standalone.
+    Tables are created without foreign keys first; every FK is added afterward via a
+    separate `ALTER TABLE ADD CONSTRAINT` pass, so entity declaration order never has to be
+    a topological sort over the FK graph.
+  - `CdmValueJdbcCodec` — `CdmValue` ↔ JDBC in both directions. `TIMESTAMP` always via
+    `OffsetDateTime` pinned to `ZoneOffset.UTC` (never `java.sql.Timestamp`, which carries
+    an implicit JVM-local zone); `DECIMAL` always via `BigDecimal` (never `double`) — both
+    directly enforcing hard rule #9.
+  - `PostgresNativeTypes` — the reverse of `PostgresTypeMapper` (B03): Postgres's short
+    `udt_name`/`ResultSetMetaData.getColumnTypeName()` form (`bool`/`int8`/`numeric`/
+    `text`/`timestamptz`/`jsonb`) back to `CdmType`. Hand-maintained rather than derived
+    from `PostgresColumnType.sqlTypeName()`, since two of those names (`boolean`/`bigint`)
+    are the long DDL form, not the short catalog form this class needs.
+  - `PostgresIdentifiers` — quotes and validates a Postgres identifier (rejects blank,
+    embedded `"`, and >63 bytes — Postgres's `NAMEDATALEN` limit).
+  - `PostgresAdapterException` — the module's one unchecked wrapper for `SQLException`.
+
+**Key decisions:**
+- `execute`'s result-set-to-`ColumnMeta` mapping falls back to `CdmType.TEXT` for any
+  native type outside the six the CDM covers, rather than throwing — an arbitrary learner
+  `SELECT` can touch any Postgres feature (e.g. `count(*)::int4`, an array literal), and
+  `CdmValueJdbcCodec`'s `TEXT` case reads via `ResultSet.getString()`, which coerces almost
+  any SQL type reasonably. `PostgresIntrospector`, by contrast, throws on the same gap —
+  it only ever introspects schemas this adapter itself created, so an unrecognized type
+  there means a real bug, not an arbitrary query.
+- No connection pooling anywhere in this module (see `PostgresConnectionFactory`'s
+  Javadoc) — deliberately left for whichever service wires this adapter in (B09,
+  execution-service) to decide, keeping hard rule #1 unambiguous.
+- `PostgresMaterializer`/`PostgresIntrospector`/`PostgresDdlBuilder`/`CdmValueJdbcCodec`/
+  `PostgresNativeTypes`/`PostgresIdentifiers` are all package-private — only
+  `PostgresEngineAdapter`, `PostgresConnectionFactory`, and `PostgresAdapterException` are
+  public. Nothing outside this module should ever construct a DDL string or bind a JDBC
+  parameter directly; the `DatabaseEngineAdapter` interface is the only supported surface.
+
+**Deviations from docs:** none beyond the standing note (docs/01-04 still don't exist).
+
+**Tests:** 4 test classes, no `mvn verify` (same standing network limitation as every prior
+milestone — no `mvn` binary reachable from this sandbox or the linked device's shell this
+session):
+- `PostgresAdapterArchitectureTest` — ArchUnit, no-Spring-dependency on the whole
+  `com.dbforge.engine.adapters.postgres` package.
+- `PostgresIdentifiersTest` — 6 tests covering `PostgresIdentifiers.quote()`'s full
+  behavior, including a SQL-injection-shaped identifier and the exact 63-byte boundary.
+- `PostgresDdlBuilderTest` — 10 pure unit tests (no database) against hand-built
+  `CdmDataset`/`CdmEntity` fixtures: quoting, `COLLATE "C"` only on TEXT columns, `NOT
+  NULL` placement, every `CdmType` → native SQL type name, single- and multi-column
+  primary keys, entities with no primary key, FK `ALTER TABLE` statement shape (including
+  multiple FKs on one entity), and constraint-name truncation past 63 characters.
+- `PostgresEngineAdapterIntegrationTest` — `@Testcontainers`/`@Container`
+  (`DbforgePostgresContainer`, plain JUnit5, no Spring annotation anywhere) against a real
+  Postgres 16 container, materializing the real `datasets/two-sum` fixture (loaded via
+  `dataset-cli`'s `CdmDatasetLoader`, the same code path a real ingestion flow would use —
+  not a hand-built `CdmDataset`). One full-lifecycle test walks `materialize` (asserts
+  `rowCountsByEntity` == `{numbers: 4, queries: 3}`) → `introspect` (asserts both entities'
+  column names, nullability, and `cdmTypeName` for every `CdmType` the fixture uses) →
+  `execute` (asserts real row values across every `CdmType` including a row with every
+  nullable column actually null, a `TIMESTAMP` round-trip against the exact epoch-millis
+  the dataset specifies, a `JSON` column's canonical text, and a failing statement
+  returning `ExecutionResult.failure(...)` rather than throwing) → `explain` (non-blank
+  plan text) → `templateClone` (asserts the clone is independent — a write to the clone
+  does not leak into the original) → `release` (asserts both databases are actually gone
+  via `pg_database`). Two smaller tests cover `release`'s idempotency and
+  `templateClone`'s rejection of a non-Postgres `SessionHandle`. Could not be run this
+  session (no Docker/Testcontainers execution available in this sandbox or the linked
+  device's shell) — hand-reviewed against the actual adapter source (not guessed
+  signatures) by reading every class's real method signatures and field names before
+  writing assertions.
+
+**Carried forward:**
+- Run `mvn -T1C verify` (and, for this module specifically, the Testcontainers
+  integration test against a real Docker daemon) on a machine with real internet access
+  and Docker — same standing note as every prior milestone, now also covering
+  `adapter-postgres`.
+- No MySQL adapter yet — `EngineType.MYSQL` exists (added in the previous audit pass) but
+  nothing materializes into it; out of scope for B04, not on the milestone table at all
+  (root CLAUDE.md's stack line names MySQL as a target engine, but B01-B19's table has no
+  MySQL-adapter milestone — flagging again since B03's Carried forward already raised
+  this and it remains unresolved).
+- No precision/scale ceiling enforced on `DECIMAL` materialization (same gap M03's
+  Carried forward flagged) — a seed row with a `numeric` value exceeding Postgres's real
+  limits would fail at `INSERT` time with a raw Postgres error, not a validator-level
+  message.
+- `adapter-mongodb` (B05) is still unstarted — `engine-adapters/pom.xml`'s `<module>`
+  list has only `adapter-postgres` so far.
+
+**Unblocks:** B06 (cross-engine equivalence proof — now has one of its two adapters) once
+B05 exists too. B04 is one of B09 (execution-service)'s four dependencies (B04, B05, B07,
+B08) — B09 still needs the other three before it can start. B18 (ingestion-service) lists
+B04 as a dependency as well.

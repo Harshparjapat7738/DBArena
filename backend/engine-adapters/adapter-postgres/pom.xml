@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.dbforge</groupId>
+    <artifactId>engine-adapters</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>adapter-postgres</artifactId>
+  <packaging>jar</packaging>
+
+  <name>DBForge :: adapter-postgres</name>
+  <description>
+    B04: materializes a CdmDataset into a real Postgres database (plain
+    JDBC, template-database cloning for fast per-session copies) and
+    introspects a materialized session's live schema back into engine-spi's
+    SchemaSnapshot model. Also implements execute/explain/release to
+    satisfy the full DatabaseEngineAdapter contract - nothing here depends
+    on the statement classifier (B08) or sandbox agent (B07): execute()
+    runs whatever StatementRequest it is given as-is, trusting (per
+    StatementRequest's own Javadoc) that validation already happened
+    upstream. HARD RULE: no org.springframework import, ever - see
+    PostgresAdapterArchitectureTest.
+  </description>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.dbforge</groupId>
+        <artifactId>platform-bom</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.dbforge</groupId>
+      <artifactId>common-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.dbforge</groupId>
+      <artifactId>engine-spi</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <!-- Test-scope only, and common-testing itself has zero Spring
+           dependencies (see its pom.xml) - does not compromise the hard
+           rule above. -->
+      <groupId>com.dbforge</groupId>
+      <artifactId>common-testing</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <!-- Library dependency on a tools/* module, not a service - not a
+           hard-rule-#2 concern (that rule is services/* only). Reuses
+           CdmDatasetLoader to materialize the real datasets/two-sum
+           fixture end to end in PostgresMaterializerIntegrationTest,
+           rather than hand-building an equivalent CdmDataset in test code
+           that could drift from what dataset-cli actually produces. -->
+      <groupId>com.dbforge</groupId>
+      <artifactId>dataset-cli</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>

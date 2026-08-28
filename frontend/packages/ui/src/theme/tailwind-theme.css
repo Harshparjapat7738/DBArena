@@ -1,0 +1,44 @@
+/*
+ * Tailwind v4 `@theme` block mapping semantic color tokens to the
+ * runtime-swappable `--db-*` custom properties `applyTheme`/the inline
+ * theme script set on `<html>`. Utilities like `bg-bg`, `text-fg`,
+ * `border-border`, `bg-accent` all resolve through these - switching
+ * themes never requires changing a single class name anywhere in the app.
+ */
+@theme {
+  --color-bg: var(--db-bg);
+  --color-bg-elevated: var(--db-bg-elevated);
+  --color-fg: var(--db-fg);
+  --color-fg-muted: var(--db-fg-muted);
+  --color-border: var(--db-border);
+  --color-accent: var(--db-accent);
+  --color-accent-fg: var(--db-accent-fg);
+  --color-success: var(--db-success);
+  --color-warning: var(--db-warning);
+  --color-danger: var(--db-danger);
+  --color-info: var(--db-info);
+  --color-editor-bg: var(--db-editor-bg);
+  --color-editor-fg: var(--db-editor-fg);
+  --color-selection: var(--db-selection);
+
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", ui-monospace, "Cascadia Code", Consolas, monospace;
+}
+
+/* Fallback values so the app never renders unstyled if the inline theme script somehow didn't run (e.g. JS disabled). */
+:root {
+  --db-bg: #1e1e1e;
+  --db-bg-elevated: #252526;
+  --db-fg: #d4d4d4;
+  --db-fg-muted: #9d9d9d;
+  --db-border: #3c3c3c;
+  --db-accent: #0e639c;
+  --db-accent-fg: #ffffff;
+  --db-success: #89d185;
+  --db-warning: #cca700;
+  --db-danger: #f48771;
+  --db-info: #3794ff;
+  --db-editor-bg: #1e1e1e;
+  --db-editor-fg: #d4d4d4;
+  --db-selection: #264f78;
+}

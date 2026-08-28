@@ -2,7 +2,7 @@ package com.dbforge.services.catalog.repository;
 
 import com.dbforge.common.core.id.TypedId;
 import com.dbforge.services.catalog.domain.Difficulty;
-import com.dbforge.services.catalog.domain.EngineKind;
+import com.dbforge.engine.spi.EngineType;
 import com.dbforge.services.catalog.domain.Problem;
 import org.bson.Document;
 
@@ -51,8 +51,8 @@ public final class ProblemDocumentMapper {
 
     public static Problem fromDocument(Document document) {
         Set<String> tags = new LinkedHashSet<>(document.getList(TAGS, String.class, List.of()));
-        Set<EngineKind> engines = document.getList(ALLOWED_ENGINES, String.class, List.of()).stream()
-                .map(EngineKind::valueOf)
+        Set<EngineType> engines = document.getList(ALLOWED_ENGINES, String.class, List.of()).stream()
+                .map(EngineType::valueOf)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
 
         return new Problem(

@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.net.http.HttpClient;
 import java.nio.file.Path;
+import java.time.Clock;
 import java.time.Duration;
 
 @Configuration
@@ -24,5 +25,11 @@ public class AiAssistantConfig {
     @Bean
     public DatasetContextLoader datasetContextLoader(AiProviderProperties properties) {
         return new DatasetContextLoader(Path.of(properties.getDatasetsRoot()));
+    }
+
+    /** Used by {@code HintRateLimiter} to window per-user hint requests. */
+    @Bean
+    public Clock clock() {
+        return Clock.systemUTC();
     }
 }

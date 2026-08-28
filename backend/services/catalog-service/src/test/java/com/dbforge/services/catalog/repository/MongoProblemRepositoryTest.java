@@ -5,7 +5,7 @@ import com.dbforge.common.core.pagination.CursorPage;
 import com.dbforge.common.core.pagination.PageRequest;
 import com.dbforge.common.testing.containers.DbforgeMongoContainer;
 import com.dbforge.services.catalog.domain.Difficulty;
-import com.dbforge.services.catalog.domain.EngineKind;
+import com.dbforge.engine.spi.EngineType;
 import com.dbforge.services.catalog.domain.Problem;
 import com.dbforge.services.catalog.domain.ProblemFilter;
 import com.dbforge.services.catalog.domain.TagCount;
@@ -70,7 +70,7 @@ class MongoProblemRepositoryTest {
                 "Statement for " + slug,
                 difficulty,
                 tags,
-                Set.of(EngineKind.POSTGRES),
+                Set.of(EngineType.POSTGRES),
                 slug + "-dataset",
                 true,
                 createdAt,

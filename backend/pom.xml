@@ -22,13 +22,15 @@
       B14: services/* (identity-service, api-gateway)
       B13: services/catalog-service
       B02: tools/dataset-cli (+ the CDM model, added into engine-spi)
+      B04: engine-adapters/adapter-postgres
 
-    engine-adapters/* is still unstarted (B04/B05).
+    engine-adapters/adapter-mongodb is still unstarted (B05).
   -->
   <modules>
     <module>platform-bom</module>
     <module>platform-common</module>
     <module>engine-spi</module>
+    <module>engine-adapters</module>
     <module>services</module>
     <module>tools</module>
   </modules>

@@ -5,7 +5,7 @@ import com.dbforge.common.core.id.TypedId;
 import com.dbforge.common.core.pagination.CursorPage;
 import com.dbforge.common.core.pagination.PageRequest;
 import com.dbforge.services.catalog.domain.Difficulty;
-import com.dbforge.services.catalog.domain.EngineKind;
+import com.dbforge.engine.spi.EngineType;
 import com.dbforge.services.catalog.domain.Problem;
 import com.dbforge.services.catalog.domain.ProblemFilter;
 import com.dbforge.services.catalog.repository.ProblemRepository;
@@ -42,7 +42,7 @@ class CatalogServiceTest {
     private static Problem sampleProblem(boolean published) {
         return new Problem(
                 TypedId.of("id-1"), "two-sum", "Two Sum", "Statement", Difficulty.EASY,
-                Set.of("arrays"), Set.of(EngineKind.POSTGRES), "two-sum-dataset", published, 1000L, 1000L);
+                Set.of("arrays"), Set.of(EngineType.POSTGRES), "two-sum-dataset", published, 1000L, 1000L);
     }
 
     @Test
@@ -51,7 +51,7 @@ class CatalogServiceTest {
 
         CreateProblemCommand command = new CreateProblemCommand(
                 "two-sum", "Two Sum", "Statement", Difficulty.EASY, Set.of("arrays"),
-                Set.of(EngineKind.POSTGRES), "two-sum-dataset");
+                Set.of(EngineType.POSTGRES), "two-sum-dataset");
 
         assertThatThrownBy(() -> service.createProblem(command)).isInstanceOf(DuplicateSlugException.class);
         verify(repository, never()).insert(any());
@@ -64,7 +64,7 @@ class CatalogServiceTest {
 
         CreateProblemCommand command = new CreateProblemCommand(
                 "two-sum", "Two Sum", "Statement", Difficulty.EASY, Set.of("arrays"),
-                Set.of(EngineKind.POSTGRES), "two-sum-dataset");
+                Set.of(EngineType.POSTGRES), "two-sum-dataset");
 
         Problem created = service.createProblem(command);
 
@@ -118,7 +118,7 @@ class CatalogServiceTest {
 
         UpdateProblemCommand command = new UpdateProblemCommand(
                 "Two Sum (Revised)", "New statement", Difficulty.MEDIUM, Set.of("arrays", "hash-map"),
-                Set.of(EngineKind.POSTGRES, EngineKind.MONGODB), "two-sum-dataset-v2");
+                Set.of(EngineType.POSTGRES, EngineType.MONGODB), "two-sum-dataset-v2");
 
         Problem updated = service.updateProblem("two-sum", command);
 

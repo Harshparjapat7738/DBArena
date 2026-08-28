@@ -1,7 +1,7 @@
 package com.dbforge.services.catalog.web.dto;
 
 import com.dbforge.services.catalog.domain.Difficulty;
-import com.dbforge.services.catalog.domain.EngineKind;
+import com.dbforge.engine.spi.EngineType;
 import com.dbforge.services.catalog.service.CreateProblemCommand;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -16,7 +16,7 @@ public record CreateProblemRequest(
         @NotBlank String statementMarkdown,
         @NotNull Difficulty difficulty,
         Set<String> tags,
-        @NotEmpty Set<EngineKind> allowedEngines,
+        @NotEmpty Set<EngineType> allowedEngines,
         String datasetSlug) {
 
     public CreateProblemRequest {

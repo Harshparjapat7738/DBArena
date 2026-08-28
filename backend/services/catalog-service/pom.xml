@@ -50,7 +50,17 @@
     </dependency>
     <dependency>
       <groupId>com.dbforge</groupId>
+      <artifactId>common-web</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.dbforge</groupId>
       <artifactId>common-observability</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.dbforge</groupId>
+      <artifactId>engine-spi</artifactId>
       <version>${project.version}</version>
     </dependency>
 

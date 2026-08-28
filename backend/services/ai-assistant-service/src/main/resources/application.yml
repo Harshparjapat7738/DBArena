@@ -21,6 +21,7 @@ dbforge:
     # risk areas (see this milestone's Session Log "Carried forward").
     datasets-root: ${DBFORGE_DATASETS_ROOT:../../../datasets}
     max-output-tokens: ${DBFORGE_AI_MAX_OUTPUT_TOKENS:220}
+    hint-rate-limit-per-hour: ${DBFORGE_AI_HINT_RATE_LIMIT_PER_HOUR:30} # per-user, fixed window - see HintRateLimiter
     groq:
       api-key: ${DBFORGE_GROQ_API_KEY:}
       base-url: ${DBFORGE_GROQ_BASE_URL:https://api.groq.com/openai/v1/chat/completions}

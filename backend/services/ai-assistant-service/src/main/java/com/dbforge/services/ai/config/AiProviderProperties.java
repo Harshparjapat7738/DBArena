@@ -27,6 +27,7 @@ public class AiProviderProperties {
     private Gemini gemini = new Gemini();
     private int maxOutputTokens = 220;
     private String datasetsRoot = "../datasets";
+    private int hintRateLimitPerHour = 30;
 
     public Groq getGroq() {
         return groq;
@@ -58,6 +59,15 @@ public class AiProviderProperties {
 
     public void setDatasetsRoot(String datasetsRoot) {
         this.datasetsRoot = datasetsRoot;
+    }
+
+    /** Fixed-window per-user cap on {@code POST /problems/{slug}/hint}. See {@code HintRateLimiter}. */
+    public int getHintRateLimitPerHour() {
+        return hintRateLimitPerHour;
+    }
+
+    public void setHintRateLimitPerHour(int hintRateLimitPerHour) {
+        this.hintRateLimitPerHour = hintRateLimitPerHour;
     }
 
     public static class Groq {

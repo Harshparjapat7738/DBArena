@@ -4,7 +4,7 @@ import com.dbforge.common.core.pagination.CursorPage;
 import com.dbforge.common.core.pagination.PageRequest;
 import com.dbforge.common.security.rbac.RequiresRole;
 import com.dbforge.services.catalog.domain.Difficulty;
-import com.dbforge.services.catalog.domain.EngineKind;
+import com.dbforge.engine.spi.EngineType;
 import com.dbforge.services.catalog.domain.ProblemFilter;
 import com.dbforge.services.catalog.domain.TagCount;
 import com.dbforge.services.catalog.service.CatalogService;
@@ -43,7 +43,7 @@ public class ProblemController {
             @RequestParam Optional<Integer> limit,
             @RequestParam Optional<String> tag,
             @RequestParam Optional<Difficulty> difficulty,
-            @RequestParam Optional<EngineKind> engine,
+            @RequestParam Optional<EngineType> engine,
             @RequestParam(name = "q") Optional<String> search) {
         PageRequest pageRequest = new PageRequest(limit.orElse(PageRequest.DEFAULT_LIMIT), cursor);
         // publishedOnly is forced true inside the service regardless of what's passed here.

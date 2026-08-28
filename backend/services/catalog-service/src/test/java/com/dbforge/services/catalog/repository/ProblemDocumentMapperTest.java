@@ -2,7 +2,7 @@ package com.dbforge.services.catalog.repository;
 
 import com.dbforge.common.core.id.TypedId;
 import com.dbforge.services.catalog.domain.Difficulty;
-import com.dbforge.services.catalog.domain.EngineKind;
+import com.dbforge.engine.spi.EngineType;
 import com.dbforge.services.catalog.domain.Problem;
 import org.bson.Document;
 import org.junit.jupiter.api.Test;
@@ -22,7 +22,7 @@ class ProblemDocumentMapperTest {
                 "Given an array of integers...",
                 Difficulty.EASY,
                 Set.of("arrays", "hash-map"),
-                Set.of(EngineKind.POSTGRES, EngineKind.MONGODB),
+                Set.of(EngineType.POSTGRES, EngineType.MONGODB),
                 "two-sum-dataset",
                 true,
                 1_700_000_000_000L,
@@ -43,7 +43,7 @@ class ProblemDocumentMapperTest {
                 "Write a join...",
                 Difficulty.MEDIUM,
                 Set.of(),
-                Set.of(EngineKind.POSTGRES),
+                Set.of(EngineType.POSTGRES),
                 "join-dataset",
                 false,
                 42L,

@@ -1,12 +1,14 @@
 package com.dbforge.services.catalog.domain;
 
+import com.dbforge.engine.spi.EngineType;
+
 import java.util.Optional;
 
 /** Every field is optional-and-composable; an absent field applies no filter on that axis. */
 public record ProblemFilter(
         Optional<String> tag,
         Optional<Difficulty> difficulty,
-        Optional<EngineKind> engine,
+        Optional<EngineType> engine,
         Optional<String> titleSearch,
         boolean publishedOnly) {
 
