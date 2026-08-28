@@ -113,7 +113,7 @@ for a human reader. Full rationale belongs in code comments or ADRs, not here.
 |---|---|---|---|
 | B01 | Maven reactor + common-* + engine-spi interfaces | 🟡 partial (code written, not `mvn verify`-green — see Session Log) | — |
 | B02 | CDM model + validator (`dataset-cli`) | 🟡 partial (code written, not `mvn verify`-green — see Session Log) | B01 |
-| B03 | Type mapping (`CdmType` → Postgres/Mongo) | 🔴 not started | B01 |
+| B03 | Type mapping (`CdmType` → Postgres/Mongo) | 🟡 partial (code written, not `mvn verify`-green — see Session Log) | B01 |
 | B04 | Postgres materializer + introspection | 🔴 not started | B02, B03 |
 | B05 | MongoDB materializer + document shaping | 🔴 not started | B02, B03 |
 | B06 | Cross-engine equivalence proof ⭐ | 🔴 not started | B04, B05 |
@@ -259,3 +259,143 @@ of every Session Log entry.
 - Title/description authoring fields beyond bare column typing (e.g. a human-readable problem statement referencing this dataset) live in catalog-service (`Problem.datasetSlug`, still just a loose string reference per M13's carried-forward note) - the CDM model itself has no such fields and shouldn't; that's catalog metadata, not dataset structure.
 
 **Unblocks:** B03 (type mapping, `CdmType` → Postgres/Mongo native types - now has a real `CdmType` to map from) and, transitively through B03, B04/B05/B10/B18 per the table below. Also unblocks nothing by itself for B13/B14/B15 (already B01-only).
+
+### [2026-08-28] Audit — B01–B12 implementation status check
+
+**Type:** read-only inspection, NOT a build session. No code written, modified, or deleted.
+No `mvn` command run (no `verify`, no tests added or executed). Requested by the human,
+scoped explicitly to B01–B12. Do not confuse this with a numbered `M<nn>` milestone entry
+above — nothing here changes what's built, it only confirms what already is.
+
+**Method:** filesystem inspection + grep only, from `backend/`:
+- `find . -maxdepth 2 -name pom.xml` — lists actual reactor modules.
+- `find . -iname "*adapter*"` — checks for `engine-adapters/*` (B04–B06).
+- `ls services/`, `ls tools/` — checks for execution-service/submission-service (B09/B11)
+  and problem-validator (B12).
+- `grep -rl` across every `.java` file for milestone-identifying symbols: `TypeMapper`,
+  `StatementClassifier`, `ResultComparator`, `SandboxAgent`, `execution-service`,
+  `submission-service`, `problem-validator`, `CrossEngine`.
+
+**Findings:**
+- B01 (Maven reactor + common-* + engine-spi) — ✅ present, matches table (M01).
+- B02 (CDM model + validator, dataset-cli) — ✅ present, matches table (M02).
+- B03 (type mapping) — 🔴 confirmed absent. No `TypeMapper` symbol anywhere.
+- B04 (Postgres materializer) — 🔴 confirmed absent. No `engine-adapters/` directory exists at all.
+- B05 (MongoDB materializer) — 🔴 confirmed absent. Same — `engine-adapters/adapter-mongodb` does not exist.
+- B06 (cross-engine equivalence proof) — 🔴 confirmed absent. No `CrossEngine*` symbol; depends on B04/B05, neither of which exists.
+- B07 (sandbox agent) — 🔴 confirmed absent. No `SandboxAgent` symbol, no sandbox-agent module.
+- B08 (statement classifier) — 🔴 confirmed absent. No `StatementClassifier` symbol.
+- B09 (execution-service) — 🔴 confirmed absent. `services/` contains only `api-gateway`, `catalog-service`, `identity-service`.
+- B10 (result comparator) — 🔴 confirmed absent. No `ResultComparator` symbol.
+- B11 (submission-service) — 🔴 confirmed absent. No `submission-service` directory under `services/`.
+- B12 (problem-validator) — 🔴 confirmed absent. `tools/` contains only `dataset-cli`.
+
+The only three grep hits found (`StatementRequest.java`, `DatabaseEngineAdapter.java`,
+`CdmDatasetValidator.java`) are pre-existing B01/B02 files that matched incidentally — an
+M01 model record's name and a Javadoc cross-reference, not an actual B03–B12
+implementation. None of B03 through B12 has any implementation footprint: no scaffolded
+module, no empty class, nothing.
+
+**Conclusion:** the milestone status table above already matches reality exactly for
+B01–B12 — no cell needed changing. B01/B02 are the only implemented work in this range
+(both still 🟡 partial pending an `mvn verify` run, per their own entries); B03–B12 are
+correctly 🔴 not started. Per the standing sequential-order policy (see root `CLAUDE.md`'s
+"Current phase"), **B03 (type mapping) is next.**
+
+### [2026-08-28] M03 — type mapping (`CdmType` → Postgres/Mongo)
+
+**Status:** 🟡 partial (see Carried forward)
+
+**Built:**
+- `engine-spi` — new `com.dbforge.engine.spi.typemap` package: `TypeMapper<T>` (a generic,
+  intentionally minimal contract — `T map(CdmType)`), `PostgresColumnType` (an enum of the
+  six native Postgres column types the mapping can produce, each carrying its literal SQL
+  type name), `MongoBsonType` (the BSON-side equivalent), `PostgresTypeMapper` and
+  `MongoTypeMapper` (stateless, thread-safe implementations of `TypeMapper<T>`, one per
+  engine). Both mappers are the "total `TypeMapper`" backend/CLAUDE.md's "Adding a new
+  engine" section requires: each is a `switch` over `CdmType` with **no `default` branch**,
+  so adding a seventh `CdmType` variant is a compiler error in both mappers until each is
+  updated — never a silent runtime gap or an `UnsupportedOperationException` discovered in
+  production.
+
+**Key decisions:**
+- `DECIMAL` → Postgres `numeric` (unbounded, no fixed precision/scale) rather than
+  `numeric(p,s)` — a `CdmColumn` declares no precision/scale of its own (`CdmValue.Decimal`
+  carries its own scale per value, per hard rule #9), so the column type must accept
+  whatever scale any given row uses, not one fixed in advance.
+- `TIMESTAMP` → Postgres `timestamptz`, not a bare `timestamp` — Postgres normalizes
+  `timestamptz` to UTC internally regardless of session timezone, so every read is
+  convertible to hard rule #9's epoch-millis-UTC representation without depending on
+  connection-level timezone configuration. The actual epoch-millis conversion at the JDBC
+  boundary is B04's job, not this mapping's.
+- `TIMESTAMP` → Mongo `MongoBsonType.INT64_EPOCH_MILLIS`, a plain BSON int64, **not** the
+  BSON `date` type, and there is deliberately no `MongoBsonType.DATE` variant at all. A BSON
+  date is an int64 epoch-millis value on the wire, but most driver/tooling layers decode it
+  straight into a language-local date object on the way out — reintroducing the exact
+  "engine-local timezone" risk hard rule #9 forbids. Storing a plain int64 keeps the on-disk
+  representation identical to the platform's own canonical timestamp with no implicit
+  conversion anywhere in the read path. This also matches the convention catalog-service
+  (M13) already established independently for its own documents — B03 makes it the type
+  mapper's rule instead of a decision every service has to remember to repeat.
+- `DECIMAL` → Mongo `DECIMAL128`, never `double` — the one BSON numeric representation that
+  stores an exact scaled value rather than a binary floating-point approximation, matching
+  hard rule #9 on the Mongo side the same way `numeric` does on the Postgres side.
+- `JSON` → Postgres `jsonb` (not `json`) and → Mongo an embedded `DOCUMENT` (not a `string`
+  field) — both preserve `CdmValue.Json`'s canonical-text contract and let a learner query
+  into the structure natively instead of treating it as an opaque blob.
+- `INTEGER` → Postgres `bigint` and → Mongo `INT64` — `CdmValue.Int` carries a `long`, so
+  anything narrower on either side risks silent overflow on materialization.
+- Kept `TypeMapper<T>` generic over one type parameter rather than writing two unrelated,
+  same-shaped interfaces — the "total switch, no default" discipline is identical for both
+  engines and is worth stating once.
+- Scope stopped at the mapping table itself — no DDL-fragment builder, no BSON document
+  shaper. Those are B04/B05's job (they also need `CdmColumn`'s nullable/primaryKey flags
+  and actual `CdmValue` instances, not just the type), and reaching into that here would
+  duplicate what those milestones are meant to build.
+
+**Deviations from docs:** none beyond M01's standing note (docs/01-04 still don't exist).
+
+**Tests:** 18 test methods across 2 test classes (`PostgresTypeMapperTest`,
+`MongoTypeMapperTest`), covering: every `CdmType` → documented native-type mapping
+explicitly; a `@ParameterizedTest @EnumSource(CdmType.class)` sweep proving neither mapper
+ever returns null for any variant (this is really re-proving switch-exhaustiveness, which
+the compiler already guarantees, but it pins the behavior at the test level too, so a
+future refactor that somehow reintroduces a `default` branch fails loudly here as well);
+the specific "never a double/never a BSON date" decisions above asserted individually, not
+just implied by the full-mapping test; purity (`map()` called twice for the same input
+returns the same value); and that no two `CdmType` variants collapse onto the same
+native type. Same standing network limitation as every prior milestone: `mvn -T1C verify`
+could not be run (no route to Maven Central). Unlike M13/M14 and like M01/M02, though, this
+milestone's main sources have **zero external dependencies** (only `common-core` and
+`engine-spi` itself), so they were fully javac-verified this session: `javac --release 21`
+against `common-core` + `engine-spi` (39 source files total) compiled clean, 0 errors, 0
+warnings. No bug was caught this time — the two mappers are small, total switch
+expressions with no branching logic to get wrong, unlike M02's record validators. Test
+sources (JUnit 5 params, AssertJ) could not be javac-verified — same 403 from Maven
+Central as everywhere else — so those are hand-reviewed only, same as every other
+milestone's test code.
+
+**Carried forward:**
+- Run `mvn -T1C verify` on a machine with real internet access — same standing note as
+  every prior milestone, now covering the `typemap` package too.
+- No DDL-fragment or BSON-document-shaping code yet — deliberately deferred to B04/B05 (see
+  Key decisions). Those milestones consume `PostgresTypeMapper`/`MongoTypeMapper` directly
+  rather than re-deriving the mapping.
+- `EngineType` (engine-spi, 2 values: POSTGRES, MONGODB) vs catalog-service's `EngineKind`
+  (3 values, includes MYSQL) still need reconciling — unchanged from M02's note, this
+  milestone didn't touch either enum. Worth flagging again here since B03's own milestone
+  name literally says "Postgres/Mongo" and doesn't mention MySQL at all — root CLAUDE.md's
+  stack line names MySQL as a target engine, but no MySQL type mapping, adapter, or
+  reconciliation of `EngineType` exists yet anywhere in the codebase. That gap is real and
+  still open, not resolved by this milestone.
+- No precision/scale ceiling is enforced anywhere on `DECIMAL` values — Postgres `numeric`
+  and Mongo `decimal128` both have their own real limits (`decimal128` tops out at 34
+  significant digits), and nothing in `CdmDatasetValidator` (M02) or this mapping checks a
+  seed value against them before it reaches an adapter. Worth a validator check once B04/B05
+  exist to make an actual overflow observable end-to-end.
+
+**Unblocks:** B04 (Postgres materializer — now has `PostgresTypeMapper` to build `CREATE
+TABLE` column definitions from) and B05 (MongoDB materializer — now has `MongoTypeMapper`
+to build document-shaping logic from). Also unblocks B10 (result comparator) per the
+table's dependency on B03, though B10 also depends on B09/B00-adjacent execution
+machinery that doesn't exist yet.

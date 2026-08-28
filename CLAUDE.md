@@ -143,6 +143,8 @@ forward on each:
 - **M01** — Maven reactor + `common-*` + `engine-spi`. (B01)
 - **M02** — the Canonical Dataset Model (`engine-spi`'s new `cdm` package) + its
   validator + `tools/dataset-cli` + a real sample dataset. (B02)
+- **M03** — type mapping: `engine-spi`'s new `typemap` package (`TypeMapper<T>` +
+  `PostgresTypeMapper`/`MongoTypeMapper`, both total switches over `CdmType`). (B03)
 - **M13** — `catalog-service` (public problem browsing + admin authoring, the first
   service in the reactor to actually use MongoDB), plus a method-aware public-path
   update to api-gateway so catalog browsing is public while writes still require a
@@ -156,8 +158,8 @@ human's explicit instruction, **all work from here on follows the milestone tabl
 numeric order strictly**: the next milestone is always the lowest-numbered `🔴 not
 started` row whose dependencies are already ✅/🟡, and a session never re-does a
 milestone that's already 🟡 partial or ✅ complete — check backend/CLAUDE.md's table
-first, every time, before starting anything. Right now that means **B03 — type mapping
-(`CdmType` → Postgres/Mongo)** is next; B13/B14 stay done and are not revisited until
+first, every time, before starting anything. Right now that means **B04 — Postgres
+materializer + introspection** is next; B13/B14 stay done and are not revisited until
 their own carried-forward items call for it.
 
 Most importantly: **`mvn -T1C verify` has not been run successfully in any environment
@@ -167,13 +169,14 @@ trusting the build — opening the project in IntelliJ (`.idea/` is already here
 this automatically — and fix whatever it surfaces. M02's `engine-spi` additions are the
 one exception: they compiled clean under plain `javac --release 21` this session (same
 zero-external-jars trick M01 used) and a real bug was caught that way before it shipped
-(see backend/CLAUDE.md's M02 entry). Everything else - tools/dataset-cli's Jackson-based
-code, and all of M13/M14 - is hand-reviewed only, not compiler-verified; give
-catalog-service's Mongock package the closest look first among those (flagged in its own
-Javadoc).
+(see backend/CLAUDE.md's M02 entry). M03's `typemap` package (also zero external dependencies) compiled clean the same way, with
+no bugs caught this time - the two mappers are small total switches with no branching logic
+to get wrong. Everything else - tools/dataset-cli's Jackson-based code, and all of M13/M14
+- is hand-reviewed only, not compiler-verified; give catalog-service's Mongock package the
+closest look first among those (flagged in its own Javadoc).
 
 Work the remaining milestones in the order given in `docs/04-claude-build-playbook.md`
 §3 once that doc exists; until then, `backend/CLAUDE.md`'s own milestone table is the
 order of record, and (per the instruction above) that order is now followed strictly.
 
-Next up: **B03 — type mapping (`CdmType` → Postgres/Mongo)**.
+Next up: **B04 — Postgres materializer + introspection**.
