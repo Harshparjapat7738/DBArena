@@ -15,14 +15,15 @@
 
   <name>DBForge :: Engine Adapters (aggregator)</name>
   <description>
-    One module per database engine (adapter-postgres, adapter-mongodb, ...).
-    Hard rule #1: nothing under here may depend on org.springframework -
-    enforced per-module by each adapter's own ArchUnit test, mirroring
-    engine-spi's EngineSpiArchitectureTest.
+    One module per database engine (adapter-postgres, adapter-mysql,
+    adapter-mongodb, ...). Hard rule #1: nothing under here may depend on
+    org.springframework - enforced per-module by each adapter's own
+    ArchUnit test, mirroring engine-spi's EngineSpiArchitectureTest.
   </description>
 
   <modules>
     <module>adapter-postgres</module>
+    <module>adapter-mysql</module>
   </modules>
 
   <dependencyManagement>

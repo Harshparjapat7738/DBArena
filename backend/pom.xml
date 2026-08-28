@@ -52,6 +52,14 @@
     <jsqlparser.version>4.9</jsqlparser.version>
     <avro.version>1.12.0</avro.version>
     <mongodb-driver.version>5.2.0</mongodb-driver.version>
+    <!-- Not managed by spring-boot-dependencies/spring-cloud-dependencies despite
+         common-security using it directly for JWT signing/verification (M01) -
+         confirmed by a real (non-offline) `mvn compile` failing on a missing
+         version for com.nimbusds:nimbus-jose-jwt with no override, the first
+         time any session had real network access to find out. Pinned here,
+         same "platform-bom is the one place a version is pinned" rule as
+         every other entry in this block. -->
+    <nimbus-jose-jwt.version>9.41.2</nimbus-jose-jwt.version>
     <flyway.version>10.20.1</flyway.version>
     <mongock.version>5.4.4</mongock.version>
     <opentelemetry.version>1.42.1</opentelemetry.version>

@@ -153,35 +153,53 @@ forward on each:
 - **M16** — `ai-assistant-service`: one endpoint, graduated non-solution-revealing hints
   (CONCEPT/APPROACH/NEAR_MISS) for a catalog problem, Groq primary / Gemini fallback,
   first real Feign use in the reactor. (B16)
+- **B04** — Postgres materializer + introspection (`engine-adapters/adapter-postgres`),
+  done in the table's own numeric order. See backend/CLAUDE.md for two further, un-numbered
+  audit/fix passes made after B04 too (common-web extraction, EngineType/EngineKind
+  reconciliation, AI hint rate limiting, frontend error/loading states).
+- **B20 — MySQL adapter + type mapping** (`engine-adapters/adapter-mysql` +
+  `engine-spi`'s `MySqlTypeMapper`) — not a real table row originally (B01-B19 never had
+  a MySQL-adapter milestone at all, despite this file's own stack line naming MySQL as a
+  target engine); added to the table and built on the human's explicit instruction, the
+  same kind of deliberate override M13/M14/M16 were. First milestone with a real,
+  network-verified `mvn compile`/`test` pass rather than hand-review-only — see its own
+  Session Log entry for what that did and didn't cover.
 
-**M13, M14, and M16 were all built out of the milestone table's numeric order** (each
-depends only on already-done milestones, so each was picked directly rather than waiting
-on the full B02–B12 chain — M16 specifically per the human's explicit "start AI
-implementation now" instruction, the same kind of deliberate, explicit override M13/M14
-were). Outside of an explicit override like these, **work follows the milestone table's
-numeric order strictly**: the next milestone is always the lowest-numbered `🔴 not
+**M13, M14, M16, and B20 were all built out of the milestone table's numeric order** (M13/
+M14/M16 depend only on already-done milestones, so each was picked directly rather than
+waiting on the full B02–B12 chain; B20 didn't exist in the table at all until this session
+added it). Outside of an explicit override like these, **work follows the milestone
+table's numeric order strictly**: the next milestone is always the lowest-numbered `🔴 not
 started` row whose dependencies are already ✅/🟡, and a session never re-does a
 milestone that's already 🟡 partial or ✅ complete — check backend/CLAUDE.md's table
-first, every time, before starting anything. Right now that means **B04 — Postgres
-materializer + introspection** is next; B13/B14/B16 stay done and are not revisited until
-their own carried-forward items call for it.
+first, every time, before starting anything. Right now that means **B05 — MongoDB
+materializer + document shaping** is next; B04/B13/B14/B16/B20 stay done and are not
+revisited until their own carried-forward items call for it.
 
-Most importantly: **`mvn -T1C verify` has not been run successfully in any environment
-any of these sessions had network access to** (Maven Central was unreachable from both
-the cloud sandbox and the linked device's Cowork VM, every time). Run it yourself before
-trusting the build — opening the project in IntelliJ (`.idea/` is already here) will do
-this automatically — and fix whatever it surfaces. M02's `engine-spi` additions are the
-one exception: they compiled clean under plain `javac --release 21` this session (same
-zero-external-jars trick M01 used) and a real bug was caught that way before it shipped
-(see backend/CLAUDE.md's M02 entry). M03's `typemap` package (also zero external dependencies) compiled clean the same way, with
-no bugs caught this time - the two mappers are small total switches with no branching logic
-to get wrong. Everything else - tools/dataset-cli's Jackson-based code, all of M13/M14, and
-now M16 - is hand-reviewed only, not compiler-verified; give catalog-service's Mongock
-package and M16's Feign/HTTP-provider code the closest look first among those (each flagged
-in its own milestone's Session Log Tests section).
+For M01 through M16, `mvn -T1C verify` had not been run successfully in any environment
+any of those sessions had network access to (Maven Central was unreachable from both the
+cloud sandbox and the linked device's Cowork VM, every time) — M02's `engine-spi`
+additions and M03's `typemap` package were the only exceptions, compiled clean under plain
+`javac --release 21` (zero external dependencies); everything else from that era -
+tools/dataset-cli's Jackson-based code, all of M13/M14/M16, B04 - was hand-reviewed only.
+
+**That changed in the B20 (MySQL adapter) session**: this sandbox's `.m2` was already
+populated and Maven Central was genuinely reachable, so `mvn compile`/`test` actually ran
+(after fixing a real, previously-undiscovered missing-version bug in
+`platform-common/common-security`'s `nimbus-jose-jwt` dependency that had silently blocked
+*any* reactor-wide Maven read since M01 - see B20's Session Log entry). Still not fully
+verified even now: Testcontainers-based integration tests (adapter-postgres's and
+adapter-mysql's alike) fail in this specific environment for reasons B20 diagnosed but did
+not fix (a JaCoCo/JDK-26 instrumentation crash, worked around per-run, and a deeper
+Testcontainers-Java-vs-Windows-npipe connectivity gap that could not be resolved this
+session) - fixing that gap is now the single highest-value infrastructure task open in
+this repo, since it blocks hard rule #3 verification project-wide, not just for one
+milestone. If you have network access, always prefer trying a real `mvn -T1C verify` over
+assuming it still can't be done - re-verify the assumption every session rather than
+carrying it forward as settled fact.
 
 Work the remaining milestones in the order given in `docs/04-claude-build-playbook.md`
 §3 once that doc exists; until then, `backend/CLAUDE.md`'s own milestone table is the
 order of record, and (per the instruction above) that order is now followed strictly.
 
-Next up: **B04 — Postgres materializer + introspection**.
+Next up: **B05 — MongoDB materializer + document shaping**.

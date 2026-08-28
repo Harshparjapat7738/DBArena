@@ -130,6 +130,7 @@ for a human reader. Full rationale belongs in code comments or ADRs, not here.
 | B17 | gamification-service | 🔴 not started | B11 |
 | B18 | ingestion-service | 🔴 not started | B02, B04, B05 |
 | B19 | sandbox-manager + Helm/K8s | 🔴 not started | B07, B09 |
+| B20 | MySQL adapter + type mapping (not in the original table - see its Session Log entry) | 🟡 partial (real `mvn compile`/`test` green for everything except the Testcontainers integration test - see Session Log) | B02, B03 |
 
 ⭐ = requires the test-suite-first protocol from `docs/04-claude-build-playbook.md` §4.
 Update the status column yourself (🔴 not started / 🟡 in progress / ✅ complete) as part
@@ -775,3 +776,203 @@ session):
 B05 exists too. B04 is one of B09 (execution-service)'s four dependencies (B04, B05, B07,
 B08) — B09 still needs the other three before it can start. B18 (ingestion-service) lists
 B04 as a dependency as well.
+
+### [2026-08-28] B20 — MySQL adapter + type mapping
+
+**Status:** 🟡 partial (see Carried forward) — but the strongest verification any
+milestone in this log has had: real `mvn compile`/`test`, not hand-review, for
+everything except the one Testcontainers integration test.
+
+**Not on the milestone table at all.** B01-B19 never had a MySQL-adapter row despite root
+CLAUDE.md's stack line naming MySQL as a target engine — flagged as an open, unresolved
+gap across three separate Session Log entries (M02, M03, B04's Carried forward) and never
+closed. Built now on the human's explicit instruction — the same kind of deliberate,
+acknowledged override of the strict numeric-order rule that M13/M14/M16 were, offered and
+confirmed via an explicit question before any code was written (a full new engine adapter
+is a real scope decision, not a "plausible guess" gap to silently fill). Added as **B20**
+to the table above (numbered after B19, not inserted into the B01-B19 sequence, since it
+was never part of that original plan) rather than left off the table entirely.
+
+**Built:**
+- `engine-spi` — new `typemap.MySqlColumnType` (BOOLEAN→`tinyint(1)`, INTEGER→`bigint`,
+  DECIMAL→`decimal(65,30)`, TEXT→`text`, TIMESTAMP→`datetime(3)`, JSON→`json`) and
+  `typemap.MySqlTypeMapper` (`TypeMapper<MySqlColumnType>`, total switch, no `default` —
+  same discipline as `PostgresTypeMapper`/`MongoTypeMapper`, B03's "adding a new engine"
+  requirement). `EngineType`'s Javadoc updated — it previously documented the MySQL gap
+  as open; that's now stale and said so.
+- `engine-adapters/adapter-mysql` (new module, added to `engine-adapters/pom.xml`) — the
+  MySQL `DatabaseEngineAdapter`, plain JDBC (`com.mysql:mysql-connector-j`), zero Spring
+  dependency (enforced by `MySqlAdapterArchitectureTest`, mirroring
+  `PostgresAdapterArchitectureTest`). Mirrors `adapter-postgres`'s structure and scope
+  exactly (`MySqlEngineAdapter`, `MySqlConnectionFactory`, `MySqlMaterializer`,
+  `MySqlIntrospector`, `MySqlDdlBuilder`, `MySqlValueJdbcCodec`, `MySqlNativeTypes`,
+  `MySqlIdentifiers`, `MySqlAdapterException`) plus one new collaborator neither Postgres
+  nor the `DatabaseEngineAdapter` interface needed: `MySqlTemplateCloner` (see Key
+  decisions - `templateClone`).
+- `platform-common/common-testing` — `DbforgeMySqlContainer` (mirrors
+  `DbforgePostgresContainer`), plus `org.testcontainers:mysql` added to that module's pom.
+- Tests: `MySqlTypeMapperTest` (engine-spi, 15 methods, mirrors `PostgresTypeMapperTest`);
+  `MySqlAdapterArchitectureTest`, `MySqlIdentifiersTest` (7 methods), `MySqlDdlBuilderTest`
+  (10 methods, mirrors `PostgresDdlBuilderTest` exactly), `MySqlEngineAdapterIntegrationTest`
+  (mirrors `PostgresEngineAdapterIntegrationTest`'s full lifecycle, plus one extra
+  assertion Postgres's version doesn't need — proving a foreign key is actually re-enforced
+  on a clone, not silently dropped, given `templateClone`'s different implementation here).
+
+**Key decisions:**
+- **`templateClone` has no Postgres-equivalent primitive.** MySQL has no `CREATE DATABASE
+  ... TEMPLATE ...`. Implemented in `MySqlTemplateCloner` as: `CREATE TABLE clone.t LIKE
+  template.t` for every table (copies columns/indexes/PK, **not** foreign keys — long-
+  standing, version-independent MySQL behavior) → `INSERT INTO clone.t SELECT * FROM
+  template.t` for every table with `FOREIGN_KEY_CHECKS=0` → foreign keys reconstructed
+  afterward by reading `information_schema.key_column_usage` off the *template* schema
+  (the only place they still exist) and issuing `ALTER TABLE ... ADD CONSTRAINT` against
+  the clone. Safe only because the clone's data is already a faithful copy of data that
+  satisfied the same constraint in the template. One connection, no default schema
+  selected, fully-qualified `` `schema`.`table` `` names throughout — a single MySQL
+  connection can read/write any schema its user has privileges on, unlike Postgres's
+  per-database connection isolation, which is what makes this a single-connection
+  operation at all.
+- **`TIMESTAMP` → `datetime(3)`, deliberately not MySQL's own `TIMESTAMP` type.** MySQL
+  `TIMESTAMP` converts between server/session `time_zone` and UTC on every read/write and
+  is range-limited to 1970–2038 — exactly the "engine-local timezone" hard rule #9
+  forbids. `DATETIME` is zone-naive with no implicit conversion at all, so
+  `MySqlValueJdbcCodec` binds/reads it as `java.time.LocalDateTime` constructed/interpreted
+  against `ZoneOffset.UTC` by the codec itself — zero dependency on the JDBC driver's or
+  MySQL session's timezone configuration, stronger than Postgres's `timestamptz` approach
+  (which relies on Postgres normalizing to UTC internally) in that there's no engine-side
+  timezone machinery involved at all.
+- **`BOOLEAN` → `tinyint(1)`, spelled explicitly rather than using the `BOOLEAN`/`BOOL`
+  alias.** MySQL has no native boolean storage type - those are parser-level synonyms for
+  `TINYINT(1)`. Reading it back is genuinely ambiguous at two different layers, handled
+  two different ways in `MySqlNativeTypes`: `information_schema.columns.COLUMN_TYPE`
+  (used by `MySqlIntrospector`, which only ever reads schemas this adapter created) gives
+  the exact string `"tinyint(1)"`, unambiguous; but `ResultSetMetaData.getColumnTypeName`
+  (used by `MySqlEngineAdapter#execute`, which runs arbitrary learner SQL) reports only
+  `"TINYINT"` for *any* tinyint column regardless of display width, so precision (MySQL
+  does surface the `(1)` as `getPrecision()`) is the only signal left to disambiguate —
+  `fromDriverType` uses it; anything that still doesn't resolve falls back to
+  `CdmType.TEXT`, same graceful-degradation posture `PostgresNativeTypes`/
+  `PostgresEngineAdapter#execute` already established for a native type outside the CDM's
+  six.
+- **`DECIMAL` → `decimal(65,30)`**, MySQL's actual maximum precision/scale — MySQL's
+  `DECIMAL` has no unbounded form (unlike Postgres `numeric`), so the widest fixed pair is
+  the closest equivalent; the DECIMAL-precision-ceiling gap M03/B04 already flagged for
+  Postgres applies here too, not newly introduced.
+- **`utf8mb4`/`utf8mb4_bin`** pinned at both database-creation and TEXT-column-definition
+  level (hard rule #9's named MySQL collation) — `utf8mb4_bin` is a byte-for-byte binary
+  collation, no case/accent-insensitive comparison sneaking into a result set order or
+  comparison a learner's query relies on. `ENGINE=InnoDB` stated explicitly on every
+  `CREATE TABLE` — InnoDB is MySQL 8's default already, but foreign keys (added in DDL's
+  second pass, same two-pass structure as `PostgresDdlBuilder`) need it specifically
+  (MyISAM silently accepts and ignores `ADD CONSTRAINT ... FOREIGN KEY`), so stating it
+  removes any dependency on server configuration.
+- **`explain` uses `EXPLAIN FORMAT=JSON`**, not MySQL's traditional multi-column tabular
+  `EXPLAIN` output — one row, one JSON column, giving one coherent plan string directly,
+  the same end result `PostgresEngineAdapter#explain` gets by joining Postgres's
+  one-text-column-per-row output.
+- **`release` has no Postgres-style `WITH (FORCE)` equivalent** — MySQL's `DROP DATABASE`
+  succeeds even while other sessions have the database selected as their current schema;
+  it does not lock or refuse based on live connections, so a plain `DROP DATABASE IF
+  EXISTS` is sufficient.
+- **A real, incidental fix along the way, not new scope:** `platform-common/common-security`
+  declares `com.nimbusds:nimbus-jose-jwt` with no version, and it turns out neither
+  `spring-boot-dependencies` nor `spring-cloud-dependencies` (both imported by
+  `platform-bom`) manages that artifact directly — a real, pre-existing gap dating back to
+  M01 that has silently blocked **any** Maven build of this reactor (not just this
+  milestone's own modules — Maven reads every reactor POM to build the module graph before
+  a `-pl` filter even applies) since the day common-security was written. It was never
+  caught before because no prior session had a route to Maven Central. Fixed by pinning
+  `nimbus-jose-jwt.version=9.41.2` in `backend/pom.xml`'s properties and adding it to
+  `platform-bom`'s `dependencyManagement`, the same "platform-bom is the one place a
+  version is pinned" pattern every other entry there already follows. Not otherwise
+  exercised or verified beyond resolving cleanly - common-security's own tests were not
+  run this session (out of scope; flagging so a future session doesn't assume this was a
+  full common-security verification).
+
+**Deviations from docs:** none beyond the standing note (docs/01-04 still don't exist).
+Being outside the milestone table's original numeric order is itself the deviation this
+entire entry exists to document — see the header note above and its own explicit
+human-confirmed override, not a silent one.
+
+**Tests:** 15 (`MySqlTypeMapperTest`) + 1 + 10 + 7 (adapter-mysql's architecture/DDL/
+identifiers tests) = 33 new test methods, plus `MySqlEngineAdapterIntegrationTest`'s one
+full-lifecycle method. **This is the first milestone in this project's history with a real,
+network-verified Maven build**, not hand-review-only:
+- This sandbox's `.m2` repository was already populated and Maven Central was actually
+  reachable this session (confirmed directly with `curl`) — different from every prior
+  session's sandbox/Cowork-VM environment, where it was not. `mvn -T1C compile` across
+  `engine-spi`, both `engine-adapters/*` modules, `common-core`, `common-testing`, and
+  `tools/dataset-cli` succeeded for real (`BUILD SUCCESS`), after the nimbus-jose-jwt fix
+  above unblocked the reactor-wide POM read.
+- `mvn test` (JaCoCo disabled - see below) actually ran and passed: 81 tests across
+  `engine-spi` (including all 15 new `MySqlTypeMapperTest` methods, plus every existing
+  Postgres/Mongo-typemap and CDM-model test, none of which had ever been machine-verified
+  before either) and 18 pure-unit tests in `adapter-mysql`
+  (`MySqlAdapterArchitectureTest`'s live ArchUnit no-Spring-dependency check,
+  `MySqlDdlBuilderTest`, `MySqlIdentifiersTest`) — genuine green, not "hand-reviewed
+  against the actual API."
+- **`MySqlEngineAdapterIntegrationTest` itself could not be run to a real pass this
+  session — but for a much more specific, newly-discovered reason than every prior
+  session's blanket "no Docker/network."** Docker Desktop was not running; started with
+  the human's explicit confirmation (asked first — starting it is real system resource
+  usage). Once up, `docker version`/`info` and a `~/.testcontainers.properties` with
+  `docker.host` already pointed at the right named pipe all confirmed Docker itself works
+  fine. Two distinct, real problems surfaced in sequence:
+  1. This machine's JDK (26.0.1, far newer than JaCoCo 0.8.12 was built against) makes
+     JaCoCo's bytecode instrumentation agent throw `IllegalClassFormatException`
+     instrumenting `java.sql.Timestamp`, which cascades into breaking Jackson's
+     `ObjectMapper` static init inside Testcontainers' shaded dependencies — an
+     environment/tooling-version mismatch, not a code defect. Worked around per-run with
+     `-Djacoco.skip=true`; a real fix (a newer JaCoCo, or excluding `java.sql.*` from
+     instrumentation) is Carried forward, not attempted here since the fix's correct shape
+     depends on what other reasons this reactor might need JaCoCo for at all - not this
+     milestone's call to make alone.
+  2. With JaCoCo out of the way, Testcontainers still could not connect
+     (`IllegalStateException: Could not find a valid Docker environment`) via the Windows
+     named pipe, **and this is confirmed environment-wide, not specific to
+     `DbforgeMySqlContainer` or this milestone's code** - the pre-existing, already-shipped
+     `PostgresEngineAdapterIntegrationTest` was run the identical way and failed
+     identically. This is a new, more specific, and more useful data point than any prior
+     session had (every prior entry just said "no Docker" - Docker is actually present and
+     functional via the CLI here; it's specifically docker-java's npipe transport that
+     cannot connect from a JVM in this configuration). Root cause not fully diagnosed
+     within this session's scope - Carried forward.
+- Given the above, `MySqlEngineAdapterIntegrationTest` and `PostgresEngineAdapterIntegrationTest`
+  are both hand-reviewed only for now, same standing caveat as before - but everything
+  else in this milestone (and, incidentally, everything B01-B04 had previously only
+  hand-reviewed in engine-spi/dataset-cli/adapter-postgres's non-Testcontainers code) now
+  has real compiler+test proof behind it for the first time.
+
+**Carried forward:**
+- Diagnose and fix the Testcontainers-Java-npipe connectivity gap (see Tests) - this
+  blocks **every** Testcontainers-based test in the whole reactor on this machine, not
+  just adapter-mysql/adapter-postgres, and is now the single highest-value infrastructure
+  fix available to a future session: fixing it would make hard rule #3 ("never mock a
+  database") actually machine-verifiable here for the first time.
+- JaCoCo 0.8.12 vs JDK 26 incompatibility (see Tests) - needs a real fix (version bump,
+  scoped exclusion) once someone decides whether this reactor's coverage tooling should
+  track a JDK this new at all; only worked around per-invocation this session.
+- `nimbus-jose-jwt`'s pinned version (9.41.2) was chosen for era-appropriateness with
+  Spring Boot 3.3.5/Spring Security 6.3.x, not verified against common-security's actual
+  Nimbus API usage beyond "the reactor's POMs now resolve" - common-security's own tests
+  were not run this session. Run them next time that module is touched.
+- No `MySqlStatementAnalyzer`/`MySqlPlanParser` beyond what `execute`/`explain` already do
+  inline - matches adapter-postgres's own scope exactly (B08's statement classifier is a
+  separate, not-yet-started milestone for every engine, not per-adapter).
+  `MySqlNativeTypes.fromDriverType`'s TINYINT-precision disambiguation is the one place in
+  this milestone most likely to need a real MySQL server to fully trust (see Tests) -
+  give it the closest look once the Testcontainers gap above is fixed.
+- Composite (multi-column) foreign keys, a DECIMAL precision/scale validator ceiling, and
+  a TEXT-typed primary key (MySQL rejects a bare `TEXT`/`BLOB` column in a `PRIMARY KEY`
+  without an explicit prefix length, e.g. `(col(191))` - untested since no dataset uses
+  this shape) are all real, unexercised gaps - same category as B04's own already-flagged
+  Postgres equivalents, not new risk this milestone introduced.
+- `DBFORGE_MYSQL_*` env vars added to `.env`/`.env.example` at the repo root for local
+  manual testing - honestly marked as unread by any `application.yml`, since no service
+  wires `MySqlEngineAdapter` into a Spring bean yet (that's B09/execution-service's job).
+
+**Unblocks:** nothing new per the original B01-B19 dependency graph (this row didn't exist
+in it) - but B06 (cross-engine equivalence proof) now has a third adapter it could
+plausibly extend to once it starts, and a future execution-service (B09) has a real,
+working MySQL path to wire in alongside Postgres whenever that milestone's own numeric
+turn comes up.

@@ -1,0 +1,53 @@
+# ---- Environment / secrets ----
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# ---- Java / Maven (backend/) ----
+target/
+*.class
+*.jar
+!.mvn/wrapper/maven-wrapper.jar
+.mvn/timing.properties
+dependency-reduced-pom.xml
+release.properties
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+
+# ---- Node / pnpm (frontend/) ----
+node_modules/
+.pnpm-store/
+.next/
+out/
+dist/
+build/
+.turbo/
+*.tsbuildinfo
+next-env.d.ts
+coverage/
+
+# ---- IDE ----
+.vscode/
+*.iml
+.classpath
+.project
+.settings/
+
+# ---- OS ----
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---- Logs ----
+*.log
+logs/
+npm-debug.log*
+pnpm-debug.log*
+
+# ---- Local infra / scratch ----
+_to_delete/
+*.tmp
+*.bak

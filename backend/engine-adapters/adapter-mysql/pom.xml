@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.dbforge</groupId>
+    <artifactId>engine-adapters</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>adapter-mysql</artifactId>
+  <packaging>jar</packaging>
+
+  <name>DBForge :: adapter-mysql</name>
+  <description>
+    Materializes a CdmDataset into a real MySQL database (plain JDBC via
+    mysql-connector-j) and introspects a materialized session's live schema
+    back into engine-spi's SchemaSnapshot model. Built outside the B01-B19
+    milestone table's numeric order, on the human's explicit instruction -
+    see backend/CLAUDE.md's Session Log entry for this module for why (no
+    MySQL-adapter milestone existed in the table at all; root CLAUDE.md's
+    stack line names MySQL as a target engine, a gap flagged repeatedly
+    across M02/M03/B04's Session Log entries and closed here). Mirrors
+    adapter-postgres's structure and scope exactly: materialize/
+    templateClone/introspect/execute/explain/release, nothing more -
+    no dependency on the statement classifier (B08) or sandbox agent (B07).
+    HARD RULE: no org.springframework import, ever - see
+    MySqlAdapterArchitectureTest.
+  </description>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.dbforge</groupId>
+        <artifactId>platform-bom</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.dbforge</groupId>
+      <artifactId>common-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.dbforge</groupId>
+      <artifactId>engine-spi</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <!-- Version pinned transitively via spring-boot-dependencies (imported
+         by platform-bom) - same "no local version" pattern adapter-postgres
+         uses for org.postgresql:postgresql. -->
+    <dependency>
+      <groupId>com.mysql</groupId>
+      <artifactId>mysql-connector-j</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <!-- Test-scope only, and common-testing itself has zero Spring
+           dependencies (see its pom.xml) - does not compromise the hard
+           rule above. -->
+      <groupId>com.dbforge</groupId>
+      <artifactId>common-testing</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <!-- Library dependency on a tools/* module, not a service - not a
+           hard-rule-#2 concern (that rule is services/* only). Reuses
+           CdmDatasetLoader to materialize the real datasets/two-sum
+           fixture end to end, same as adapter-postgres's integration test. -->
+      <groupId>com.dbforge</groupId>
+      <artifactId>dataset-cli</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>

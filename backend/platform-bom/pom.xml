@@ -75,6 +75,16 @@
         <version>${avro.version}</version>
       </dependency>
 
+      <!-- Security - not managed by spring-boot-dependencies/spring-cloud-dependencies
+           (see backend/pom.xml's nimbus-jose-jwt.version comment for how that was
+           actually confirmed, not assumed). common-security uses this directly for
+           HS256 signing/verification (M01), not through spring-security-oauth2-jose. -->
+      <dependency>
+        <groupId>com.nimbusds</groupId>
+        <artifactId>nimbus-jose-jwt</artifactId>
+        <version>${nimbus-jose-jwt.version}</version>
+      </dependency>
+
       <!-- Engines -->
       <dependency>
         <groupId>org.mongodb</groupId>

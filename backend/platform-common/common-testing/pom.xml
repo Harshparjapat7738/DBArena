@@ -18,7 +18,7 @@
     ArchUnit rule definitions that enforce root CLAUDE.md hard rules #1
     ("engine-spi/engine-adapters must not depend on Spring") and #2 ("no
     service module imports another service module"), plus pre-configured
-    Testcontainers fixtures for Postgres/Mongo/Redis/Redpanda. Every
+    Testcontainers fixtures for Postgres/MySQL/Mongo/Redis/Redpanda. Every
     dependency here is compile-scope on purpose: a module that adds
     common-testing as a *test*-scope dependency gets ArchUnit and
     Testcontainers on its test classpath transitively.
@@ -53,6 +53,13 @@
     <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>postgresql</artifactId>
+    </dependency>
+    <dependency>
+      <!-- adapter-mysql's DbforgeMySqlContainer, built outside the milestone
+           table's numeric order alongside that module - see its own Javadoc
+           and backend/CLAUDE.md's Session Log. -->
+      <groupId>org.testcontainers</groupId>
+      <artifactId>mysql</artifactId>
     </dependency>
     <dependency>
       <groupId>org.testcontainers</groupId>
