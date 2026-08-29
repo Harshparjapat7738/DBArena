@@ -1,4 +1,4 @@
-package com.dbforge.engine.spi.cdm;
+package com.DBArena.engine.spi.cdm;
 
 /** One column declaration on a {@link CdmEntity}. A primary-key column may never be nullable. */
 public record CdmColumn(String name, CdmType type, boolean nullable, boolean primaryKey) {

@@ -1,8 +1,8 @@
-package com.dbforge.services.identity.security;
+package com.DBArena.services.identity.security;
 
-import com.dbforge.common.security.autoconfigure.CommonSecurityProperties;
-import com.dbforge.common.security.jwt.JwtClaims;
-import com.dbforge.services.identity.domain.UserAccount;
+import com.DBArena.common.security.autoconfigure.CommonSecurityProperties;
+import com.DBArena.common.security.jwt.JwtClaims;
+import com.DBArena.services.identity.domain.UserAccount;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
@@ -59,7 +59,7 @@ public class JwtIssuer {
     private byte[] secretBytes() {
         String secret = securityProperties.getSecret();
         if (secret == null || secret.isBlank()) {
-            throw new IllegalStateException("dbforge.security.jwt.secret is not set");
+            throw new IllegalStateException("dbarena.security.jwt.secret is not set");
         }
         return secret.getBytes(StandardCharsets.UTF_8);
     }

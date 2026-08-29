@@ -1,13 +1,13 @@
-package com.dbforge.services.identity.domain;
+package com.DBArena.services.identity.domain;
 
-import com.dbforge.common.core.id.TypedId;
+import com.DBArena.common.core.id.TypedId;
 
 import java.time.Instant;
 import java.util.Optional;
 
 /**
  * One row of the refresh_tokens table. {@code tokenHash} is
- * SHA-256(opaque token) - see {@link com.dbforge.services.identity.security.RefreshTokenGenerator}.
+ * SHA-256(opaque token) - see {@link com.DBArena.services.identity.security.RefreshTokenGenerator}.
  * {@code replacedById} chains rotations so a reused (already-rotated)
  * token can be traced and the whole chain revoked - see
  * {@code AuthService#detectReuseAndRevokeChain}.

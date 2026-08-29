@@ -1,4 +1,4 @@
-package com.dbforge.common.observability.metrics;
+package com.DBArena.common.observability.metrics;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryCustomizer;

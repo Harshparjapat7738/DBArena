@@ -1,11 +1,11 @@
-import { ThemeProvider, ThemeScript } from "@dbforge/ui";
+import { ThemeProvider, ThemeScript } from "@DBArena/ui";
 import type { Metadata } from "next";
 import { AuthProvider } from "@/lib/auth/AuthProvider";
 import { QueryProvider } from "@/lib/query/QueryProvider";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "DBForge",
+  title: "DBArena",
   description: "A LeetCode-style practice platform for databases.",
 };
 

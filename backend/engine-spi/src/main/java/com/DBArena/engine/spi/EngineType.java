@@ -1,4 +1,4 @@
-package com.dbforge.engine.spi;
+package com.DBArena.engine.spi;
 
 /**
  * The set of engines a dataset can be materialized into. Adding a value
@@ -10,7 +10,7 @@ package com.dbforge.engine.spi;
  * duplication as pending exactly this, once B02/B03 landed a real
  * CDM-owned engine enum; B02/B03 are now done). A full adapter
  * ({@code engine-adapters/adapter-mysql}) and type mapper
- * ({@code com.dbforge.engine.spi.typemap.MySqlTypeMapper}) now exist too,
+ * ({@code com.DBArena.engine.spi.typemap.MySqlTypeMapper}) now exist too,
  * built outside the milestone table's numeric order on the human's
  * explicit instruction - see backend/CLAUDE.md's Session Log for that
  * milestone. Only MONGODB has no adapter yet (B05, still not started).

@@ -176,8 +176,8 @@ of every Session Log entry.
 **Status:** 🟡 partial (see Carried forward)
 
 **Built:**
-- `services/identity-service` — registration, login, `/me`, refresh-token rotation with reuse detection (a reused/already-rotated token revokes every live session for that user), logout. Plain JDBC (`NamedParameterJdbcTemplate`) + Flyway over Postgres (`users`, `user_roles`, `refresh_tokens`). BCrypt password hashing (`spring-security-crypto` only, not the full Spring Security stack). Access tokens minted with Nimbus HS256 using the same `dbforge.security.jwt.secret` common-security's `Hs256JwtVerifier` checks against. Refresh tokens are opaque (256-bit random, base64url), SHA-256-hashed at rest, returned only via an `HttpOnly; Secure; SameSite=Strict` cookie scoped to `/api/v1/auth` (hard rule #6) — never in the JSON body. RFC 7807 error mapping via `ProblemDetail`. `springdoc-openapi` wired for a live `/v3/api-docs` + `/swagger-ui.html`.
-- `services/api-gateway` — single entry point at `/api/v1/**`. Deliberately a hand-rolled Spring MVC + `RestClient` reverse proxy, not Spring Cloud Gateway (see Key decisions). Longest-prefix route table (`dbforge.gateway.routes`), currently routing `/api/v1/auth/**` to identity-service and `/api/v1/catalog/**` to a not-yet-built catalog-service (B13). `GatewayAccessFilter` rejects (401, before proxying) any non-public path with no `AuthenticatedUser` resolved by common-security's filter — a convenience, not the security boundary: every backend service still verifies the token itself.
+- `services/identity-service` — registration, login, `/me`, refresh-token rotation with reuse detection (a reused/already-rotated token revokes every live session for that user), logout. Plain JDBC (`NamedParameterJdbcTemplate`) + Flyway over Postgres (`users`, `user_roles`, `refresh_tokens`). BCrypt password hashing (`spring-security-crypto` only, not the full Spring Security stack). Access tokens minted with Nimbus HS256 using the same `DBArena.security.jwt.secret` common-security's `Hs256JwtVerifier` checks against. Refresh tokens are opaque (256-bit random, base64url), SHA-256-hashed at rest, returned only via an `HttpOnly; Secure; SameSite=Strict` cookie scoped to `/api/v1/auth` (hard rule #6) — never in the JSON body. RFC 7807 error mapping via `ProblemDetail`. `springdoc-openapi` wired for a live `/v3/api-docs` + `/swagger-ui.html`.
+- `services/api-gateway` — single entry point at `/api/v1/**`. Deliberately a hand-rolled Spring MVC + `RestClient` reverse proxy, not Spring Cloud Gateway (see Key decisions). Longest-prefix route table (`DBArena.gateway.routes`), currently routing `/api/v1/auth/**` to identity-service and `/api/v1/catalog/**` to a not-yet-built catalog-service (B13). `GatewayAccessFilter` rejects (401, before proxying) any non-public path with no `AuthenticatedUser` resolved by common-security's filter — a convenience, not the security boundary: every backend service still verifies the token itself.
 - Reactor: added `services` aggregator module (`identity-service`, `api-gateway`) to `backend/pom.xml`; added `spring-boot-maven-plugin` to root `pluginManagement` (each service's own pom opts in with the `repackage` execution — library modules never do); added `springdoc-openapi-starter-webmvc-ui` to `platform-bom`.
 
 **Key decisions:**
@@ -218,7 +218,7 @@ of every Session Log entry.
 
 **Deviations from docs:** none beyond M01's standing note (docs/01-04 still don't exist).
 
-**Tests:** 4 test classes in catalog-service (mapper round-trip unit test; `MongoProblemRepositoryTest` against real Testcontainers Mongo - insert/find/replace, cursor pagination + `hasMore`, tag/difficulty filtering, tag-count aggregation excluding unpublished; `CatalogServiceTest` with Mockito - duplicate-slug rejection, unpublished-is-404, publish/unpublish timestamp stamping, update preserving id/slug/createdAt, and that browsing always forces `publishedOnly=true` regardless of what's passed in; `ProblemControllerIntegrationTest` - full `@SpringBootTest` + Testcontainers Mongo + a real Mongock migration run + real JWT verification, covering unpublished→404→publish→visible, `@RequiresRole` 403 for both a non-admin token and no token at all, duplicate-slug 409, bean-validation 422, and paginated/filtered listing) plus a new `PublicPathsTest` in api-gateway for the method-aware public-path change. Same standing limitation as M01/M14: `mvn -T1C verify` could not be run (no network route to Maven Central). Nothing here could be javac-verified standalone either (Spring/Mongo driver/Mongock/Nimbus dependencies) - all hand-reviewed. The Mongock package (`ChangeLog001CreateProblemsIndexes` and its `mongock.*` application.yml properties) carries the highest reconstructed-from-memory risk in this milestone - flagged in its own Javadoc, check it first if `mvn verify` fails on this module. Two real bugs were caught and fixed during self-review before shipping: `listTagCounts` originally read the aggregation's `$sum` result via `Document.getInteger`, which returns `null` (not the value) when the driver decodes the sum as a `Long` rather than an `Integer`; and the integration test originally supplied `dbforge.catalog.mongo-database` and `mongock.mongo-db.database` as two independently-evaluated `System.nanoTime()` suppliers, which could resolve to two different random database names and silently split the app's Mongo database from Mongock's migration target - both fixed before packaging. A third, unrelated bug was also fixed while re-reading this file just now: the M14 append at the end of this Session Log had picked up two stray `</content>`/`</invoke>` lines (an artifact of a copy/paste while assembling that update) - removed.
+**Tests:** 4 test classes in catalog-service (mapper round-trip unit test; `MongoProblemRepositoryTest` against real Testcontainers Mongo - insert/find/replace, cursor pagination + `hasMore`, tag/difficulty filtering, tag-count aggregation excluding unpublished; `CatalogServiceTest` with Mockito - duplicate-slug rejection, unpublished-is-404, publish/unpublish timestamp stamping, update preserving id/slug/createdAt, and that browsing always forces `publishedOnly=true` regardless of what's passed in; `ProblemControllerIntegrationTest` - full `@SpringBootTest` + Testcontainers Mongo + a real Mongock migration run + real JWT verification, covering unpublished→404→publish→visible, `@RequiresRole` 403 for both a non-admin token and no token at all, duplicate-slug 409, bean-validation 422, and paginated/filtered listing) plus a new `PublicPathsTest` in api-gateway for the method-aware public-path change. Same standing limitation as M01/M14: `mvn -T1C verify` could not be run (no network route to Maven Central). Nothing here could be javac-verified standalone either (Spring/Mongo driver/Mongock/Nimbus dependencies) - all hand-reviewed. The Mongock package (`ChangeLog001CreateProblemsIndexes` and its `mongock.*` application.yml properties) carries the highest reconstructed-from-memory risk in this milestone - flagged in its own Javadoc, check it first if `mvn verify` fails on this module. Two real bugs were caught and fixed during self-review before shipping: `listTagCounts` originally read the aggregation's `$sum` result via `Document.getInteger`, which returns `null` (not the value) when the driver decodes the sum as a `Long` rather than an `Integer`; and the integration test originally supplied `DBArena.catalog.mongo-database` and `mongock.mongo-db.database` as two independently-evaluated `System.nanoTime()` suppliers, which could resolve to two different random database names and silently split the app's Mongo database from Mongock's migration target - both fixed before packaging. A third, unrelated bug was also fixed while re-reading this file just now: the M14 append at the end of this Session Log had picked up two stray `</content>`/`</invoke>` lines (an artifact of a copy/paste while assembling that update) - removed.
 
 **Carried forward:**
 - Run `mvn -T1C verify` on a machine with real internet access - same standing note as M01/M14, now covering catalog-service too. Give the Mongock package the closest look (see Tests).
@@ -236,7 +236,7 @@ of every Session Log entry.
 **Status:** 🟡 partial (see Carried forward)
 
 **Built:**
-- `engine-spi` — new `com.dbforge.engine.spi.cdm` package: `CdmType` (a closed, 1:1 mirror of `CdmValue`'s sealed variants: BOOLEAN/INTEGER/DECIMAL/TEXT/TIMESTAMP/JSON), `CdmColumn` (name/type/nullable/primaryKey - a PK column can never be nullable, enforced in its constructor), `CdmForeignKey` (single-column only), `CdmRow` (column name -> `CdmValue`, order-preserving), `CdmEntity` (columns + foreign keys + seed rows, with `column()`/`primaryKeyColumns()` lookups), `CdmDataset` (the root: datasetId/name/schemaVersion/entities). This **replaces** M01's `DatasetDescriptor` placeholder per that class's own Javadoc instruction ("expect B02 to ... replace it") - `DatabaseEngineAdapter.materialize` now takes a `CdmDataset`. Nothing outside engine-spi referenced `DatasetDescriptor` yet, so this was a clean swap, not a breaking change to any built code.
+- `engine-spi` — new `com.DBArena.engine.spi.cdm` package: `CdmType` (a closed, 1:1 mirror of `CdmValue`'s sealed variants: BOOLEAN/INTEGER/DECIMAL/TEXT/TIMESTAMP/JSON), `CdmColumn` (name/type/nullable/primaryKey - a PK column can never be nullable, enforced in its constructor), `CdmForeignKey` (single-column only), `CdmRow` (column name -> `CdmValue`, order-preserving), `CdmEntity` (columns + foreign keys + seed rows, with `column()`/`primaryKeyColumns()` lookups), `CdmDataset` (the root: datasetId/name/schemaVersion/entities). This **replaces** M01's `DatasetDescriptor` placeholder per that class's own Javadoc instruction ("expect B02 to ... replace it") - `DatabaseEngineAdapter.materialize` now takes a `CdmDataset`. Nothing outside engine-spi referenced `DatasetDescriptor` yet, so this was a clean swap, not a breaking change to any built code.
 - `engine-spi` — `CdmDatasetValidator` + `CdmValidationResult`: structural validation reusing common-core's existing `FieldViolation` rather than inventing a parallel type. Checks: case-insensitive unique entity/column names (a same-case-different-spelling collision is exactly what Postgres's unquoted-identifier lowercasing would silently merge at materialization time - caught here instead), every entity has at least one PK column, every FK's own column/target entity/target column actually exist, every seed row's key set exactly matches its entity's declared columns (no missing, no extra), every seed value's `CdmValue` variant matches its column's declared `CdmType`, non-nullable columns never get a null seed value, PK values are unique across an entity's seed rows, and FK values in seed data actually match a seed row in the referenced entity (a null value on a nullable FK column is treated as "no reference", not an error). Framework-free per hard rule #1, so B12 (problem-validator) and B18 (ingestion-service) can reuse it rather than reimplementing.
 - `tools/dataset-cli` (new reactor module, `tools` aggregator added alongside it) — a plain CLI (not Spring Boot; see Key decisions), `mvn -pl backend/tools/dataset-cli exec:java -Dexec.args="validate <path>"`. `CdmDatasetLoader` parses a dataset.yaml (Jackson + `jackson-dataformat-yaml`) into intermediate `Yaml*` records, then converts each seed-row scalar into the right `CdmValue` variant using the column's declared `CdmType` (decimals via `BigDecimal` - `USE_BIG_DECIMAL_FOR_FLOATS` is enabled precisely so a seed value like `1.50` never round-trips through a `double`, per hard rule #9; timestamps via `Instant.parse` on an ISO-8601 string; JSON fragments re-serialized to canonical text through a second, plain `ObjectMapper`). `DatasetCli.run` exit codes: `0` valid, `1` parsed but `CdmDatasetValidator` found real problems (printed one per line), `2` usage/IO/YAML-parse error - kept as a package-visible method taking the arg array and both output streams so tests never have to fork a JVM or intercept `System.exit`.
 - `datasets/two-sum/dataset.yaml` (new top-level `datasets/` directory, per root CLAUDE.md's repository layout) - a real sample exercising every `CdmType` variant, a PK, and a nullable FK, doubling as documentation of the authoring format and as a fixture other sessions can validate against.
@@ -308,7 +308,7 @@ correctly 🔴 not started. Per the standing sequential-order policy (see root `
 **Status:** 🟡 partial (see Carried forward)
 
 **Built:**
-- `engine-spi` — new `com.dbforge.engine.spi.typemap` package: `TypeMapper<T>` (a generic,
+- `engine-spi` — new `com.DBArena.engine.spi.typemap` package: `TypeMapper<T>` (a generic,
   intentionally minimal contract — `T map(CdmType)`), `PostgresColumnType` (an enum of the
   six native Postgres column types the mapping can produce, each carrying its literal SQL
   type name), `MongoBsonType` (the BSON-side equivalent), `PostgresTypeMapper` and
@@ -453,7 +453,7 @@ machinery that doesn't exist yet.
 - `service.HintService` — sequences the above: catalog lookup → dataset lookup → context
   build → prompt build → fallback gateway → output guard → response. No business logic
   anywhere else.
-- api-gateway: added a new `/api/v1/ai` route to `dbforge.gateway.routes` (`application.yml`
+- api-gateway: added a new `/api/v1/ai` route to `DBArena.gateway.routes` (`application.yml`
   only — no `PublicPaths` change, so it inherits "auth required" by default).
 
 **Key decisions:**
@@ -474,7 +474,7 @@ machinery that doesn't exist yet.
 - Model defaults (`llama-3.3-70b-versatile` for Groq, `gemini-3-flash-preview` for Gemini)
   were chosen from each provider's own current-as-of-2026-08 model documentation
   (console.groq.com/docs/models; ai.google.dev/gemini-api/docs/gemini-3), not invented -
-  both are overridable per-environment via `dbforge.ai.groq.model` / `dbforge.ai.gemini.model`
+  both are overridable per-environment via `DBArena.ai.groq.model` / `DBArena.ai.gemini.model`
   with no code change needed if either provider ships a newer default later.
 - No reference-solution field exists anywhere in `HintContext` - not because one was removed,
   but because none exists yet anywhere in this system (B12/problem-validator would be what
@@ -585,7 +585,7 @@ equivalent pass over the frontend.
 - **AI hint rate limiting** - closed the gap M16's Session Log flagged as needed "before any
   real deployment, not just before scale": `HintRateLimiter` (new,
   `ai-assistant-service/ratelimit`), a fixed-window per-user limiter
-  (`dbforge.ai.hint-rate-limit-per-hour`, default 30), enforced in `HintController` before
+  (`DBArena.ai.hint-rate-limit-per-hour`, default 30), enforced in `HintController` before
   any of the expensive work (Feign call, dataset load, LLM call) runs. Deliberately
   in-memory/single-instance, not Redis-backed - there's no Redis wiring or `deploy/`
   compose config anywhere in this reactor yet to add it to; documented in
@@ -628,7 +628,7 @@ per the standing limitation on every prior entry, `mvn -T1C verify` still could 
 (no `mvn` binary reachable from either this sandbox or the linked device's shell this
 session). Every change was mechanical (a full-file grep confirmed zero remaining
 `EngineKind` references anywhere in source, and that every file using `EngineType` now
-imports `com.dbforge.engine.spi.EngineType`) and hand-reviewed twice, but is unverified by
+imports `com.DBArena.engine.spi.EngineType`) and hand-reviewed twice, but is unverified by
 a compiler - treat `common-web`, the `EngineType` rename, and `HintRateLimiter` as the
 highest-risk-of-a-typo surface for the next `mvn verify` run, same posture as every prior
 milestone's Carried forward. Frontend fixes ARE compiler/build-verified: `pnpm install`,
@@ -669,7 +669,7 @@ materializer + introspection) remains the next milestone in the table's order.
   (enforced by `PostgresAdapterArchitectureTest`, same ArchUnit pattern as
   `EngineSpiArchitectureTest`):
   - `PostgresEngineAdapter` — implements all 7 `DatabaseEngineAdapter` methods.
-    `materialize` generates a `dbforge_<ulid>` database name, creates it from
+    `materialize` generates a `DBArena_<ulid>` database name, creates it from
     `template0` with `LC_COLLATE`/`LC_CTYPE` pinned to `C` (hard rule #9), then delegates
     DDL + seeding to `PostgresMaterializer`. `templateClone` issues `CREATE DATABASE ...
     TEMPLATE ...` for a fast per-session copy. `introspect` delegates to
@@ -727,7 +727,7 @@ materializer + introspection) remains the next milestone in the table's order.
 milestone — no `mvn` binary reachable from this sandbox or the linked device's shell this
 session):
 - `PostgresAdapterArchitectureTest` — ArchUnit, no-Spring-dependency on the whole
-  `com.dbforge.engine.adapters.postgres` package.
+  `com.DBArena.engine.adapters.postgres` package.
 - `PostgresIdentifiersTest` — 6 tests covering `PostgresIdentifiers.quote()`'s full
   behavior, including a SQL-injection-shaped identifier and the exact 63-byte boundary.
 - `PostgresDdlBuilderTest` — 10 pure unit tests (no database) against hand-built
@@ -736,7 +736,7 @@ session):
   primary keys, entities with no primary key, FK `ALTER TABLE` statement shape (including
   multiple FKs on one entity), and constraint-name truncation past 63 characters.
 - `PostgresEngineAdapterIntegrationTest` — `@Testcontainers`/`@Container`
-  (`DbforgePostgresContainer`, plain JUnit5, no Spring annotation anywhere) against a real
+  (`DBArenaPostgresContainer`, plain JUnit5, no Spring annotation anywhere) against a real
   Postgres 16 container, materializing the real `datasets/two-sum` fixture (loaded via
   `dataset-cli`'s `CdmDatasetLoader`, the same code path a real ingestion flow would use —
   not a hand-built `CdmDataset`). One full-lifecycle test walks `materialize` (asserts
@@ -809,8 +809,8 @@ was never part of that original plan) rather than left off the table entirely.
   `MySqlIdentifiers`, `MySqlAdapterException`) plus one new collaborator neither Postgres
   nor the `DatabaseEngineAdapter` interface needed: `MySqlTemplateCloner` (see Key
   decisions - `templateClone`).
-- `platform-common/common-testing` — `DbforgeMySqlContainer` (mirrors
-  `DbforgePostgresContainer`), plus `org.testcontainers:mysql` added to that module's pom.
+- `platform-common/common-testing` — `DBArenaMySqlContainer` (mirrors
+  `DBArenaPostgresContainer`), plus `org.testcontainers:mysql` added to that module's pom.
 - Tests: `MySqlTypeMapperTest` (engine-spi, 15 methods, mirrors `PostgresTypeMapperTest`);
   `MySqlAdapterArchitectureTest`, `MySqlIdentifiersTest` (7 methods), `MySqlDdlBuilderTest`
   (10 methods, mirrors `PostgresDdlBuilderTest` exactly), `MySqlEngineAdapterIntegrationTest`
@@ -930,7 +930,7 @@ network-verified Maven build**, not hand-review-only:
   2. With JaCoCo out of the way, Testcontainers still could not connect
      (`IllegalStateException: Could not find a valid Docker environment`) via the Windows
      named pipe, **and this is confirmed environment-wide, not specific to
-     `DbforgeMySqlContainer` or this milestone's code** - the pre-existing, already-shipped
+     `DBArenaMySqlContainer` or this milestone's code** - the pre-existing, already-shipped
      `PostgresEngineAdapterIntegrationTest` was run the identical way and failed
      identically. This is a new, more specific, and more useful data point than any prior
      session had (every prior entry just said "no Docker" - Docker is actually present and
@@ -967,7 +967,7 @@ network-verified Maven build**, not hand-review-only:
   without an explicit prefix length, e.g. `(col(191))` - untested since no dataset uses
   this shape) are all real, unexercised gaps - same category as B04's own already-flagged
   Postgres equivalents, not new risk this milestone introduced.
-- `DBFORGE_MYSQL_*` env vars added to `.env`/`.env.example` at the repo root for local
+- `DBArena_MYSQL_*` env vars added to `.env`/`.env.example` at the repo root for local
   manual testing - honestly marked as unread by any `application.yml`, since no service
   wires `MySqlEngineAdapter` into a Spring bean yet (that's B09/execution-service's job).
 
@@ -976,3 +976,153 @@ in it) - but B06 (cross-engine equivalence proof) now has a third adapter it cou
 plausibly extend to once it starts, and a future execution-service (B09) has a real,
 working MySQL path to wire in alongside Postgres whenever that milestone's own numeric
 turn comes up.
+
+### [2026-08-29] Session — identity-service store swap: Postgres → MongoDB Atlas
+
+**Type:** not a numbered milestone - a targeted architecture change to already-shipped M14,
+done on the human's explicit, confirmed instruction (asked directly: migrate vs. it being a
+misunderstanding; answer was migrate) after a demo-account login/register/delete smoke test
+surfaced that identity-service was on Postgres while the human's actual intent for auth
+storage was MongoDB Atlas. Superseding note: M14's Session Log entry above still describes
+what M14 *originally* built (Postgres/JDBC) - that description is now historical, not
+current; this entry is the one that reflects what identity-service actually runs on today.
+
+**Built:**
+- `identity-service` re-pointed from plain JDBC+Flyway/Postgres onto the plain
+  `mongodb-driver-sync` + Mongock combination catalog-service (M13) already established -
+  same "no ORM, stay close to records" posture, not a new pattern. `UserRepository`/
+  `RefreshTokenRepository` (the interfaces `AuthService` depends on) are unchanged - only
+  `JdbcUserRepository`/`JdbcRefreshTokenRepository` were deleted and replaced with
+  `MongoUserRepository`/`MongoRefreshTokenRepository`, backed by new `UserDocumentMapper`/
+  `RefreshTokenDocumentMapper` (pure, dependency-free, mirroring `ProblemDocumentMapper`'s
+  split) and a new `MongoConfig` (mirrors catalog-service's own, two collections:
+  `users`, `refresh_tokens`).
+- `mongock/ChangeLog001CreateUsersAndRefreshTokensIndexes` - the Mongo equivalent of the
+  deleted `V1-V3` Flyway migrations: a unique index on `users.email` with a case-insensitive
+  (`CollationStrength.SECONDARY`) collation (replacing Postgres's
+  `UNIQUE INDEX ON users (lower(email))`), a unique index on `refresh_tokens.tokenHash`, and
+  a plain index on `refresh_tokens.userId` (backing `revokeAllForUser`).
+- `IdentityProperties` gained `mongoUri`/`mongoDatabase` fields (same shape as
+  `CatalogProperties`); `application.yml`'s `spring.datasource`/`spring.flyway` blocks
+  replaced with `dbarena.identity.mongo-uri`/`mongo-database` + a `mongock:` block, mirroring
+  catalog-service's `application.yml` exactly. `.env`/`.env.example`'s
+  `DBArena_IDENTITY_DB_URL/USER/PASSWORD` replaced with `DBArena_IDENTITY_MONGO_URI/DATABASE`
+  - reusing the same Atlas cluster catalog-service already points at, own database
+  (`DBArena_identity`), per hard rule #2.
+- `AuthService`'s four `@Transactional` annotations removed (and the now-unused
+  `spring-tx` import) - no `PlatformTransactionManager` bean exists once
+  `spring-boot-starter-jdbc` is gone, so keeping them would have been a startup-time bean
+  error, not a silent no-op. Safe to drop, not just a compile fix: every write is already a
+  single, independently-atomic document write once roles are embedded in the user document
+  (see next point) - there was never a real multi-statement atomicity requirement here, only
+  Postgres's own two-table (`users`+`user_roles`) insert needed one.
+- `UserAccount.roles` is now embedded as a plain string array directly on the user document
+  instead of a separate `user_roles` collection/table - the actual reason `@Transactional`
+  could be dropped safely (a single-document insert is already atomic); this is a genuine
+  design improvement the store swap enabled, not a workaround.
+- `AuthControllerIntegrationTest` rewritten from Testcontainers-Postgres+Flyway to
+  Testcontainers-Mongo+Mongock, following the exact pattern catalog-service's
+  `ProblemControllerIntegrationTest` already established (shared `DBArenaMongoContainer`,
+  a per-class-run unique database name so the app's own Mongo config and Mongock's
+  migration target can't drift apart).
+- **`platform-bom` fix, found while actually booting a Mongo-backed service for the first
+  time in this reactor's history:** `mongodb-driver-sync` was explicitly pinned to `5.2.0`,
+  but `mongodb-driver-core`/`bson` were left unpinned by platform-bom itself, so
+  `mongock-bom`'s own (older, `5.0.1`) pins for those two GAs applied instead - a real,
+  previously-latent, project-wide bug (silently affecting catalog-service too, not just
+  identity-service - see Carried forward) that produced
+  `NoClassDefFoundError: com/mongodb/internal/TimeoutSettings` the instant a `MongoClient`
+  bean was actually constructed, because `mongodb-driver-sync:5.2.0` calls into
+  `mongodb-driver-core` APIs that don't exist in `5.0.1`. Fixed by explicitly pinning
+  `mongodb-driver-core` and `bson` to the same `${mongodb-driver.version}` property
+  `mongodb-driver-sync` already used, right next to it in platform-bom's
+  `dependencyManagement` (before the `mongock-bom` import, so the explicit entries win) -
+  keeps the driver's three-jar release triad internally consistent regardless of what
+  version Mongock's own BOM would otherwise prefer for the two GAs it doesn't own outright.
+
+**Key decisions:**
+- Reused catalog-service's exact Mongo/Mongock pattern rather than inventing a second one -
+  this platform now has two Mongo-backed services and they should look identical at the
+  infrastructure-wiring layer; a reviewer who understands one understands both.
+- Did not migrate `refresh_tokens.replacedById`'s implicit FK-chain semantics into a real
+  Mongo `$lookup`/reference-integrity mechanism - it's stored as a loose string reference
+  now (no more `REFERENCES refresh_tokens (id)`), exactly like `Problem.datasetSlug` already
+  is elsewhere in this codebase. `AuthService`'s own logic is what enforces the chain's
+  correctness (it always sets `replacedById` to a token id it just created), not the store.
+- Kept `UserAccount`/`RefreshTokenRecord` as `Instant`-typed domain records rather than
+  switching to `long` epoch-millis fields the way `Problem` does - the millis conversion
+  happens only at the document-mapper boundary (mirroring exactly where the deleted JDBC
+  repositories converted to/from `java.sql.Timestamp`), so `AuthService`, `JwtIssuer`, and
+  `RefreshCookieFactory` needed zero changes. `Problem`'s all-`long` shape was a valid
+  alternative design, not a rule this had to match - minimizing blast radius on a
+  higher-risk change (a live-tested auth path) mattered more here.
+
+**Deviations from docs:** none beyond the standing note (docs/01-04 still don't exist). The
+store swap itself is the human's own explicit override of what M14 originally built -
+documented here, not silently made.
+
+**Tests:** Full manual smoke test run against a **real** MongoDB (not Testcontainers - see
+below for why): register -> login -> `/me` with the bearer token -> case-insensitive
+duplicate-email rejection (`DEMO.DBARENA@example.com` correctly collided with the already-
+registered `demo.dbarena@example.com`, proving the collation index behaves like Postgres's
+`lower(email)` index did) -> account deleted directly from Mongo (`users` and
+`refresh_tokens` both confirmed back to 0 documents for that user) -> login after delete
+confirmed `401`. `mvn install`/`test-compile` both green for identity-service and its
+dependency chain (`platform-bom`, `common-core`, `common-security`, `common-web`,
+`common-observability`) after the platform-bom driver-triad fix.
+- **MongoDB Atlas itself (the human's actual target, and what `.env`'s
+  `DBArena_IDENTITY_MONGO_URI`/`DBArena_CATALOG_MONGO_URI` point at) is unreachable from
+  this session's own sandboxed tool network** - confirmed via a raw `openssl s_client`
+  handshake against the Atlas shard host directly (bypassing the JVM/driver entirely):
+  DNS resolves the shard host to a NAT64-synthesized address (`64:ff9b::/96` prefix,
+  meaning the host is IPv4-only and this network only has NAT64 IPv6 egress), and the TLS
+  handshake fails with `tlsv1 alert internal error` partway through - a plain HTTPS
+  handshake to `www.google.com` from the same shell succeeds cleanly, so this is specific to
+  reaching Atlas's IPv4-only shard hosts through this sandbox's NAT64 path, not a broken TLS
+  stack in general. This is the same *category* of standing environment limitation as the
+  Maven Central and Testcontainers-npipe gaps earlier sessions hit (see B20's entry) - a new
+  instance of it, not a code defect. **The actual demo-account smoke test above therefore
+  ran against a local MongoDB Windows service instead** (`mongodb://localhost:27017`,
+  same database name `DBArena_identity`) to prove the migration's logic is correct; the
+  Atlas-specific connectivity gap is unverified from this sandbox and needs confirming from
+  a normal (non-sandboxed) network - almost certainly fine, since nothing about the code
+  is Atlas-specific (it's a plain `mongodb+srv://` URI), but flagged rather than assumed.
+
+**Carried forward:**
+- **The `mongodb-driver-core`/`bson` version-pin bug this session found and fixed was
+  latent in `catalog-service` too**, not just identity-service - catalog-service uses the
+  identical `mongodb-driver-sync` + `mongock-bom` combination and would have hit the exact
+  same `NoClassDefFoundError` the moment anything actually constructed its `MongoClient`
+  bean. Per M13's own Session Log, catalog-service's Mongo integration test was never
+  actually run (blocked on the Testcontainers-npipe gap, same as everywhere else) and no
+  prior session ever started it standalone via `mvn spring-boot:run` either - so this bug
+  sat undetected in a second service for as long as it did in identity-service. The
+  platform-bom fix here already covers catalog-service too (nothing in catalog-service
+  itself needed changing) - just flagging that this session's fix is reactor-wide, not
+  identity-service-scoped, in case a future session wonders why catalog-service was never
+  separately touched.
+- **Confirm real MongoDB Atlas connectivity from a normal network** (not this sandbox) -
+  see Tests. Start identity-service and catalog-service against the real
+  `DBArena_IDENTITY_MONGO_URI`/`DBArena_CATALOG_MONGO_URI` from `.env` and repeat the same
+  register/login/`/me` smoke test one more time before treating Atlas as proven end-to-end.
+- `setup-postgres-DBArena.ps1` and `run-all.ps1`'s local-Postgres `Confirm-LocalService`
+  call are no longer needed by identity-service (both already updated - `run-all.ps1` no
+  longer starts a local Postgres service at all, and its docstring/inline notes say so).
+  The script itself was left in place, unused, in case some future Postgres-backed service
+  needs the same "create a role + database" convenience later.
+- Same standing Testcontainers-Java-npipe gap B20 already flagged, now also blocking
+  `AuthControllerIntegrationTest`'s rewritten Mongo version from ever actually running in
+  this environment - hand-reviewed against the real Mongo driver/Mongock APIs (both already
+  proven correct by the live manual smoke test above, not guessed from memory the way
+  earlier Mongock code in this codebase had to be), but not compiler-and-Testcontainers
+  verified together as one run.
+- `bson-record-codec` still resolves to `5.0.1` (runtime scope, transitively pulled in by
+  `mongodb-driver-sync` itself) while the rest of the driver triad is now `5.2.0` - left
+  alone since it never appeared in the actual crash and forcing a fourth explicit pin
+  without a concrete symptom would be guessing; revisit only if a real error ever points at
+  it.
+
+**Unblocks:** nothing new per the milestone dependency graph (M14 was already done) - but
+`catalog-service` can now also be started standalone via `mvn spring-boot:run` without
+hitting the same driver-triad crash, which was untested and unverified in every session
+that shipped it.

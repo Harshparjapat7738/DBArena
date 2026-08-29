@@ -1,9 +1,9 @@
-package com.dbforge.engine.adapters.mysql;
+package com.DBArena.engine.adapters.mysql;
 
-import com.dbforge.engine.spi.cdm.CdmType;
-import com.dbforge.engine.spi.model.ColumnMeta;
-import com.dbforge.engine.spi.model.EntitySchema;
-import com.dbforge.engine.spi.model.SchemaSnapshot;
+import com.DBArena.engine.spi.cdm.CdmType;
+import com.DBArena.engine.spi.model.ColumnMeta;
+import com.DBArena.engine.spi.model.EntitySchema;
+import com.DBArena.engine.spi.model.SchemaSnapshot;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Reads back the live schema of a materialized MySQL database via
  * {@code information_schema} - proving what was actually created, rather
- * than trusting the {@link com.dbforge.engine.spi.cdm.CdmDataset} that was
+ * than trusting the {@link com.DBArena.engine.spi.cdm.CdmDataset} that was
  * asked for (needed for B06's cross-engine equivalence proof later, same
  * rationale as {@code PostgresIntrospector}). {@code column_type} (not
  * {@code data_type}) is used for each column's native type - see
@@ -24,7 +24,7 @@ import java.util.List;
  * <p>Also the single source of table-name and foreign-key metadata for
  * {@link MySqlTemplateCloner}, which needs to enumerate a template
  * database's tables and reconstruct its foreign keys without ever having
- * the original {@link com.dbforge.engine.spi.cdm.CdmDataset} in hand (a
+ * the original {@link com.DBArena.engine.spi.cdm.CdmDataset} in hand (a
  * {@code SessionHandle} carries only an opaque database-name reference) -
  * see {@link #tableNames} and {@link #foreignKeysOf}, both package-visible
  * for that reuse rather than private.

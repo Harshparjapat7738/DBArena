@@ -1,4 +1,4 @@
-package com.dbforge.services.identity.web.dto;
+package com.DBArena.services.identity.web.dto;
 
 /**
  * The refresh token is deliberately NOT a field here - it only ever

@@ -1,18 +1,18 @@
-package com.dbforge.engine.adapters.mysql;
+package com.DBArena.engine.adapters.mysql;
 
-import com.dbforge.common.core.value.CdmValue;
-import com.dbforge.common.testing.containers.DbforgeMySqlContainer;
-import com.dbforge.engine.spi.cdm.CdmDataset;
-import com.dbforge.engine.spi.model.ColumnMeta;
-import com.dbforge.engine.spi.model.EntitySchema;
-import com.dbforge.engine.spi.model.ExecutionResult;
-import com.dbforge.engine.spi.model.ExplainPlan;
-import com.dbforge.engine.spi.model.MaterializationResult;
-import com.dbforge.engine.spi.model.ResultRow;
-import com.dbforge.engine.spi.model.SchemaSnapshot;
-import com.dbforge.engine.spi.model.SessionHandle;
-import com.dbforge.engine.spi.model.StatementRequest;
-import com.dbforge.tools.datasetcli.CdmDatasetLoader;
+import com.DBArena.common.core.value.CdmValue;
+import com.DBArena.common.testing.containers.DBArenaMySqlContainer;
+import com.DBArena.engine.spi.cdm.CdmDataset;
+import com.DBArena.engine.spi.model.ColumnMeta;
+import com.DBArena.engine.spi.model.EntitySchema;
+import com.DBArena.engine.spi.model.ExecutionResult;
+import com.DBArena.engine.spi.model.ExplainPlan;
+import com.DBArena.engine.spi.model.MaterializationResult;
+import com.DBArena.engine.spi.model.ResultRow;
+import com.DBArena.engine.spi.model.SchemaSnapshot;
+import com.DBArena.engine.spi.model.SessionHandle;
+import com.DBArena.engine.spi.model.StatementRequest;
+import com.DBArena.tools.datasetcli.CdmDatasetLoader;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,7 +55,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class MySqlEngineAdapterIntegrationTest {
 
     @Container
-    static final DbforgeMySqlContainer MYSQL = new DbforgeMySqlContainer();
+    static final DBArenaMySqlContainer MYSQL = new DBArenaMySqlContainer();
 
     private static final Path TWO_SUM_DATASET_PATH = Path.of("../../../datasets/two-sum/dataset.yaml");
 
@@ -78,7 +78,7 @@ class MySqlEngineAdapterIntegrationTest {
 
     @Test
     void engineTypeIsMysql() {
-        assertThat(adapter.engineType()).isEqualTo(com.dbforge.engine.spi.EngineType.MYSQL);
+        assertThat(adapter.engineType()).isEqualTo(com.DBArena.engine.spi.EngineType.MYSQL);
     }
 
     @Test
@@ -87,8 +87,8 @@ class MySqlEngineAdapterIntegrationTest {
         MaterializationResult materialization = adapter.materialize(twoSum);
         SessionHandle session = materialization.session();
 
-        assertThat(session.engineType()).isEqualTo(com.dbforge.engine.spi.EngineType.MYSQL);
-        assertThat(session.connectionRef()).startsWith("dbforge_");
+        assertThat(session.engineType()).isEqualTo(com.DBArena.engine.spi.EngineType.MYSQL);
+        assertThat(session.connectionRef()).startsWith("DBArena_");
         assertThat(materialization.rowCountsByEntity())
                 .isEqualTo(Map.of("numbers", 4L, "queries", 3L));
 
@@ -214,7 +214,7 @@ class MySqlEngineAdapterIntegrationTest {
 
     @Test
     void templateCloneRejectsANonMySqlSessionHandle() {
-        SessionHandle mongoSession = new SessionHandle("s1", com.dbforge.engine.spi.EngineType.MONGODB, "ref");
+        SessionHandle mongoSession = new SessionHandle("s1", com.DBArena.engine.spi.EngineType.MONGODB, "ref");
 
         assertThatThrownBy(() -> adapter.templateClone(mongoSession))
                 .isInstanceOf(IllegalArgumentException.class);

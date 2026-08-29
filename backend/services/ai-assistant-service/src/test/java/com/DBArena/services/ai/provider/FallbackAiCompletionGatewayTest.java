@@ -1,6 +1,6 @@
-package com.dbforge.services.ai.provider;
+package com.DBArena.services.ai.provider;
 
-import com.dbforge.services.ai.domain.AiUnavailableException;
+import com.DBArena.services.ai.domain.AiUnavailableException;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

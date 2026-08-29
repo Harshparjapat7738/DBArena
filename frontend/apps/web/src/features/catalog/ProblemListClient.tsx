@@ -1,8 +1,8 @@
 "use client";
 
-import type { ProblemListQuery, ProblemSummary } from "@dbforge/api-client";
-import { hasMorePages } from "@dbforge/api-client";
-import { Button, Skeleton } from "@dbforge/ui";
+import type { ProblemListQuery, ProblemSummary } from "@DBArena/api-client";
+import { hasMorePages } from "@DBArena/api-client";
+import { Button, Skeleton } from "@DBArena/ui";
 import { useState } from "react";
 import { catalogApi } from "@/lib/api/clients";
 import { ProblemCard } from "./ProblemCard";

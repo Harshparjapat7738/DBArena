@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  transpilePackages: ["@dbforge/ui", "@dbforge/api-client"],
+  transpilePackages: ["@DBArena/ui", "@DBArena/api-client"],
 };
 
 export default nextConfig;

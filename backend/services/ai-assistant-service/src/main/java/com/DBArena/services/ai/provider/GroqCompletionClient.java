@@ -1,6 +1,6 @@
-package com.dbforge.services.ai.provider;
+package com.DBArena.services.ai.provider;
 
-import com.dbforge.services.ai.config.AiProviderProperties;
+import com.DBArena.services.ai.config.AiProviderProperties;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -49,7 +49,7 @@ public class GroqCompletionClient implements AiCompletionClient {
     @Override
     public AiCompletionResult complete(AiCompletionRequest request) {
         if (!configured()) {
-            throw new AiProviderException(name(), "no API key configured (dbforge.ai.groq.api-key)");
+            throw new AiProviderException(name(), "no API key configured (DBArena.ai.groq.api-key)");
         }
         ObjectNode body = objectMapper.createObjectNode();
         body.put("model", config.getModel());

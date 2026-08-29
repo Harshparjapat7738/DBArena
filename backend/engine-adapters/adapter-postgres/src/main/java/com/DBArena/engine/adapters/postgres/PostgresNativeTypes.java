@@ -1,12 +1,12 @@
-package com.dbforge.engine.adapters.postgres;
+package com.DBArena.engine.adapters.postgres;
 
-import com.dbforge.engine.spi.cdm.CdmType;
+import com.DBArena.engine.spi.cdm.CdmType;
 
 import java.util.Map;
 import java.util.Optional;
 
 /**
- * The reverse of {@link com.dbforge.engine.spi.typemap.PostgresTypeMapper}:
+ * The reverse of {@link com.DBArena.engine.spi.typemap.PostgresTypeMapper}:
  * a Postgres native short type name (the pg_catalog/{@code udt_name} form -
  * {@code bool}/{@code int8}/{@code numeric}/{@code text}/{@code timestamptz}/{@code jsonb},
  * the same short names {@link java.sql.ResultSetMetaData#getColumnTypeName}

@@ -17,7 +17,7 @@ import { NextRequest, NextResponse } from "next/server";
  * the upstream sent - Next's fetch (undici) exposes multiple Set-Cookie
  * values via `headers.getSetCookie()`.
  */
-const GATEWAY_URL = process.env.DBFORGE_GATEWAY_URL ?? "http://localhost:8080";
+const GATEWAY_URL = process.env.DBArena_GATEWAY_URL ?? "http://localhost:8080";
 
 const HOP_BY_HOP_REQUEST_HEADERS = new Set(["host", "connection", "content-length"]);
 

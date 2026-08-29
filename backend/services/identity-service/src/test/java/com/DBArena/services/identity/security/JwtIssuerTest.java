@@ -1,10 +1,10 @@
-package com.dbforge.services.identity.security;
+package com.DBArena.services.identity.security;
 
-import com.dbforge.common.core.id.TypedId;
-import com.dbforge.common.security.AuthenticatedUser;
-import com.dbforge.common.security.autoconfigure.CommonSecurityProperties;
-import com.dbforge.common.security.jwt.Hs256JwtVerifier;
-import com.dbforge.services.identity.domain.UserAccount;
+import com.DBArena.common.core.id.TypedId;
+import com.DBArena.common.security.AuthenticatedUser;
+import com.DBArena.common.security.autoconfigure.CommonSecurityProperties;
+import com.DBArena.common.security.jwt.Hs256JwtVerifier;
+import com.DBArena.services.identity.domain.UserAccount;
 import org.junit.jupiter.api.Test;
 
 import java.time.Clock;

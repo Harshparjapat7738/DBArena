@@ -1,4 +1,4 @@
-package com.dbforge.engine.adapters.mysql;
+package com.DBArena.engine.adapters.mysql;
 
 import org.junit.jupiter.api.Test;
 
@@ -47,6 +47,6 @@ class MySqlIdentifiersTest {
 
     @Test
     void qualifyJoinsAQuotedSchemaAndObjectNameWithADot() {
-        assertThat(MySqlIdentifiers.qualify("dbforge_x", "numbers")).isEqualTo("`dbforge_x`.`numbers`");
+        assertThat(MySqlIdentifiers.qualify("DBArena_x", "numbers")).isEqualTo("`DBArena_x`.`numbers`");
     }
 }

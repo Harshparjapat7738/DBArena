@@ -1,4 +1,4 @@
-package com.dbforge.services.catalog.domain;
+package com.DBArena.services.catalog.domain;
 
 public enum Difficulty {
     EASY,

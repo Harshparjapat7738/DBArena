@@ -1,4 +1,4 @@
-package com.dbforge.services.gateway.web;
+package com.DBArena.services.gateway.web;
 
 import org.junit.jupiter.api.Test;
 

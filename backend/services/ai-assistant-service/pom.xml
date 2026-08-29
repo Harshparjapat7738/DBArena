@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>com.dbforge</groupId>
+    <groupId>com.DBArena</groupId>
     <artifactId>services</artifactId>
     <version>0.1.0-SNAPSHOT</version>
   </parent>
@@ -13,7 +13,7 @@
   <artifactId>ai-assistant-service</artifactId>
   <packaging>jar</packaging>
 
-  <name>DBForge :: ai-assistant-service</name>
+  <name>DBArena :: ai-assistant-service</name>
   <description>
     ContextBuilder-first slice of B16: graduated, non-solution-revealing
     hints for a learner working a catalog problem. Reads problem metadata
@@ -31,7 +31,7 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>com.dbforge</groupId>
+        <groupId>com.DBArena</groupId>
         <artifactId>platform-bom</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
@@ -42,27 +42,27 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.dbforge</groupId>
+      <groupId>com.DBArena</groupId>
       <artifactId>common-core</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.dbforge</groupId>
+      <groupId>com.DBArena</groupId>
       <artifactId>common-security</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.dbforge</groupId>
+      <groupId>com.DBArena</groupId>
       <artifactId>common-web</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.dbforge</groupId>
+      <groupId>com.DBArena</groupId>
       <artifactId>common-observability</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.dbforge</groupId>
+      <groupId>com.DBArena</groupId>
       <artifactId>engine-spi</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -72,7 +72,7 @@
          one *service* module depending on another; dataset-cli lives
          under tools/, not services/. -->
     <dependency>
-      <groupId>com.dbforge</groupId>
+      <groupId>com.DBArena</groupId>
       <artifactId>dataset-cli</artifactId>
       <version>${project.version}</version>
     </dependency>

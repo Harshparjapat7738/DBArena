@@ -1,4 +1,4 @@
-package com.dbforge.common.security.jwt;
+package com.DBArena.common.security.jwt;
 
 /** Claim names this platform agrees on across every service that mints or reads a token. */
 public final class JwtClaims {

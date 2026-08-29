@@ -1,6 +1,6 @@
-package com.dbforge.engine.spi.model;
+package com.DBArena.engine.spi.model;
 
-import com.dbforge.engine.spi.EngineType;
+import com.DBArena.engine.spi.EngineType;
 
 /**
  * Refers to one learner's live materialized copy of a dataset in one

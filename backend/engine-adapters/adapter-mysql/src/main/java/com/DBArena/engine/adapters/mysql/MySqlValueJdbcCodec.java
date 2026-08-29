@@ -1,7 +1,7 @@
-package com.dbforge.engine.adapters.mysql;
+package com.DBArena.engine.adapters.mysql;
 
-import com.dbforge.common.core.value.CdmValue;
-import com.dbforge.engine.spi.cdm.CdmType;
+import com.DBArena.common.core.value.CdmValue;
+import com.DBArena.engine.spi.cdm.CdmType;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

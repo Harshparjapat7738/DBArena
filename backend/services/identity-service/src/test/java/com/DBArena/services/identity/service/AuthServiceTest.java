@@ -1,15 +1,15 @@
-package com.dbforge.services.identity.service;
+package com.DBArena.services.identity.service;
 
-import com.dbforge.common.core.id.IdGenerator;
-import com.dbforge.common.core.id.TypedId;
-import com.dbforge.services.identity.config.IdentityProperties;
-import com.dbforge.services.identity.domain.RefreshTokenRecord;
-import com.dbforge.services.identity.domain.UserAccount;
-import com.dbforge.services.identity.repository.RefreshTokenRepository;
-import com.dbforge.services.identity.repository.UserRepository;
-import com.dbforge.services.identity.security.JwtIssuer;
-import com.dbforge.services.identity.security.PasswordHasher;
-import com.dbforge.services.identity.security.RefreshTokenGenerator;
+import com.DBArena.common.core.id.IdGenerator;
+import com.DBArena.common.core.id.TypedId;
+import com.DBArena.services.identity.config.IdentityProperties;
+import com.DBArena.services.identity.domain.RefreshTokenRecord;
+import com.DBArena.services.identity.domain.UserAccount;
+import com.DBArena.services.identity.repository.RefreshTokenRepository;
+import com.DBArena.services.identity.repository.UserRepository;
+import com.DBArena.services.identity.security.JwtIssuer;
+import com.DBArena.services.identity.security.PasswordHasher;
+import com.DBArena.services.identity.security.RefreshTokenGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;

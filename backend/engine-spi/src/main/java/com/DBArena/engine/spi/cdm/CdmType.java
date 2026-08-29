@@ -1,6 +1,6 @@
-package com.dbforge.engine.spi.cdm;
+package com.DBArena.engine.spi.cdm;
 
-import com.dbforge.common.core.value.CdmValue;
+import com.DBArena.common.core.value.CdmValue;
 
 /**
  * The declared type of one CDM column. Deliberately a closed, 1:1 mirror of

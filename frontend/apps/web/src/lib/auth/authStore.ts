@@ -1,4 +1,4 @@
-import type { AuthUser } from "@dbforge/api-client";
+import type { AuthUser } from "@DBArena/api-client";
 import { create } from "zustand";
 
 export type AuthStatus = "loading" | "authenticated" | "anonymous";

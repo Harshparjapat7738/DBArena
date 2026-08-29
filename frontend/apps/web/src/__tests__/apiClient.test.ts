@@ -1,4 +1,4 @@
-import { ApiError, createApiClient } from "@dbforge/api-client";
+import { ApiError, createApiClient } from "@DBArena/api-client";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 function mockFetchOnce(response: Partial<Response> & { json?: () => Promise<unknown> }) {

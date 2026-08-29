@@ -1,5 +1,5 @@
-import { ApiError } from "@dbforge/api-client";
-import { Card, CardContent } from "@dbforge/ui";
+import { ApiError } from "@DBArena/api-client";
+import { Card, CardContent } from "@DBArena/ui";
 import { notFound } from "next/navigation";
 import { DifficultyBadge, EngineBadge } from "@/features/catalog/badges";
 import { HintPanel } from "@/features/ai-assistant/HintPanel";

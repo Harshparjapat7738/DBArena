@@ -1,7 +1,7 @@
 {
   "type": "record",
   "name": "OutboxDispatchedEvent",
-  "namespace": "com.dbforge.common.events.avro",
+  "namespace": "com.DBArena.common.events.avro",
   "doc": "Envelope shape every service-specific event payload is wrapped in when it leaves the outbox. Individual services define their own payload schemas separately; this one is the generic transport envelope used to exercise the codegen + serializer path in common-events itself.",
   "fields": [
     { "name": "eventId", "type": "string", "doc": "Same value as the outbox row id - the idempotency key downstream consumers dedupe on." },

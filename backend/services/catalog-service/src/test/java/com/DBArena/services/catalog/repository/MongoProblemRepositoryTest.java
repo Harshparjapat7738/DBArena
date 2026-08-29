@@ -1,14 +1,14 @@
-package com.dbforge.services.catalog.repository;
+package com.DBArena.services.catalog.repository;
 
-import com.dbforge.common.core.id.TypedId;
-import com.dbforge.common.core.pagination.CursorPage;
-import com.dbforge.common.core.pagination.PageRequest;
-import com.dbforge.common.testing.containers.DbforgeMongoContainer;
-import com.dbforge.services.catalog.domain.Difficulty;
-import com.dbforge.engine.spi.EngineType;
-import com.dbforge.services.catalog.domain.Problem;
-import com.dbforge.services.catalog.domain.ProblemFilter;
-import com.dbforge.services.catalog.domain.TagCount;
+import com.DBArena.common.core.id.TypedId;
+import com.DBArena.common.core.pagination.CursorPage;
+import com.DBArena.common.core.pagination.PageRequest;
+import com.DBArena.common.testing.containers.DBArenaMongoContainer;
+import com.DBArena.services.catalog.domain.Difficulty;
+import com.DBArena.engine.spi.EngineType;
+import com.DBArena.services.catalog.domain.Problem;
+import com.DBArena.services.catalog.domain.ProblemFilter;
+import com.DBArena.services.catalog.domain.TagCount;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
@@ -40,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MongoProblemRepositoryTest {
 
     @Container
-    static final DbforgeMongoContainer MONGO = DbforgeMongoContainer.defaultInstance();
+    static final DBArenaMongoContainer MONGO = DBArenaMongoContainer.defaultInstance();
 
     private static MongoClient client;
     private MongoProblemRepository repository;

@@ -1,12 +1,12 @@
-package com.dbforge.engine.spi;
+package com.DBArena.engine.spi;
 
-import com.dbforge.engine.spi.cdm.CdmDataset;
-import com.dbforge.engine.spi.model.ExecutionResult;
-import com.dbforge.engine.spi.model.ExplainPlan;
-import com.dbforge.engine.spi.model.MaterializationResult;
-import com.dbforge.engine.spi.model.SchemaSnapshot;
-import com.dbforge.engine.spi.model.SessionHandle;
-import com.dbforge.engine.spi.model.StatementRequest;
+import com.DBArena.engine.spi.cdm.CdmDataset;
+import com.DBArena.engine.spi.model.ExecutionResult;
+import com.DBArena.engine.spi.model.ExplainPlan;
+import com.DBArena.engine.spi.model.MaterializationResult;
+import com.DBArena.engine.spi.model.SchemaSnapshot;
+import com.DBArena.engine.spi.model.SessionHandle;
+import com.DBArena.engine.spi.model.StatementRequest;
 
 /**
  * Everything a database engine must be able to do to host a learner's
@@ -31,7 +31,7 @@ public interface DatabaseEngineAdapter {
      * For Postgres this is expected to be a cheap template-database clone
      * after the first materialization (see {@link #templateClone}); for
      * Mongo, document shaping happens here. {@code dataset} is expected to
-     * already be valid - see {@link com.dbforge.engine.spi.cdm.CdmDatasetValidator}
+     * already be valid - see {@link com.DBArena.engine.spi.cdm.CdmDatasetValidator}
      * - an adapter is not required to re-validate it.
      */
     MaterializationResult materialize(CdmDataset dataset);

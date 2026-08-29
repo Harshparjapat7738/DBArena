@@ -1,4 +1,4 @@
-package com.dbforge.services.ai.client;
+package com.DBArena.services.ai.client;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
  * gateway's route table and public-path allowlist are for external
  * clients.
  */
-@FeignClient(name = "catalog-service", url = "${dbforge.ai.catalog-service-uri}")
+@FeignClient(name = "catalog-service", url = "${dbarena.ai.catalog-service-uri}")
 public interface CatalogServiceClient {
 
     @GetMapping("/api/v1/catalog/problems/{slug}")

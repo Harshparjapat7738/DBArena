@@ -1,6 +1,6 @@
-package com.dbforge.services.ai.guard;
+package com.DBArena.services.ai.guard;
 
-import com.dbforge.services.ai.provider.AiCompletionResult;
+import com.DBArena.services.ai.provider.AiCompletionResult;
 import org.springframework.stereotype.Component;
 
 /**

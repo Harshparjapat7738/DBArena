@@ -1,7 +1,7 @@
-package com.dbforge.services.ai.web.dto;
+package com.DBArena.services.ai.web.dto;
 
-import com.dbforge.services.ai.domain.HintLevel;
-import com.dbforge.services.ai.domain.HintResult;
+import com.DBArena.services.ai.domain.HintLevel;
+import com.DBArena.services.ai.domain.HintResult;
 
 public record HintResponseBody(String problemSlug, HintLevel level, String hint, String provider, boolean truncated) {
 

@@ -1,6 +1,6 @@
-package com.dbforge.services.identity.service;
+package com.DBArena.services.identity.service;
 
-import com.dbforge.common.core.error.DomainException;
+import com.DBArena.common.core.error.DomainException;
 
 public class InvalidRefreshTokenException extends DomainException {
 

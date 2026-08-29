@@ -1,4 +1,4 @@
-package com.dbforge.engine.adapters.postgres;
+package com.DBArena.engine.adapters.postgres;
 
 import org.junit.jupiter.api.Test;
 

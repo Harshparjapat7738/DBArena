@@ -1,4 +1,4 @@
-package com.dbforge.common.core.result;
+package com.DBArena.common.core.result;
 
 import java.util.NoSuchElementException;
 import java.util.function.Function;
@@ -8,7 +8,7 @@ import java.util.function.Supplier;
  * An explicit success/failure value, for domain flows where "throw an
  * exception" is too heavy-handed (e.g. a validation step whose failure is
  * an expected, handled branch rather than an exceptional one). Prefer
- * {@link com.dbforge.common.core.error.DomainException} subtypes for
+ * {@link com.DBArena.common.core.error.DomainException} subtypes for
  * errors that should propagate up to the web layer unhandled; reach for
  * {@code Result} when the caller is expected to branch on the outcome
  * right there.

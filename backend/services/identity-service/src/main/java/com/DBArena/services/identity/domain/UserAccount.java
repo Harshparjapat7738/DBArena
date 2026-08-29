@@ -1,6 +1,6 @@
-package com.dbforge.services.identity.domain;
+package com.DBArena.services.identity.domain;
 
-import com.dbforge.common.core.id.TypedId;
+import com.DBArena.common.core.id.TypedId;
 
 import java.time.Instant;
 import java.util.Set;

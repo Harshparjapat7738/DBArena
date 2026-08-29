@@ -1,4 +1,4 @@
-package com.dbforge.common.testing.archunit;
+package com.DBArena.common.testing.archunit;
 
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
@@ -18,10 +18,10 @@ class ArchitectureRulesTest {
     @Test
     void flagsAClassThatDependsOnSpring() {
         JavaClasses dirty = new ClassFileImporter()
-                .importPackages("com.dbforge.common.testing.archunit.fixtures.dirty");
+                .importPackages("com.DBArena.common.testing.archunit.fixtures.dirty");
 
         EvaluationResult result = ArchitectureRules
-                .noSpringDependency("com.dbforge.common.testing.archunit.fixtures.dirty..")
+                .noSpringDependency("com.DBArena.common.testing.archunit.fixtures.dirty..")
                 .evaluate(dirty);
 
         assertThat(result.hasViolation()).isTrue();
@@ -30,10 +30,10 @@ class ArchitectureRulesTest {
     @Test
     void allowsAFrameworkFreeClass() {
         JavaClasses clean = new ClassFileImporter()
-                .importPackages("com.dbforge.common.testing.archunit.fixtures.clean");
+                .importPackages("com.DBArena.common.testing.archunit.fixtures.clean");
 
         EvaluationResult result = ArchitectureRules
-                .noSpringDependency("com.dbforge.common.testing.archunit.fixtures.clean..")
+                .noSpringDependency("com.DBArena.common.testing.archunit.fixtures.clean..")
                 .evaluate(clean);
 
         assertThat(result.hasViolation()).isFalse();

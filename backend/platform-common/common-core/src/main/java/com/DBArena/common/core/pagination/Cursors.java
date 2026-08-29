@@ -1,4 +1,4 @@
-package com.dbforge.common.core.pagination;
+package com.DBArena.common.core.pagination;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;

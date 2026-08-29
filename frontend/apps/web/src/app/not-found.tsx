@@ -1,4 +1,4 @@
-import { buttonVariants } from "@dbforge/ui";
+import { buttonVariants } from "@DBArena/ui";
 import { Database } from "lucide-react";
 import Link from "next/link";
 
@@ -7,7 +7,7 @@ export default function NotFound() {
     <main className="flex min-h-screen flex-col items-center justify-center gap-4 bg-bg px-4 text-center">
       <Link href="/" className="flex items-center gap-2 font-mono text-lg font-semibold text-fg">
         <Database className="h-5 w-5 text-accent" aria-hidden />
-        DBForge
+        DBArena
       </Link>
       <p className="text-6xl font-bold text-fg-muted">404</p>
       <h1 className="text-xl font-semibold text-fg">Page not found</h1>

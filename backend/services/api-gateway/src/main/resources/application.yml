@@ -8,18 +8,18 @@ spring:
 server:
   port: ${PORT:8080}
 
-dbforge:
+dbarena:
   security:
     jwt:
-      secret: ${DBFORGE_JWT_SECRET:} # must match every backend service's secret - same signer, many verifiers
+      secret: ${DBArena_JWT_SECRET:} # must match every backend service's secret - same signer, many verifiers
   gateway:
     routes:
       - prefix: /api/v1/auth
-        uri: ${DBFORGE_IDENTITY_SERVICE_URI:http://localhost:8081}
+        uri: ${DBArena_IDENTITY_SERVICE_URI:http://localhost:8081}
       - prefix: /api/v1/catalog
-        uri: ${DBFORGE_CATALOG_SERVICE_URI:http://localhost:8083} # catalog-service, M13
+        uri: ${DBArena_CATALOG_SERVICE_URI:http://localhost:8083} # catalog-service, M13
       - prefix: /api/v1/ai
-        uri: ${DBFORGE_AI_ASSISTANT_SERVICE_URI:http://localhost:8084} # ai-assistant-service, M16 - no PublicPaths entry, every route needs a token
+        uri: ${DBArena_AI_ASSISTANT_SERVICE_URI:http://localhost:8084} # ai-assistant-service, M16 - no PublicPaths entry, every route needs a token
 
 management:
   endpoints:

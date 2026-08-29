@@ -1,4 +1,4 @@
-package com.dbforge.services.ai.domain;
+package com.DBArena.services.ai.domain;
 
 /**
  * A graduated hint ladder, weakest to strongest. The learner picks the
@@ -20,8 +20,8 @@ public enum HintLevel {
      * submitted query, as close to the answer as this system gets - but
      * never the reference solution and never a complete, directly
      * copy-pasteable final query (enforced by {@link
-     * com.dbforge.services.ai.prompt.HintPromptBuilder} and backstopped by
-     * {@link com.dbforge.services.ai.guard.OutputGuard}).
+     * com.DBArena.services.ai.prompt.HintPromptBuilder} and backstopped by
+     * {@link com.DBArena.services.ai.guard.OutputGuard}).
      */
     NEAR_MISS
 }

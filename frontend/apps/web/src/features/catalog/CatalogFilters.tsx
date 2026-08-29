@@ -1,6 +1,6 @@
 "use client";
 
-import type { Difficulty, EngineKind, TagCount } from "@dbforge/api-client";
+import type { Difficulty, EngineKind, TagCount } from "@DBArena/api-client";
 import { Search } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";

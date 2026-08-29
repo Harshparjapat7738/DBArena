@@ -1,4 +1,4 @@
-package com.dbforge.common.core.error;
+package com.DBArena.common.core.error;
 
 import org.junit.jupiter.api.Test;
 

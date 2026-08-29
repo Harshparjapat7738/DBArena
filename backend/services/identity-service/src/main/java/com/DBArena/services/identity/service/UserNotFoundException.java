@@ -1,8 +1,8 @@
-package com.dbforge.services.identity.service;
+package com.DBArena.services.identity.service;
 
-import com.dbforge.common.core.error.NotFoundException;
-import com.dbforge.common.core.id.TypedId;
-import com.dbforge.services.identity.domain.UserAccount;
+import com.DBArena.common.core.error.NotFoundException;
+import com.DBArena.common.core.id.TypedId;
+import com.DBArena.services.identity.domain.UserAccount;
 
 public class UserNotFoundException extends NotFoundException {
 

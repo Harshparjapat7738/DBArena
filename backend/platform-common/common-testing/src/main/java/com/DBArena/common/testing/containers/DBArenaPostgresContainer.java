@@ -1,4 +1,4 @@
-package com.dbforge.common.testing.containers;
+package com.DBArena.common.testing.containers;
 
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
@@ -8,19 +8,19 @@ import org.testcontainers.utility.DockerImageName;
  * rule #9 ("collations are pinned") - a test against the default locale
  * collation would pass locally and fail in CI on a different base image.
  */
-public final class DbforgePostgresContainer extends PostgreSQLContainer<DbforgePostgresContainer> {
+public final class DBArenaPostgresContainer extends PostgreSQLContainer<DBArenaPostgresContainer> {
 
     private static final DockerImageName IMAGE = DockerImageName.parse("postgres:16-alpine");
 
-    public DbforgePostgresContainer() {
+    public DBArenaPostgresContainer() {
         super(IMAGE);
-        withDatabaseName("dbforge");
-        withUsername("dbforge");
-        withPassword("dbforge");
+        withDatabaseName("DBArena");
+        withUsername("DBArena");
+        withPassword("DBArena");
         withReuse(true);
     }
 
-    public static DbforgePostgresContainer defaultInstance() {
-        return new DbforgePostgresContainer();
+    public static DBArenaPostgresContainer defaultInstance() {
+        return new DBArenaPostgresContainer();
     }
 }

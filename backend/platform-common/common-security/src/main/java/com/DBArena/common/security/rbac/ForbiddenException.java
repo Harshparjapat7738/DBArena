@@ -1,6 +1,6 @@
-package com.dbforge.common.security.rbac;
+package com.DBArena.common.security.rbac;
 
-import com.dbforge.common.core.error.DomainException;
+import com.DBArena.common.core.error.DomainException;
 
 import java.util.Map;
 import java.util.Set;

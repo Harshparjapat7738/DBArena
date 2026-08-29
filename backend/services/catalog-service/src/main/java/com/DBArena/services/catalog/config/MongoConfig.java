@@ -1,4 +1,4 @@
-package com.dbforge.services.catalog.config;
+package com.DBArena.services.catalog.config;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Configuration;
  * ORM/ODM abstraction - Spring Data MongoDB's repository proxies and
  * {@code @Document} entity-mapping machinery would be exactly the kind of
  * framework root CLAUDE.md's "do not introduce ... without asking" line is
- * about. {@link com.dbforge.services.catalog.repository.MongoProblemRepository}
+ * about. {@link com.DBArena.services.catalog.repository.MongoProblemRepository}
  * talks to {@link MongoCollection}&lt;{@link Document}&gt; directly.
  */
 @Configuration

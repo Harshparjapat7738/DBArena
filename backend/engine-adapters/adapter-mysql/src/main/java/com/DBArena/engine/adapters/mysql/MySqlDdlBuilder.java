@@ -1,11 +1,11 @@
-package com.dbforge.engine.adapters.mysql;
+package com.DBArena.engine.adapters.mysql;
 
-import com.dbforge.engine.spi.cdm.CdmColumn;
-import com.dbforge.engine.spi.cdm.CdmDataset;
-import com.dbforge.engine.spi.cdm.CdmEntity;
-import com.dbforge.engine.spi.cdm.CdmForeignKey;
-import com.dbforge.engine.spi.typemap.MySqlColumnType;
-import com.dbforge.engine.spi.typemap.MySqlTypeMapper;
+import com.DBArena.engine.spi.cdm.CdmColumn;
+import com.DBArena.engine.spi.cdm.CdmDataset;
+import com.DBArena.engine.spi.cdm.CdmEntity;
+import com.DBArena.engine.spi.cdm.CdmForeignKey;
+import com.DBArena.engine.spi.typemap.MySqlColumnType;
+import com.DBArena.engine.spi.typemap.MySqlTypeMapper;
 
 import java.util.ArrayList;
 import java.util.List;

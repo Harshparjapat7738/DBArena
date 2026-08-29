@@ -1,4 +1,4 @@
-package com.dbforge.common.core.id;
+package com.DBArena.common.core.id;
 
 /**
  * Generates new, lexicographically-sortable, globally-unique id values.

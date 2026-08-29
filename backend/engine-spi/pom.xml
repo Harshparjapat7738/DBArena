@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>com.dbforge</groupId>
+    <groupId>com.DBArena</groupId>
     <artifactId>backend</artifactId>
     <version>0.1.0-SNAPSHOT</version>
   </parent>
@@ -13,7 +13,7 @@
   <artifactId>engine-spi</artifactId>
   <packaging>jar</packaging>
 
-  <name>DBForge :: engine-spi</name>
+  <name>DBArena :: engine-spi</name>
   <description>
     DatabaseEngineAdapter and the model types every engine adapter
     (adapter-postgres, adapter-mongodb, and any future engine) speaks in.
@@ -28,7 +28,7 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>com.dbforge</groupId>
+        <groupId>com.DBArena</groupId>
         <artifactId>platform-bom</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
@@ -39,7 +39,7 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.dbforge</groupId>
+      <groupId>com.DBArena</groupId>
       <artifactId>common-core</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -57,7 +57,7 @@
     <dependency>
       <!-- Test-scope only, and common-testing itself has zero Spring dependencies -
            see its pom.xml - so this does not compromise the hard rule above. -->
-      <groupId>com.dbforge</groupId>
+      <groupId>com.DBArena</groupId>
       <artifactId>common-testing</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>

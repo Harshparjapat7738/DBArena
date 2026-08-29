@@ -1,6 +1,6 @@
-package com.dbforge.services.ai.provider;
+package com.DBArena.services.ai.provider;
 
-import com.dbforge.services.ai.domain.AiUnavailableException;
+import com.DBArena.services.ai.domain.AiUnavailableException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

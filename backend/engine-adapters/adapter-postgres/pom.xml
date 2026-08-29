@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>com.dbforge</groupId>
+    <groupId>com.DBArena</groupId>
     <artifactId>engine-adapters</artifactId>
     <version>0.1.0-SNAPSHOT</version>
   </parent>
@@ -13,7 +13,7 @@
   <artifactId>adapter-postgres</artifactId>
   <packaging>jar</packaging>
 
-  <name>DBForge :: adapter-postgres</name>
+  <name>DBArena :: adapter-postgres</name>
   <description>
     B04: materializes a CdmDataset into a real Postgres database (plain
     JDBC, template-database cloning for fast per-session copies) and
@@ -30,7 +30,7 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>com.dbforge</groupId>
+        <groupId>com.DBArena</groupId>
         <artifactId>platform-bom</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
@@ -41,12 +41,12 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.dbforge</groupId>
+      <groupId>com.DBArena</groupId>
       <artifactId>common-core</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.dbforge</groupId>
+      <groupId>com.DBArena</groupId>
       <artifactId>engine-spi</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -70,7 +70,7 @@
       <!-- Test-scope only, and common-testing itself has zero Spring
            dependencies (see its pom.xml) - does not compromise the hard
            rule above. -->
-      <groupId>com.dbforge</groupId>
+      <groupId>com.DBArena</groupId>
       <artifactId>common-testing</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
@@ -82,7 +82,7 @@
            fixture end to end in PostgresMaterializerIntegrationTest,
            rather than hand-building an equivalent CdmDataset in test code
            that could drift from what dataset-cli actually produces. -->
-      <groupId>com.dbforge</groupId>
+      <groupId>com.DBArena</groupId>
       <artifactId>dataset-cli</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>

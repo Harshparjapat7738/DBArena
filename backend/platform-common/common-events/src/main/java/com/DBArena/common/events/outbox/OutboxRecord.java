@@ -1,4 +1,4 @@
-package com.dbforge.common.events.outbox;
+package com.DBArena.common.events.outbox;
 
 import java.time.Instant;
 

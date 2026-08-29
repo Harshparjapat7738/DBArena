@@ -1,6 +1,6 @@
-package com.dbforge.services.ai.domain;
+package com.DBArena.services.ai.domain;
 
-import com.dbforge.common.core.error.DomainException;
+import com.DBArena.common.core.error.DomainException;
 
 import java.util.Map;
 

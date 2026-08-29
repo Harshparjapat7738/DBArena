@@ -1,4 +1,4 @@
-package com.dbforge.services.ai.domain;
+package com.DBArena.services.ai.domain;
 
 /**
  * The already-guarded (length-capped, provider-attributed) result of one

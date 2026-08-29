@@ -1,7 +1,7 @@
-package com.dbforge.services.identity.web;
+package com.DBArena.services.identity.web;
 
-import com.dbforge.common.testing.containers.DbforgePostgresContainer;
-import com.dbforge.services.identity.web.dto.AuthResponse;
+import com.DBArena.common.testing.containers.DBArenaMongoContainer;
+import com.DBArena.services.identity.web.dto.AuthResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.Test;
@@ -23,25 +23,36 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
- * Full-stack test: real Postgres (Testcontainers), real Flyway
- * migrations, real common-security JwtAuthenticationFilter and
- * @CurrentUser resolution - not a slice test, because the whole point of
- * this milestone is proving those pieces work together end to end.
+ * Full-stack test: real Mongo (Testcontainers), real Mongock migration
+ * run, real common-security JwtAuthenticationFilter and @CurrentUser
+ * resolution - not a slice test, because the whole point of this
+ * milestone is proving those pieces work together end to end. Was
+ * Postgres/Flyway (M14) until the Mongo store swap - see MongoConfig's
+ * Javadoc and backend/CLAUDE.md's Session Log; catalog-service's own
+ * ProblemControllerIntegrationTest uses the identical Testcontainers-Mongo
+ * + Mongock pattern this was rewritten to match.
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
 @Testcontainers
 class AuthControllerIntegrationTest {
 
+    // Computed once and reused by both suppliers below - the app's own
+    // MongoConfig and Mongock's migration target must point at the exact
+    // same database, or indexes get created in a database the app never
+    // reads or writes (same pitfall catalog-service's own test flags).
+    private static final String DATABASE_NAME = "identity_it_" + System.nanoTime();
+
     @Container
-    static final DbforgePostgresContainer POSTGRES = DbforgePostgresContainer.defaultInstance();
+    static final DBArenaMongoContainer MONGO = DBArenaMongoContainer.defaultInstance();
 
     @DynamicPropertySource
     static void configure(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", POSTGRES::getJdbcUrl);
-        registry.add("spring.datasource.username", POSTGRES::getUsername);
-        registry.add("spring.datasource.password", POSTGRES::getPassword);
-        registry.add("dbforge.security.jwt.secret", () -> "0123456789abcdef0123456789abcdef");
+        registry.add("dbarena.identity.mongo-uri", MONGO::getReplicaSetUrl);
+        registry.add("dbarena.identity.mongo-database", () -> DATABASE_NAME);
+        registry.add("mongock.mongo-db.uri", MONGO::getReplicaSetUrl);
+        registry.add("mongock.mongo-db.database", () -> DATABASE_NAME);
+        registry.add("dbarena.security.jwt.secret", () -> "0123456789abcdef0123456789abcdef");
     }
 
     @Autowired

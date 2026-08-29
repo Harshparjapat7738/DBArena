@@ -1,10 +1,10 @@
-package com.dbforge.common.security.autoconfigure;
+package com.DBArena.common.security.autoconfigure;
 
-import com.dbforge.common.security.jwt.Hs256JwtVerifier;
-import com.dbforge.common.security.jwt.JwtVerifier;
-import com.dbforge.common.security.rbac.RoleAuthorizationAspect;
-import com.dbforge.common.security.web.CurrentUserArgumentResolver;
-import com.dbforge.common.security.web.JwtAuthenticationFilter;
+import com.DBArena.common.security.jwt.Hs256JwtVerifier;
+import com.DBArena.common.security.jwt.JwtVerifier;
+import com.DBArena.common.security.rbac.RoleAuthorizationAspect;
+import com.DBArena.common.security.web.CurrentUserArgumentResolver;
+import com.DBArena.common.security.web.JwtAuthenticationFilter;
 import jakarta.servlet.Filter;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -25,7 +25,7 @@ import java.util.List;
  * Wires JWT resolution, {@code @CurrentUser}, and (if AspectJ is on the
  * classpath) {@code @RequiresRole} into any Spring Boot service that
  * depends on common-security - no per-service configuration needed
- * beyond setting {@code dbforge.security.jwt.secret}.
+ * beyond setting {@code DBArena.security.jwt.secret}.
  */
 @AutoConfiguration(before = WebMvcAutoConfiguration.class)
 @ConditionalOnWebApplication
@@ -37,7 +37,7 @@ public class CommonSecurityAutoConfiguration {
     public JwtVerifier jwtVerifier(CommonSecurityProperties properties) {
         if (properties.getSecret() == null || properties.getSecret().isBlank()) {
             throw new IllegalStateException(
-                    "dbforge.security.jwt.secret is not set. Every service needs this to verify tokens; "
+                    "dbarena.security.jwt.secret is not set. Every service needs this to verify tokens; "
                             + "see common-security/CLAUDE.md (once written) for where it comes from per environment.");
         }
         return new Hs256JwtVerifier(properties.getSecret());

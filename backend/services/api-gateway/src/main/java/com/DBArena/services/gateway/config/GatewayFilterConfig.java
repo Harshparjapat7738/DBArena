@@ -1,6 +1,6 @@
-package com.dbforge.services.gateway.config;
+package com.DBArena.services.gateway.config;
 
-import com.dbforge.services.gateway.web.GatewayAccessFilter;
+import com.DBArena.services.gateway.web.GatewayAccessFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.Filter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;

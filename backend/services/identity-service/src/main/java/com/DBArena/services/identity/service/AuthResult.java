@@ -1,6 +1,6 @@
-package com.dbforge.services.identity.service;
+package com.DBArena.services.identity.service;
 
-import com.dbforge.services.identity.domain.UserAccount;
+import com.DBArena.services.identity.domain.UserAccount;
 
 import java.time.Instant;
 

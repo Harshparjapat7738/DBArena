@@ -1,6 +1,6 @@
-package com.dbforge.services.identity.web.dto;
+package com.DBArena.services.identity.web.dto;
 
-import com.dbforge.services.identity.domain.UserAccount;
+import com.DBArena.services.identity.domain.UserAccount;
 
 import java.util.Set;
 

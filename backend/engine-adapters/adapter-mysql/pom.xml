@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>com.dbforge</groupId>
+    <groupId>com.DBArena</groupId>
     <artifactId>engine-adapters</artifactId>
     <version>0.1.0-SNAPSHOT</version>
   </parent>
@@ -13,7 +13,7 @@
   <artifactId>adapter-mysql</artifactId>
   <packaging>jar</packaging>
 
-  <name>DBForge :: adapter-mysql</name>
+  <name>DBArena :: adapter-mysql</name>
   <description>
     Materializes a CdmDataset into a real MySQL database (plain JDBC via
     mysql-connector-j) and introspects a materialized session's live schema
@@ -33,7 +33,7 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>com.dbforge</groupId>
+        <groupId>com.DBArena</groupId>
         <artifactId>platform-bom</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
@@ -44,12 +44,12 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.dbforge</groupId>
+      <groupId>com.DBArena</groupId>
       <artifactId>common-core</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.dbforge</groupId>
+      <groupId>com.DBArena</groupId>
       <artifactId>engine-spi</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -76,7 +76,7 @@
       <!-- Test-scope only, and common-testing itself has zero Spring
            dependencies (see its pom.xml) - does not compromise the hard
            rule above. -->
-      <groupId>com.dbforge</groupId>
+      <groupId>com.DBArena</groupId>
       <artifactId>common-testing</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
@@ -86,7 +86,7 @@
            hard-rule-#2 concern (that rule is services/* only). Reuses
            CdmDatasetLoader to materialize the real datasets/two-sum
            fixture end to end, same as adapter-postgres's integration test. -->
-      <groupId>com.dbforge</groupId>
+      <groupId>com.DBArena</groupId>
       <artifactId>dataset-cli</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>

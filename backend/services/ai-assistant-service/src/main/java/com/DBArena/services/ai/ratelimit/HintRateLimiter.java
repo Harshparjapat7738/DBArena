@@ -1,6 +1,6 @@
-package com.dbforge.services.ai.ratelimit;
+package com.DBArena.services.ai.ratelimit;
 
-import com.dbforge.services.ai.config.AiProviderProperties;
+import com.DBArena.services.ai.config.AiProviderProperties;
 import org.springframework.stereotype.Component;
 
 import java.time.Clock;

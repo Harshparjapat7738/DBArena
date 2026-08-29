@@ -1,17 +1,16 @@
-package com.dbforge.services.identity.service;
+package com.DBArena.services.identity.service;
 
-import com.dbforge.common.core.id.IdGenerator;
-import com.dbforge.common.core.id.TypedId;
-import com.dbforge.services.identity.config.IdentityProperties;
-import com.dbforge.services.identity.domain.RefreshTokenRecord;
-import com.dbforge.services.identity.domain.UserAccount;
-import com.dbforge.services.identity.repository.RefreshTokenRepository;
-import com.dbforge.services.identity.repository.UserRepository;
-import com.dbforge.services.identity.security.JwtIssuer;
-import com.dbforge.services.identity.security.PasswordHasher;
-import com.dbforge.services.identity.security.RefreshTokenGenerator;
+import com.DBArena.common.core.id.IdGenerator;
+import com.DBArena.common.core.id.TypedId;
+import com.DBArena.services.identity.config.IdentityProperties;
+import com.DBArena.services.identity.domain.RefreshTokenRecord;
+import com.DBArena.services.identity.domain.UserAccount;
+import com.DBArena.services.identity.repository.RefreshTokenRepository;
+import com.DBArena.services.identity.repository.UserRepository;
+import com.DBArena.services.identity.security.JwtIssuer;
+import com.DBArena.services.identity.security.PasswordHasher;
+import com.DBArena.services.identity.security.RefreshTokenGenerator;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -19,13 +18,19 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * Orchestrates registration, login, and refresh-token rotation.
- * Everything that touches more than one repository call happens inside
- * one {@code @Transactional} method here - repositories themselves stay
- * transaction-unaware. This bean is a Spring singleton shared across
- * concurrent requests, so it must hold no per-request mutable state -
- * every method threads its data through parameters and return values
- * only.
+ * Orchestrates registration, login, and refresh-token rotation. No
+ * {@code @Transactional} here (unlike the Postgres/JDBC version this
+ * replaced - see MongoConfig's Javadoc for the store swap): every method
+ * below is either a single document write (already atomic on its own -
+ * {@code register}'s user document embeds its roles precisely so it
+ * stays single-document, see UserDocumentMapper) or a sequence of
+ * independently-atomic single-document writes where partial completion
+ * is already a handled, meaningful state (e.g. {@code refresh} revoking
+ * the old token after saving the new one - if the process died in
+ * between, the old token is still usable next time, which is safe, not
+ * corrupt). This bean is a Spring singleton shared across concurrent
+ * requests, so it must hold no per-request mutable state - every method
+ * threads its data through parameters and return values only.
  */
 @Service
 public class AuthService {
@@ -58,7 +63,6 @@ public class AuthService {
         this.clock = clock;
     }
 
-    @Transactional
     public AuthResult register(String email, String rawPassword, String displayName) {
         if (userRepository.existsByEmail(email)) {
             throw new EmailAlreadyRegisteredException(email);
@@ -77,7 +81,6 @@ public class AuthService {
     }
 
     /** Not read-only: issuing a session persists a new refresh_tokens row. */
-    @Transactional
     public AuthResult login(String email, String rawPassword) {
         UserAccount user = userRepository.findByEmail(email).orElseThrow(InvalidCredentialsException::new);
         if (!passwordHasher.matches(rawPassword, user.passwordHash())) {
@@ -94,7 +97,6 @@ public class AuthService {
      * leaked), every live token for that user is revoked and the caller
      * is forced to log in again everywhere.
      */
-    @Transactional
     public AuthResult refresh(String presentedToken) {
         String presentedHash = refreshTokenGenerator.hash(presentedToken);
         RefreshTokenRecord record = refreshTokenRepository.findByTokenHash(presentedHash)
@@ -116,7 +118,6 @@ public class AuthService {
         return issued.result();
     }
 
-    @Transactional
     public void logout(String presentedToken) {
         String presentedHash = refreshTokenGenerator.hash(presentedToken);
         refreshTokenRepository.findByTokenHash(presentedHash)
@@ -124,7 +125,6 @@ public class AuthService {
                 .ifPresent(token -> refreshTokenRepository.revoke(token.id(), clock.instant(), Optional.empty()));
     }
 
-    @Transactional(readOnly = true)
     public UserAccount requireUser(TypedId<UserAccount> id) {
         return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
     }

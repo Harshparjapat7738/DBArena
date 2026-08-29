@@ -1,4 +1,4 @@
-package com.dbforge.services.ai.provider;
+package com.DBArena.services.ai.provider;
 
 /** One completion call, provider-agnostic. */
 public record AiCompletionRequest(String systemPrompt, String userPrompt, int maxOutputTokens) {

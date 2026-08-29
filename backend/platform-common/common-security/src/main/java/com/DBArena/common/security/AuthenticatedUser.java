@@ -1,6 +1,6 @@
-package com.dbforge.common.security;
+package com.DBArena.common.security;
 
-import com.dbforge.common.core.id.TypedId;
+import com.DBArena.common.core.id.TypedId;
 
 import java.util.Set;
 

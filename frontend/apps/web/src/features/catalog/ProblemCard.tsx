@@ -1,5 +1,5 @@
-import type { ProblemSummary } from "@dbforge/api-client";
-import { Card } from "@dbforge/ui";
+import type { ProblemSummary } from "@DBArena/api-client";
+import { Card } from "@DBArena/ui";
 import Link from "next/link";
 import { DifficultyBadge, EngineBadge } from "./badges";
 

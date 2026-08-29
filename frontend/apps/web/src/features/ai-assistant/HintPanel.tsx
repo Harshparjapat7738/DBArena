@@ -1,8 +1,8 @@
 "use client";
 
-import type { HintLevel, HintResponse } from "@dbforge/api-client";
-import { ApiError } from "@dbforge/api-client";
-import { Badge, Button, Card, CardContent, CardHeader, CardTitle } from "@dbforge/ui";
+import type { HintLevel, HintResponse } from "@DBArena/api-client";
+import { ApiError } from "@DBArena/api-client";
+import { Badge, Button, Card, CardContent, CardHeader, CardTitle } from "@DBArena/ui";
 import { Lightbulb, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { aiApi } from "@/lib/api/clients";

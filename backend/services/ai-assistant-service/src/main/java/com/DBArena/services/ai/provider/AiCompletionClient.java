@@ -1,4 +1,4 @@
-package com.dbforge.services.ai.provider;
+package com.DBArena.services.ai.provider;
 
 /** One LLM provider's chat-completion call, reduced to exactly what a hint needs. */
 public interface AiCompletionClient {

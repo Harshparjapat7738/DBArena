@@ -1,5 +1,5 @@
 /**
- * The DBForge theme catalog. Every theme is a flat set of CSS custom
+ * The DBArena theme catalog. Every theme is a flat set of CSS custom
  * property values applied to `document.documentElement` at runtime by
  * `ThemeProvider` - there is no per-theme static CSS file to keep in sync,
  * and no build step regenerates anything when a theme is added here; this

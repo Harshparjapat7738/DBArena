@@ -10,10 +10,10 @@ importers:
 
   apps/web:
     dependencies:
-      '@dbforge/api-client':
+      '@DBArena/api-client':
         specifier: workspace:*
         version: link:../../packages/api-client
-      '@dbforge/ui':
+      '@DBArena/ui':
         specifier: workspace:*
         version: link:../../packages/ui
       '@hookform/resolvers':
@@ -47,7 +47,7 @@ importers:
         specifier: 5.0.15
         version: 5.0.15(@types/react@19.2.18)(react@19.2.8)
     devDependencies:
-      '@dbforge/config':
+      '@DBArena/config':
         specifier: workspace:*
         version: link:../../packages/config
       '@eslint/js':
@@ -98,7 +98,7 @@ importers:
 
   packages/api-client:
     devDependencies:
-      '@dbforge/config':
+      '@DBArena/config':
         specifier: workspace:*
         version: link:../config
       typescript:
@@ -134,7 +134,7 @@ importers:
         specifier: 5.0.15
         version: 5.0.15(@types/react@19.2.18)(react@19.2.8)
     devDependencies:
-      '@dbforge/config':
+      '@DBArena/config':
         specifier: workspace:*
         version: link:../config
       '@types/react':

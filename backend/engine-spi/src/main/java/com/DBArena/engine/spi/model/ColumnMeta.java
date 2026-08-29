@@ -1,4 +1,4 @@
-package com.dbforge.engine.spi.model;
+package com.DBArena.engine.spi.model;
 
 /**
  * One result-set column. {@code cdmTypeName} names a {@code CdmValue}

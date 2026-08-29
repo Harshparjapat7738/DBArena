@@ -1,7 +1,7 @@
-package com.dbforge.common.security.jwt;
+package com.DBArena.common.security.jwt;
 
-import com.dbforge.common.core.id.TypedId;
-import com.dbforge.common.security.AuthenticatedUser;
+import com.DBArena.common.core.id.TypedId;
+import com.DBArena.common.security.AuthenticatedUser;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.SignedJWT;

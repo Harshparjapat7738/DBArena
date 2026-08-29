@@ -1,9 +1,9 @@
-package com.dbforge.services.ai.config;
+package com.DBArena.services.ai.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * {@code dbforge.ai.*}. Model ids default to the current production/GA
+ * {@code DBArena.ai.*}. Model ids default to the current production/GA
  * models documented for each provider as of this milestone (2026-08):
  * Groq's {@code llama-3.3-70b-versatile} (their strongest general-purpose
  * production model - see console.groq.com/docs/models) and Gemini's
@@ -15,12 +15,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  * <p>{@code maxOutputTokens} is passed to the provider as a generation
  * hint. It is deliberately NOT the only enforcement of "output must be
- * compact" - {@link com.dbforge.services.ai.guard.OutputGuard} hard-caps
+ * compact" - {@link com.DBArena.services.ai.guard.OutputGuard} hard-caps
  * the response server-side regardless of what a provider actually
  * returns, the same "don't trust the request, verify the response"
  * posture hard rule #5 takes with the AI context builder's row cap.
  */
-@ConfigurationProperties(prefix = "dbforge.ai")
+@ConfigurationProperties(prefix = "dbarena.ai")
 public class AiProviderProperties {
 
     private Groq groq = new Groq();

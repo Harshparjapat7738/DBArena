@@ -1,6 +1,6 @@
-package com.dbforge.services.catalog.service;
+package com.DBArena.services.catalog.service;
 
-import com.dbforge.common.core.error.ConflictException;
+import com.DBArena.common.core.error.ConflictException;
 
 import java.util.Map;
 

@@ -1,4 +1,4 @@
-package com.dbforge.services.gateway;
+package com.DBArena.services.gateway;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -1,4 +1,4 @@
-import { Skeleton } from "@dbforge/ui";
+import { Skeleton } from "@DBArena/ui";
 
 /**
  * Route-level Suspense fallback while `page.tsx`'s server-side

@@ -1,4 +1,4 @@
-package com.dbforge.common.events.serialization;
+package com.DBArena.common.events.serialization;
 
 import org.apache.avro.io.BinaryDecoder;
 import org.apache.avro.io.BinaryEncoder;

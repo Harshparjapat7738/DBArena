@@ -1,4 +1,4 @@
-package com.dbforge.services.ai.provider;
+package com.DBArena.services.ai.provider;
 
 /** {@code providerName} is which provider actually answered ("groq" or "gemini") - surfaced to the caller for observability, never hidden. */
 public record AiCompletionResult(String text, String providerName) {

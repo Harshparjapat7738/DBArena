@@ -1,6 +1,6 @@
-package com.dbforge.engine.adapters.postgres;
+package com.DBArena.engine.adapters.postgres;
 
-import com.dbforge.common.testing.archunit.ArchitectureRules;
+import com.DBArena.common.testing.archunit.ArchitectureRules;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.core.importer.ImportOption;
@@ -18,8 +18,8 @@ class PostgresAdapterArchitectureTest {
     void adapterPostgresHasNoSpringDependency() {
         JavaClasses classes = new ClassFileImporter()
                 .withImportOption(ImportOption.Predefined.DO_NOT_INCLUDE_TESTS)
-                .importPackages("com.dbforge.engine.adapters.postgres");
+                .importPackages("com.DBArena.engine.adapters.postgres");
 
-        ArchitectureRules.noSpringDependency("com.dbforge.engine.adapters.postgres..").check(classes);
+        ArchitectureRules.noSpringDependency("com.DBArena.engine.adapters.postgres..").check(classes);
     }
 }

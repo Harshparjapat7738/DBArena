@@ -1,6 +1,6 @@
-package com.dbforge.services.ai.ratelimit;
+package com.DBArena.services.ai.ratelimit;
 
-import com.dbforge.common.core.error.DomainException;
+import com.DBArena.common.core.error.DomainException;
 
 import java.time.Duration;
 

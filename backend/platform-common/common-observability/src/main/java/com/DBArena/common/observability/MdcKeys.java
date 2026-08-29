@@ -1,4 +1,4 @@
-package com.dbforge.common.observability;
+package com.DBArena.common.observability;
 
 /** MDC key names every service's log lines and every structured-logging config agree on. */
 public final class MdcKeys {

@@ -1,4 +1,4 @@
-package com.dbforge.services.ai.domain;
+package com.DBArena.services.ai.domain;
 
 import java.util.Optional;
 

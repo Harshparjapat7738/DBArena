@@ -1,7 +1,7 @@
-package com.dbforge.common.events.outbox;
+package com.DBArena.common.events.outbox;
 
-import com.dbforge.common.events.avro.OutboxDispatchedEvent;
-import com.dbforge.common.events.serialization.EventSerializer;
+import com.DBArena.common.events.avro.OutboxDispatchedEvent;
+import com.DBArena.common.events.serialization.EventSerializer;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.kafka.core.KafkaTemplate;

@@ -1,4 +1,4 @@
-package com.dbforge.services.catalog.mongock;
+package com.DBArena.services.catalog.mongock;
 
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.IndexOptions;

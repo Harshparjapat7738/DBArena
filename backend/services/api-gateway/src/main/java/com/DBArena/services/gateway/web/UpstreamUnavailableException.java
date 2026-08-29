@@ -1,6 +1,6 @@
-package com.dbforge.services.gateway.web;
+package com.DBArena.services.gateway.web;
 
-import com.dbforge.common.core.error.DomainException;
+import com.DBArena.common.core.error.DomainException;
 
 public class UpstreamUnavailableException extends DomainException {
 

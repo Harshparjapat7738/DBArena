@@ -1,10 +1,10 @@
-package com.dbforge.engine.adapters.postgres;
+package com.DBArena.engine.adapters.postgres;
 
-import com.dbforge.engine.spi.cdm.CdmColumn;
-import com.dbforge.engine.spi.cdm.CdmDataset;
-import com.dbforge.engine.spi.cdm.CdmEntity;
-import com.dbforge.engine.spi.cdm.CdmForeignKey;
-import com.dbforge.engine.spi.cdm.CdmType;
+import com.DBArena.engine.spi.cdm.CdmColumn;
+import com.DBArena.engine.spi.cdm.CdmDataset;
+import com.DBArena.engine.spi.cdm.CdmEntity;
+import com.DBArena.engine.spi.cdm.CdmForeignKey;
+import com.DBArena.engine.spi.cdm.CdmType;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

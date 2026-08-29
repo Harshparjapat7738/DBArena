@@ -1,4 +1,4 @@
-import { createAiEndpoints, createApiClient, createAuthEndpoints, createCatalogEndpoints } from "@dbforge/api-client";
+import { createAiEndpoints, createApiClient, createAuthEndpoints, createCatalogEndpoints } from "@DBArena/api-client";
 import { useAuthStore } from "../auth/authStore";
 
 /**
@@ -26,6 +26,6 @@ export const aiApi = createAiEndpoints(browserClient);
  * `aiApi`/`authApi` above instead.
  */
 export function createServerCatalogApi() {
-  const gatewayUrl = process.env.DBFORGE_GATEWAY_URL ?? "http://localhost:8080";
+  const gatewayUrl = process.env.DBArena_GATEWAY_URL ?? "http://localhost:8080";
   return createCatalogEndpoints(createApiClient({ baseUrl: gatewayUrl }));
 }

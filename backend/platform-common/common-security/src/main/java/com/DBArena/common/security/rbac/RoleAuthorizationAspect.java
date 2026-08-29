@@ -1,7 +1,7 @@
-package com.dbforge.common.security.rbac;
+package com.DBArena.common.security.rbac;
 
-import com.dbforge.common.security.AuthenticatedUser;
-import com.dbforge.common.security.context.CurrentUserContext;
+import com.DBArena.common.security.AuthenticatedUser;
+import com.DBArena.common.security.context.CurrentUserContext;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -19,8 +19,8 @@ import java.util.Set;
 @Aspect
 public class RoleAuthorizationAspect {
 
-    @Around("@annotation(com.dbforge.common.security.rbac.RequiresRole) "
-            + "|| @within(com.dbforge.common.security.rbac.RequiresRole)")
+    @Around("@annotation(com.DBArena.common.security.rbac.RequiresRole) "
+            + "|| @within(com.DBArena.common.security.rbac.RequiresRole)")
     public Object enforce(ProceedingJoinPoint joinPoint) throws Throwable {
         RequiresRole annotation = resolveAnnotation(joinPoint);
         if (annotation != null) {

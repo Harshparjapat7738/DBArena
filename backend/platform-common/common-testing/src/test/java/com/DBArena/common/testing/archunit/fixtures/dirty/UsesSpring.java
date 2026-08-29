@@ -1,4 +1,4 @@
-package com.dbforge.common.testing.archunit.fixtures.dirty;
+package com.DBArena.common.testing.archunit.fixtures.dirty;
 
 import org.springframework.util.StringUtils;
 

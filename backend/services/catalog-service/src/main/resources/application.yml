@@ -8,22 +8,22 @@ spring:
 server:
   port: ${PORT:8083}
 
-dbforge:
+dbarena:
   security:
     jwt:
-      secret: ${DBFORGE_JWT_SECRET:} # must match every backend service's secret - same signer, many verifiers
+      secret: ${DBArena_JWT_SECRET:} # must match every backend service's secret - same signer, many verifiers
   catalog:
-    mongo-uri: ${DBFORGE_CATALOG_MONGO_URI:mongodb://localhost:27017}
-    mongo-database: ${DBFORGE_CATALOG_MONGO_DATABASE:dbforge_catalog}
+    mongo-uri: ${DBArena_CATALOG_MONGO_URI:mongodb://localhost:27017}
+    mongo-database: ${DBArena_CATALOG_MONGO_DATABASE:DBArena_catalog}
 
 # Mongock (Mongo migrations - see ChangeLog001CreateProblemsIndexes's Javadoc
 # for why this block carries above-average reconstructed-API risk).
 mongock:
   migration-scan-package:
-    - com.dbforge.services.catalog.mongock
+    - com.DBArena.services.catalog.mongock
   mongo-db:
-    uri: ${DBFORGE_CATALOG_MONGO_URI:mongodb://localhost:27017}
-    database: ${DBFORGE_CATALOG_MONGO_DATABASE:dbforge_catalog}
+    uri: ${DBArena_CATALOG_MONGO_URI:mongodb://localhost:27017}
+    database: ${DBArena_CATALOG_MONGO_DATABASE:DBArena_catalog}
 
 management:
   endpoints:

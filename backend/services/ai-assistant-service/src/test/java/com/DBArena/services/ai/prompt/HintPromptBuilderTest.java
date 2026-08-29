@@ -1,9 +1,9 @@
-package com.dbforge.services.ai.prompt;
+package com.DBArena.services.ai.prompt;
 
-import com.dbforge.services.ai.context.ColumnSummary;
-import com.dbforge.services.ai.context.EntitySummary;
-import com.dbforge.services.ai.context.HintContext;
-import com.dbforge.services.ai.domain.HintLevel;
+import com.DBArena.services.ai.context.ColumnSummary;
+import com.DBArena.services.ai.context.EntitySummary;
+import com.DBArena.services.ai.context.HintContext;
+import com.DBArena.services.ai.domain.HintLevel;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

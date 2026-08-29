@@ -1,4 +1,4 @@
-package com.dbforge.common.core.value;
+package com.DBArena.common.core.value;
 
 import org.junit.jupiter.api.Test;
 

@@ -1,4 +1,4 @@
-# DBForge
+# DBArena
 
 A LeetCode-style practice platform for **databases**. The core premise: one dataset is
 authored once in an engine-neutral form and materialized into PostgreSQL, MySQL and
@@ -112,7 +112,7 @@ Run `mvn -T 1C verify` directly from `backend/` until one exists.
 
 ## Conventions
 
-- Package root `com.dbforge.<module>`. Module names match directory names.
+- Package root `com.DBArena.<module>`. Module names match directory names.
 - Java **records** for DTOs and value objects. No Lombok.
 - Constructor injection only. No field `@Autowired`.
 - Flyway for PostgreSQL (`src/main/resources/db/migration`), Mongock for MongoDB.

@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>com.dbforge</groupId>
+    <groupId>com.DBArena</groupId>
     <artifactId>backend</artifactId>
     <version>0.1.0-SNAPSHOT</version>
   </parent>
@@ -13,7 +13,7 @@
   <artifactId>platform-bom</artifactId>
   <packaging>pom</packaging>
 
-  <name>DBForge :: Platform BOM</name>
+  <name>DBArena :: Platform BOM</name>
   <description>
     Single place dependency versions are pinned for the whole reactor.
     Every other module imports this in its own dependencyManagement
@@ -86,9 +86,35 @@
       </dependency>
 
       <!-- Engines -->
+      <!-- mongodb-driver-sync, -core and bson are always released together as
+           one matched triad. mongock-bom (imported below) also declares its
+           own dependencyManagement entries for -core/bson - pinned to
+           whatever driver version Mongock itself was tested against, which
+           is NOT necessarily this one. Left unpinned here, mongock-bom's
+           entries would win for -core/bson (nothing else overrides those two
+           GAs) while this explicit entry still wins for mongodb-driver-sync
+           itself, producing a mixed-version triad: a real, previously-latent
+           bug that surfaced only once a Mongo-backed service was actually
+           booted (identity-service's Postgres->Mongo migration - see
+           backend/CLAUDE.md's Session Log) as
+           `NoClassDefFoundError: com/mongodb/internal/TimeoutSettings` -
+           a class that exists in 5.2.0's driver-core but not in the 5.0.1
+           mongock-bom otherwise pins. Pinning all three explicitly, to the
+           same version, keeps the triad internally consistent regardless of
+           import order. -->
       <dependency>
         <groupId>org.mongodb</groupId>
         <artifactId>mongodb-driver-sync</artifactId>
+        <version>${mongodb-driver.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mongodb</groupId>
+        <artifactId>mongodb-driver-core</artifactId>
+        <version>${mongodb-driver.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mongodb</groupId>
+        <artifactId>bson</artifactId>
         <version>${mongodb-driver.version}</version>
       </dependency>
       <dependency>

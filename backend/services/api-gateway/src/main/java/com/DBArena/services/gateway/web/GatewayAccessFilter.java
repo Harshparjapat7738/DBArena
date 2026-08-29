@@ -1,6 +1,6 @@
-package com.dbforge.services.gateway.web;
+package com.DBArena.services.gateway.web;
 
-import com.dbforge.common.security.context.CurrentUserContext;
+import com.DBArena.common.security.context.CurrentUserContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

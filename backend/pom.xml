@@ -4,14 +4,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.dbforge</groupId>
+  <groupId>com.DBArena</groupId>
   <artifactId>backend</artifactId>
   <version>0.1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <name>DBForge :: Backend Reactor</name>
+  <name>DBArena :: Backend Reactor</name>
   <description>
-    Java 21 / Spring Boot 3.3 Maven reactor for DBForge (DB Arena).
+    Java 21 / Spring Boot 3.3 Maven reactor for DBArena (DB Arena).
     See CLAUDE.md at the repo root and in this directory before adding modules.
   </description>
 

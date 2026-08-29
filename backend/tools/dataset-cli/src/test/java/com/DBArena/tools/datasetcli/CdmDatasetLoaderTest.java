@@ -1,8 +1,8 @@
-package com.dbforge.tools.datasetcli;
+package com.DBArena.tools.datasetcli;
 
-import com.dbforge.common.core.value.CdmValue;
-import com.dbforge.engine.spi.cdm.CdmDataset;
-import com.dbforge.engine.spi.cdm.CdmEntity;
+import com.DBArena.common.core.value.CdmValue;
+import com.DBArena.engine.spi.cdm.CdmDataset;
+import com.DBArena.engine.spi.cdm.CdmEntity;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;

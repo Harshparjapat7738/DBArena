@@ -1,9 +1,9 @@
-package com.dbforge.engine.spi.typemap;
+package com.DBArena.engine.spi.typemap;
 
 /**
  * A native PostgreSQL column type used to materialize one
- * {@link com.dbforge.engine.spi.cdm.CdmColumn}. One entry per
- * {@link com.dbforge.engine.spi.cdm.CdmType} variant - see
+ * {@link com.DBArena.engine.spi.cdm.CdmColumn}. One entry per
+ * {@link com.DBArena.engine.spi.cdm.CdmType} variant - see
  * {@link PostgresTypeMapper} for the mapping itself.
  */
 public enum PostgresColumnType {

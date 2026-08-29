@@ -1,4 +1,4 @@
-package com.dbforge.common.events.idempotency;
+package com.DBArena.common.events.idempotency;
 
 /**
  * Enforces root CLAUDE.md hard rule: "every Kafka consumer must be

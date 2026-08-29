@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { DEFAULT_DARK_THEME_ID, findTheme } from "./themes";
 
-export const THEME_STORAGE_KEY = "dbforge.theme";
+export const THEME_STORAGE_KEY = "DBArena.theme";
 
 interface ThemeState {
   themeId: string;

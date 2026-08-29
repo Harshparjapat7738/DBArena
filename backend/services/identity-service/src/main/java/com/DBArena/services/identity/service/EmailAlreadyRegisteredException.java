@@ -1,6 +1,6 @@
-package com.dbforge.services.identity.service;
+package com.DBArena.services.identity.service;
 
-import com.dbforge.common.core.error.ConflictException;
+import com.DBArena.common.core.error.ConflictException;
 
 public class EmailAlreadyRegisteredException extends ConflictException {
 

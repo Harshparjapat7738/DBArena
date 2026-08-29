@@ -1,4 +1,4 @@
-package com.dbforge.common.testing.archunit;
+package com.DBArena.common.testing.archunit;
 
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.library.dependencies.SlicesRuleDefinition;
@@ -43,11 +43,11 @@ public final class ArchitectureRules {
      * {@code services/<y>}; cross-service reads go through OpenFeign
      * clients, writes through Kafka events. Uses ArchUnit's slice-based
      * dependency check so any two distinct service packages under
-     * {@code com.dbforge.services} are checked pairwise.
+     * {@code com.DBArena.services} are checked pairwise.
      */
     public static ArchRule noServiceDependsOnAnotherService() {
         return SlicesRuleDefinition.slices()
-                .matching("com.dbforge.services.(*)..")
+                .matching("com.DBArena.services.(*)..")
                 .should().notDependOnEachOther()
                 .because("cross-service reads go through OpenFeign, writes through Kafka events "
                         + "(root CLAUDE.md hard rule #2)");

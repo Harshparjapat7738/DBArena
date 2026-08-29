@@ -1,5 +1,5 @@
-import { Badge } from "@dbforge/ui";
-import type { Difficulty, EngineKind } from "@dbforge/api-client";
+import { Badge } from "@DBArena/ui";
+import type { Difficulty, EngineKind } from "@DBArena/api-client";
 
 const DIFFICULTY_TONE: Record<Difficulty, "success" | "warning" | "danger"> = {
   EASY: "success",

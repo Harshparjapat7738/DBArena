@@ -1,6 +1,6 @@
-package com.dbforge.services.ai.config;
+package com.DBArena.services.ai.config;
 
-import com.dbforge.services.ai.dataset.DatasetContextLoader;
+import com.DBArena.services.ai.dataset.DatasetContextLoader;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

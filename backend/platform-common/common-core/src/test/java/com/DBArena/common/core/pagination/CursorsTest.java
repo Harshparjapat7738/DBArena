@@ -1,4 +1,4 @@
-package com.dbforge.common.core.pagination;
+package com.DBArena.common.core.pagination;
 
 import org.junit.jupiter.api.Test;
 

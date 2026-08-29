@@ -1,9 +1,9 @@
-package com.dbforge.engine.spi.typemap;
+package com.DBArena.engine.spi.typemap;
 
 /**
  * A native BSON representation used to shape one
- * {@link com.dbforge.engine.spi.cdm.CdmColumn}'s value when materializing a
- * document. One entry per {@link com.dbforge.engine.spi.cdm.CdmType}
+ * {@link com.DBArena.engine.spi.cdm.CdmColumn}'s value when materializing a
+ * document. One entry per {@link com.DBArena.engine.spi.cdm.CdmType}
  * variant - see {@link MongoTypeMapper} for the mapping itself.
  */
 public enum MongoBsonType {

@@ -2,7 +2,7 @@
   Shared structured-logging fragment. A service's own logback-spring.xml
   includes this instead of redefining the console appender:
 
-    <include resource="dbforge/logback-json-base.xml"/>
+    <include resource="DBArena/logback-json-base.xml"/>
     <root level="INFO"><appender-ref ref="JSON_CONSOLE"/></root>
 
   Every field a log aggregator needs to correlate a line back to a

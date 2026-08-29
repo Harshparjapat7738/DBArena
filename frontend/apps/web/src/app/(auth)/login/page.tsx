@@ -1,8 +1,8 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ApiError } from "@dbforge/api-client";
-import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, FieldError, Input, Label } from "@dbforge/ui";
+import { ApiError } from "@DBArena/api-client";
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, FieldError, Input, Label } from "@DBArena/ui";
 import { Database } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -47,7 +47,7 @@ export default function LoginPage() {
         <CardHeader className="items-center text-center">
           <Link href="/" className="mb-2 flex items-center gap-2 font-mono text-lg font-semibold text-fg">
             <Database className="h-5 w-5 text-accent" aria-hidden />
-            DBForge
+            DBArena
           </Link>
           <CardTitle>Welcome back</CardTitle>
           <CardDescription>Log in to keep practicing.</CardDescription>

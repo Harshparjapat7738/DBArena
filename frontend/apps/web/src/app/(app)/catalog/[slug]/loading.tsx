@@ -1,4 +1,4 @@
-import { Skeleton } from "@dbforge/ui";
+import { Skeleton } from "@DBArena/ui";
 
 export default function ProblemDetailLoading() {
   return (

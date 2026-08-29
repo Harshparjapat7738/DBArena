@@ -1,6 +1,6 @@
-package com.dbforge.engine.spi.typemap;
+package com.DBArena.engine.spi.typemap;
 
-import com.dbforge.engine.spi.cdm.CdmType;
+import com.DBArena.engine.spi.cdm.CdmType;
 
 /**
  * Maps every {@link CdmType} variant to one engine's native column/field

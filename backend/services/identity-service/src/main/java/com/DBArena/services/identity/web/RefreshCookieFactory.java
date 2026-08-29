@@ -1,4 +1,4 @@
-package com.dbforge.services.identity.web;
+package com.DBArena.services.identity.web;
 
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
@@ -14,7 +14,7 @@ import java.time.Instant;
 @Component
 public class RefreshCookieFactory {
 
-    public static final String COOKIE_NAME = "dbforge_rt";
+    public static final String COOKIE_NAME = "DBArena_rt";
     private static final String COOKIE_PATH = "/api/v1/auth";
 
     public ResponseCookie issue(String refreshToken, Instant expiresAt) {

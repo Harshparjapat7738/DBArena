@@ -1,4 +1,4 @@
-package com.dbforge.services.ai.provider;
+package com.DBArena.services.ai.provider;
 
 /**
  * One provider call failed - not configured (no API key), timed out,

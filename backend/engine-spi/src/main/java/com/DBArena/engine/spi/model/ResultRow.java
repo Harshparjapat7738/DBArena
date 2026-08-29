@@ -1,6 +1,6 @@
-package com.dbforge.engine.spi.model;
+package com.DBArena.engine.spi.model;
 
-import com.dbforge.common.core.value.CdmValue;
+import com.DBArena.common.core.value.CdmValue;
 
 import java.util.List;
 

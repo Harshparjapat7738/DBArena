@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>com.dbforge</groupId>
+    <groupId>com.DBArena</groupId>
     <artifactId>tools</artifactId>
     <version>0.1.0-SNAPSHOT</version>
   </parent>
@@ -13,10 +13,10 @@
   <artifactId>dataset-cli</artifactId>
   <packaging>jar</packaging>
 
-  <name>DBForge :: dataset-cli</name>
+  <name>DBArena :: dataset-cli</name>
   <description>
     Reads an authored dataset.yaml, converts it into the Canonical Dataset
-    Model (engine-spi's com.dbforge.engine.spi.cdm package), and validates
+    Model (engine-spi's com.DBArena.engine.spi.cdm package), and validates
     it with CdmDatasetValidator. Deliberately a plain CLI, not a Spring
     Boot app - it's a fast-starting local tool an author runs repeatedly
     while writing YAML, and it has no need of DI, web, or persistence.
@@ -28,7 +28,7 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>com.dbforge</groupId>
+        <groupId>com.DBArena</groupId>
         <artifactId>platform-bom</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
@@ -39,12 +39,12 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.dbforge</groupId>
+      <groupId>com.DBArena</groupId>
       <artifactId>common-core</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.dbforge</groupId>
+      <groupId>com.DBArena</groupId>
       <artifactId>engine-spi</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -79,7 +79,7 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
         <configuration>
-          <mainClass>com.dbforge.tools.datasetcli.DatasetCli</mainClass>
+          <mainClass>com.DBArena.tools.datasetcli.DatasetCli</mainClass>
         </configuration>
       </plugin>
     </plugins>

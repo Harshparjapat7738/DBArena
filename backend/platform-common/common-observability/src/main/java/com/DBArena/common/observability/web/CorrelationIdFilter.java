@@ -1,6 +1,6 @@
-package com.dbforge.common.observability.web;
+package com.DBArena.common.observability.web;
 
-import com.dbforge.common.observability.MdcKeys;
+import com.DBArena.common.observability.MdcKeys;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

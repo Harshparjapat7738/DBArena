@@ -1,12 +1,12 @@
-package com.dbforge.engine.adapters.mysql;
+package com.DBArena.engine.adapters.mysql;
 
-import com.dbforge.engine.spi.cdm.CdmType;
+import com.DBArena.engine.spi.cdm.CdmType;
 
 import java.util.Map;
 import java.util.Optional;
 
 /**
- * The reverse of {@link com.dbforge.engine.spi.typemap.MySqlTypeMapper}:
+ * The reverse of {@link com.DBArena.engine.spi.typemap.MySqlTypeMapper}:
  * a MySQL native type name back to the {@link CdmType} it materializes.
  * Serves two different callers with two different native-name sources,
  * unlike Postgres's single-table {@code PostgresNativeTypes} - MySQL's

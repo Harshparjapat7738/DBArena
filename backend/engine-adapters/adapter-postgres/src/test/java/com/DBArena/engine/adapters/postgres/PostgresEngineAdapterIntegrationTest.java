@@ -1,18 +1,18 @@
-package com.dbforge.engine.adapters.postgres;
+package com.DBArena.engine.adapters.postgres;
 
-import com.dbforge.common.core.value.CdmValue;
-import com.dbforge.common.testing.containers.DbforgePostgresContainer;
-import com.dbforge.engine.spi.cdm.CdmDataset;
-import com.dbforge.engine.spi.model.ColumnMeta;
-import com.dbforge.engine.spi.model.EntitySchema;
-import com.dbforge.engine.spi.model.ExecutionResult;
-import com.dbforge.engine.spi.model.ExplainPlan;
-import com.dbforge.engine.spi.model.MaterializationResult;
-import com.dbforge.engine.spi.model.ResultRow;
-import com.dbforge.engine.spi.model.SchemaSnapshot;
-import com.dbforge.engine.spi.model.SessionHandle;
-import com.dbforge.engine.spi.model.StatementRequest;
-import com.dbforge.tools.datasetcli.CdmDatasetLoader;
+import com.DBArena.common.core.value.CdmValue;
+import com.DBArena.common.testing.containers.DBArenaPostgresContainer;
+import com.DBArena.engine.spi.cdm.CdmDataset;
+import com.DBArena.engine.spi.model.ColumnMeta;
+import com.DBArena.engine.spi.model.EntitySchema;
+import com.DBArena.engine.spi.model.ExecutionResult;
+import com.DBArena.engine.spi.model.ExplainPlan;
+import com.DBArena.engine.spi.model.MaterializationResult;
+import com.DBArena.engine.spi.model.ResultRow;
+import com.DBArena.engine.spi.model.SchemaSnapshot;
+import com.DBArena.engine.spi.model.SessionHandle;
+import com.DBArena.engine.spi.model.StatementRequest;
+import com.DBArena.tools.datasetcli.CdmDatasetLoader;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,7 +49,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class PostgresEngineAdapterIntegrationTest {
 
     @Container
-    static final DbforgePostgresContainer POSTGRES = new DbforgePostgresContainer();
+    static final DBArenaPostgresContainer POSTGRES = new DBArenaPostgresContainer();
 
     private static final Path TWO_SUM_DATASET_PATH = Path.of("../../../datasets/two-sum/dataset.yaml");
 
@@ -72,7 +72,7 @@ class PostgresEngineAdapterIntegrationTest {
 
     @Test
     void engineTypeIsPostgres() {
-        assertThat(adapter.engineType()).isEqualTo(com.dbforge.engine.spi.EngineType.POSTGRES);
+        assertThat(adapter.engineType()).isEqualTo(com.DBArena.engine.spi.EngineType.POSTGRES);
     }
 
     @Test
@@ -81,8 +81,8 @@ class PostgresEngineAdapterIntegrationTest {
         MaterializationResult materialization = adapter.materialize(twoSum);
         SessionHandle session = materialization.session();
 
-        assertThat(session.engineType()).isEqualTo(com.dbforge.engine.spi.EngineType.POSTGRES);
-        assertThat(session.connectionRef()).startsWith("dbforge_");
+        assertThat(session.engineType()).isEqualTo(com.DBArena.engine.spi.EngineType.POSTGRES);
+        assertThat(session.connectionRef()).startsWith("DBArena_");
         assertThat(materialization.rowCountsByEntity())
                 .isEqualTo(Map.of("numbers", 4L, "queries", 3L));
 
@@ -192,7 +192,7 @@ class PostgresEngineAdapterIntegrationTest {
 
     @Test
     void templateCloneRejectsANonPostgresSessionHandle() {
-        SessionHandle mongoSession = new SessionHandle("s1", com.dbforge.engine.spi.EngineType.MONGODB, "ref");
+        SessionHandle mongoSession = new SessionHandle("s1", com.DBArena.engine.spi.EngineType.MONGODB, "ref");
 
         assertThatThrownBy(() -> adapter.templateClone(mongoSession))
                 .isInstanceOf(IllegalArgumentException.class);

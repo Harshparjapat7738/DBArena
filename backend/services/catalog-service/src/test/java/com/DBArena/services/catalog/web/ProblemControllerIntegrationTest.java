@@ -1,7 +1,7 @@
-package com.dbforge.services.catalog.web;
+package com.DBArena.services.catalog.web;
 
-import com.dbforge.common.testing.containers.DbforgeMongoContainer;
-import com.dbforge.services.catalog.domain.TagCount;
+import com.DBArena.common.testing.containers.DBArenaMongoContainer;
+import com.DBArena.services.catalog.domain.TagCount;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -51,15 +51,15 @@ class ProblemControllerIntegrationTest {
     private static final String DATABASE_NAME = "catalog_it_" + System.nanoTime();
 
     @Container
-    static final DbforgeMongoContainer MONGO = DbforgeMongoContainer.defaultInstance();
+    static final DBArenaMongoContainer MONGO = DBArenaMongoContainer.defaultInstance();
 
     @DynamicPropertySource
     static void configure(DynamicPropertyRegistry registry) {
-        registry.add("dbforge.catalog.mongo-uri", MONGO::getReplicaSetUrl);
-        registry.add("dbforge.catalog.mongo-database", () -> DATABASE_NAME);
+        registry.add("dbarena.catalog.mongo-uri", MONGO::getReplicaSetUrl);
+        registry.add("dbarena.catalog.mongo-database", () -> DATABASE_NAME);
         registry.add("mongock.mongo-db.uri", MONGO::getReplicaSetUrl);
         registry.add("mongock.mongo-db.database", () -> DATABASE_NAME);
-        registry.add("dbforge.security.jwt.secret", () -> SECRET);
+        registry.add("dbarena.security.jwt.secret", () -> SECRET);
     }
 
     @Autowired

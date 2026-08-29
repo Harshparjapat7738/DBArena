@@ -1,14 +1,14 @@
-package com.dbforge.services.ai.context;
+package com.DBArena.services.ai.context;
 
-import com.dbforge.common.core.value.CdmValue;
-import com.dbforge.engine.spi.cdm.CdmColumn;
-import com.dbforge.engine.spi.cdm.CdmDataset;
-import com.dbforge.engine.spi.cdm.CdmEntity;
-import com.dbforge.engine.spi.cdm.CdmRow;
-import com.dbforge.engine.spi.cdm.CdmType;
-import com.dbforge.services.ai.client.CatalogProblemResponse;
-import com.dbforge.services.ai.domain.HintCommand;
-import com.dbforge.services.ai.domain.HintLevel;
+import com.DBArena.common.core.value.CdmValue;
+import com.DBArena.engine.spi.cdm.CdmColumn;
+import com.DBArena.engine.spi.cdm.CdmDataset;
+import com.DBArena.engine.spi.cdm.CdmEntity;
+import com.DBArena.engine.spi.cdm.CdmRow;
+import com.DBArena.engine.spi.cdm.CdmType;
+import com.DBArena.services.ai.client.CatalogProblemResponse;
+import com.DBArena.services.ai.domain.HintCommand;
+import com.DBArena.services.ai.domain.HintLevel;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedHashMap;

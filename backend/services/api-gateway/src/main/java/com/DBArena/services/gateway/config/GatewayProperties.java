@@ -1,4 +1,4 @@
-package com.dbforge.services.gateway.config;
+package com.DBArena.services.gateway.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Route table, e.g.:
  * <pre>
- * dbforge:
+ * DBArena:
  *   gateway:
  *     routes:
  *       - prefix: /api/v1/auth
@@ -17,7 +17,7 @@ import java.util.List;
  * does not strip {@code prefix} - so a backend service's own
  * {@code @RequestMapping} must match the same path clients use.
  */
-@ConfigurationProperties(prefix = "dbforge.gateway")
+@ConfigurationProperties(prefix = "dbarena.gateway")
 public record GatewayProperties(List<RouteRule> routes) {
 
     public GatewayProperties {

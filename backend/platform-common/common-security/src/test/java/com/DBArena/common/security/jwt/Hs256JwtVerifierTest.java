@@ -1,6 +1,6 @@
-package com.dbforge.common.security.jwt;
+package com.DBArena.common.security.jwt;
 
-import com.dbforge.common.security.AuthenticatedUser;
+import com.DBArena.common.security.AuthenticatedUser;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;

@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, ThemeSwitcher } from "@dbforge/ui";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, ThemeSwitcher } from "@DBArena/ui";
 import { useAuthStore } from "@/lib/auth/authStore";
 
 export default function SettingsPage() {
@@ -10,13 +10,13 @@ export default function SettingsPage() {
     <div className="mx-auto flex max-w-4xl flex-col gap-6 px-6 py-8">
       <div>
         <h1 className="text-2xl font-semibold">Settings</h1>
-        <p className="text-sm text-fg-muted">Manage your account and how DBForge looks.</p>
+        <p className="text-sm text-fg-muted">Manage your account and how DBArena looks.</p>
       </div>
 
       <Card>
         <CardHeader>
           <CardTitle>Account</CardTitle>
-          <CardDescription>Your DBForge profile.</CardDescription>
+          <CardDescription>Your DBArena profile.</CardDescription>
         </CardHeader>
         <CardContent className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>

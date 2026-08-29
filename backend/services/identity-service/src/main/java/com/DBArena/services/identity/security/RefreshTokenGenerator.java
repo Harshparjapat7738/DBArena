@@ -1,4 +1,4 @@
-package com.dbforge.services.identity.security;
+package com.DBArena.services.identity.security;
 
 import org.springframework.stereotype.Component;
 

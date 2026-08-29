@@ -1,8 +1,8 @@
-package com.dbforge.common.events.autoconfigure;
+package com.DBArena.common.events.autoconfigure;
 
-import com.dbforge.common.events.avro.OutboxDispatchedEvent;
-import com.dbforge.common.events.serialization.AvroEventSerializer;
-import com.dbforge.common.events.serialization.EventSerializer;
+import com.DBArena.common.events.avro.OutboxDispatchedEvent;
+import com.DBArena.common.events.serialization.AvroEventSerializer;
+import com.DBArena.common.events.serialization.EventSerializer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;

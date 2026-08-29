@@ -8,30 +8,30 @@ spring:
 server:
   port: ${PORT:8084}
 
-dbforge:
+dbarena:
   security:
     jwt:
-      secret: ${DBFORGE_JWT_SECRET:} # must match every backend service's secret - same signer, many verifiers
+      secret: ${DBArena_JWT_SECRET:} # must match every backend service's secret - same signer, many verifiers
   ai:
-    catalog-service-uri: ${DBFORGE_CATALOG_SERVICE_URI:http://localhost:8083} # Feign target, called directly - not through api-gateway (hard rule #2, service-to-service)
+    catalog-service-uri: ${DBArena_CATALOG_SERVICE_URI:http://localhost:8083} # Feign target, called directly - not through api-gateway (hard rule #2, service-to-service)
     # Repo layout: backend/services/ai-assistant-service/ -> ../../../datasets is the
     # repo-root datasets/ directory (see M02). Assumes the process cwd is this module's
     # own directory (mvn's default for `spring-boot:run`) - unverified end-to-end without
     # a real run, same standing caveat as every prior milestone's reconstructed-from-memory
     # risk areas (see this milestone's Session Log "Carried forward").
-    datasets-root: ${DBFORGE_DATASETS_ROOT:../../../datasets}
-    max-output-tokens: ${DBFORGE_AI_MAX_OUTPUT_TOKENS:220}
-    hint-rate-limit-per-hour: ${DBFORGE_AI_HINT_RATE_LIMIT_PER_HOUR:30} # per-user, fixed window - see HintRateLimiter
+    datasets-root: ${DBArena_DATASETS_ROOT:../../../datasets}
+    max-output-tokens: ${DBArena_AI_MAX_OUTPUT_TOKENS:220}
+    hint-rate-limit-per-hour: ${DBArena_AI_HINT_RATE_LIMIT_PER_HOUR:30} # per-user, fixed window - see HintRateLimiter
     groq:
-      api-key: ${DBFORGE_GROQ_API_KEY:}
-      base-url: ${DBFORGE_GROQ_BASE_URL:https://api.groq.com/openai/v1/chat/completions}
-      model: ${DBFORGE_GROQ_MODEL:llama-3.3-70b-versatile}
-      timeout-ms: ${DBFORGE_GROQ_TIMEOUT_MS:8000}
+      api-key: ${DBArena_GROQ_API_KEY:}
+      base-url: ${DBArena_GROQ_BASE_URL:https://api.groq.com/openai/v1/chat/completions}
+      model: ${DBArena_GROQ_MODEL:llama-3.3-70b-versatile}
+      timeout-ms: ${DBArena_GROQ_TIMEOUT_MS:8000}
     gemini:
-      api-key: ${DBFORGE_GEMINI_API_KEY:}
-      base-url: ${DBFORGE_GEMINI_BASE_URL:https://generativelanguage.googleapis.com/v1beta/models}
-      model: ${DBFORGE_GEMINI_MODEL:gemini-3-flash-preview}
-      timeout-ms: ${DBFORGE_GEMINI_TIMEOUT_MS:8000}
+      api-key: ${DBArena_GEMINI_API_KEY:}
+      base-url: ${DBArena_GEMINI_BASE_URL:https://generativelanguage.googleapis.com/v1beta/models}
+      model: ${DBArena_GEMINI_MODEL:gemini-3-flash-preview}
+      timeout-ms: ${DBArena_GEMINI_TIMEOUT_MS:8000}
 
 management:
   endpoints:

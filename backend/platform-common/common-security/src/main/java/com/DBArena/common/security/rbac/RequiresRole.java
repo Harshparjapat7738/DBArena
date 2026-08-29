@@ -1,4 +1,4 @@
-package com.dbforge.common.security.rbac;
+package com.DBArena.common.security.rbac;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

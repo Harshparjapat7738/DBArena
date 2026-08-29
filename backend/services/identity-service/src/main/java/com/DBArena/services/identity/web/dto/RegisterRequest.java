@@ -1,4 +1,4 @@
-package com.dbforge.services.identity.web.dto;
+package com.DBArena.services.identity.web.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

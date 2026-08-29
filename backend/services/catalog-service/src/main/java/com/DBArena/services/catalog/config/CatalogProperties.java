@@ -1,12 +1,12 @@
-package com.dbforge.services.catalog.config;
+package com.DBArena.services.catalog.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "dbforge.catalog")
+@ConfigurationProperties(prefix = "dbarena.catalog")
 public class CatalogProperties {
 
     private String mongoUri = "mongodb://localhost:27017";
-    private String mongoDatabase = "dbforge_catalog";
+    private String mongoDatabase = "DBArena_catalog";
 
     public String getMongoUri() {
         return mongoUri;

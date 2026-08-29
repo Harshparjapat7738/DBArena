@@ -1,7 +1,7 @@
-package com.dbforge.services.ai.web.dto;
+package com.DBArena.services.ai.web.dto;
 
-import com.dbforge.services.ai.domain.HintCommand;
-import com.dbforge.services.ai.domain.HintLevel;
+import com.DBArena.services.ai.domain.HintCommand;
+import com.DBArena.services.ai.domain.HintLevel;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

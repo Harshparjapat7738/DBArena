@@ -1,4 +1,4 @@
-package com.dbforge.services.gateway.web;
+package com.DBArena.services.gateway.web;
 
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -59,9 +59,9 @@ class ReverseProxyIntegrationTest {
      */
     @DynamicPropertySource
     static void configure(DynamicPropertyRegistry registry) {
-        registry.add("dbforge.gateway.routes[0].prefix", () -> "/api/v1/auth");
-        registry.add("dbforge.gateway.routes[0].uri", () -> "http://localhost:" + ensureFakeUpstreamRunning());
-        registry.add("dbforge.security.jwt.secret", () -> SECRET);
+        registry.add("dbarena.gateway.routes[0].prefix", () -> "/api/v1/auth");
+        registry.add("dbarena.gateway.routes[0].uri", () -> "http://localhost:" + ensureFakeUpstreamRunning());
+        registry.add("dbarena.security.jwt.secret", () -> SECRET);
     }
 
     private static synchronized int ensureFakeUpstreamRunning() {

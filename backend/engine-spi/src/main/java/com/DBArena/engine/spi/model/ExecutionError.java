@@ -1,4 +1,4 @@
-package com.dbforge.engine.spi.model;
+package com.DBArena.engine.spi.model;
 
 /** An engine-reported failure (syntax error, constraint violation, timeout) translated out of the driver's native exception type. */
 public record ExecutionError(String code, String message) {

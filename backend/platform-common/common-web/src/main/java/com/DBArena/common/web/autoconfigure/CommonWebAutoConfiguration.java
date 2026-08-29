@@ -1,6 +1,6 @@
-package com.dbforge.common.web.autoconfigure;
+package com.DBArena.common.web.autoconfigure;
 
-import com.dbforge.common.web.GlobalProblemExceptionHandler;
+import com.DBArena.common.web.GlobalProblemExceptionHandler;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;

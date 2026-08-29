@@ -1,4 +1,4 @@
-import { DEFAULT_DARK_THEME_ID, DEFAULT_LIGHT_THEME_ID, useThemeStore } from "@dbforge/ui";
+import { DEFAULT_DARK_THEME_ID, DEFAULT_LIGHT_THEME_ID, useThemeStore } from "@DBArena/ui";
 import { beforeEach, describe, expect, it } from "vitest";
 
 describe("useThemeStore", () => {

@@ -1,9 +1,9 @@
-package com.dbforge.engine.adapters.postgres;
+package com.DBArena.engine.adapters.postgres;
 
-import com.dbforge.engine.spi.cdm.CdmType;
-import com.dbforge.engine.spi.model.ColumnMeta;
-import com.dbforge.engine.spi.model.EntitySchema;
-import com.dbforge.engine.spi.model.SchemaSnapshot;
+import com.DBArena.engine.spi.cdm.CdmType;
+import com.DBArena.engine.spi.model.ColumnMeta;
+import com.DBArena.engine.spi.model.EntitySchema;
+import com.DBArena.engine.spi.model.SchemaSnapshot;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Reads back the live schema of a materialized Postgres database via
  * {@code information_schema} - proving what was actually created, rather
- * than trusting the {@link com.dbforge.engine.spi.cdm.CdmDataset} that was
+ * than trusting the {@link com.DBArena.engine.spi.cdm.CdmDataset} that was
  * asked for (needed for B06's cross-engine equivalence proof later).
  * {@code udt_name} (not {@code data_type}) is used for each column's
  * native type - see {@link PostgresNativeTypes}'s Javadoc for why.

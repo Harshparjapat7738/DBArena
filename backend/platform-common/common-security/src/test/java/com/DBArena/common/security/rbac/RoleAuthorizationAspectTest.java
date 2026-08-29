@@ -1,8 +1,8 @@
-package com.dbforge.common.security.rbac;
+package com.DBArena.common.security.rbac;
 
-import com.dbforge.common.core.id.TypedId;
-import com.dbforge.common.security.AuthenticatedUser;
-import com.dbforge.common.security.context.CurrentUserContext;
+import com.DBArena.common.core.id.TypedId;
+import com.DBArena.common.security.AuthenticatedUser;
+import com.DBArena.common.security.context.CurrentUserContext;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.junit.jupiter.api.AfterEach;

@@ -1,6 +1,6 @@
-package com.dbforge.common.events.outbox;
+package com.DBArena.common.events.outbox;
 
-import com.dbforge.common.events.avro.OutboxDispatchedEvent;
+import com.DBArena.common.events.avro.OutboxDispatchedEvent;
 
 import java.nio.ByteBuffer;
 

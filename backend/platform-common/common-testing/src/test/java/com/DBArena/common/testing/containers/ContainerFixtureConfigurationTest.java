@@ -1,4 +1,4 @@
-package com.dbforge.common.testing.containers;
+package com.DBArena.common.testing.containers;
 
 import org.junit.jupiter.api.Test;
 
@@ -14,26 +14,26 @@ class ContainerFixtureConfigurationTest {
 
     @Test
     void postgresPinsImageAndCredentials() {
-        DbforgePostgresContainer container = DbforgePostgresContainer.defaultInstance();
+        DBArenaPostgresContainer container = DBArenaPostgresContainer.defaultInstance();
         assertThat(container.getDockerImageName()).isEqualTo("postgres:16-alpine");
-        assertThat(container.getDatabaseName()).isEqualTo("dbforge");
+        assertThat(container.getDatabaseName()).isEqualTo("DBArena");
     }
 
     @Test
     void mongoPinsImage() {
-        DbforgeMongoContainer container = DbforgeMongoContainer.defaultInstance();
+        DBArenaMongoContainer container = DBArenaMongoContainer.defaultInstance();
         assertThat(container.getDockerImageName()).isEqualTo("mongo:7.0");
     }
 
     @Test
     void redisExposesTheStandardPort() {
-        DbforgeRedisContainer container = DbforgeRedisContainer.defaultInstance();
+        DBArenaRedisContainer container = DBArenaRedisContainer.defaultInstance();
         assertThat(container.getExposedPorts()).containsExactly(6379);
     }
 
     @Test
     void redpandaPinsImage() {
-        DbforgeRedpandaContainer container = DbforgeRedpandaContainer.defaultInstance();
+        DBArenaRedpandaContainer container = DBArenaRedpandaContainer.defaultInstance();
         assertThat(container.getDockerImageName()).isEqualTo("redpandadata/redpanda:v24.2.7");
     }
 }

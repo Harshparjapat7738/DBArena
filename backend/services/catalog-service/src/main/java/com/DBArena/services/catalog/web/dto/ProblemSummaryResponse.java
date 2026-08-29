@@ -1,8 +1,8 @@
-package com.dbforge.services.catalog.web.dto;
+package com.DBArena.services.catalog.web.dto;
 
-import com.dbforge.services.catalog.domain.Difficulty;
-import com.dbforge.engine.spi.EngineType;
-import com.dbforge.services.catalog.domain.Problem;
+import com.DBArena.services.catalog.domain.Difficulty;
+import com.DBArena.engine.spi.EngineType;
+import com.DBArena.services.catalog.domain.Problem;
 
 import java.util.Set;
 

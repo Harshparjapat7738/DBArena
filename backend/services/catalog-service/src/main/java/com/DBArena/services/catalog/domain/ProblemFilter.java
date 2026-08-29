@@ -1,6 +1,6 @@
-package com.dbforge.services.catalog.domain;
+package com.DBArena.services.catalog.domain;
 
-import com.dbforge.engine.spi.EngineType;
+import com.DBArena.engine.spi.EngineType;
 
 import java.util.Optional;
 

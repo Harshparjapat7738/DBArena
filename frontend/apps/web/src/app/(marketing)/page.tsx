@@ -1,4 +1,4 @@
-import { Badge, Button } from "@dbforge/ui";
+import { Badge, Button } from "@DBArena/ui";
 import { Database, GitBranch, Sparkles, Zap } from "lucide-react";
 import Link from "next/link";
 
@@ -40,7 +40,7 @@ export default function MarketingHomePage() {
       <header className="relative z-10 flex items-center justify-between px-6 py-5 sm:px-10">
         <div className="flex items-center gap-2 font-mono text-lg font-semibold">
           <Database className="h-5 w-5 text-accent" aria-hidden />
-          DBForge
+          DBArena
         </div>
         <nav className="flex items-center gap-3">
           <Link href="/login">

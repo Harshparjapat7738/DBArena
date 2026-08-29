@@ -1,6 +1,6 @@
-package com.dbforge.services.catalog.service;
+package com.DBArena.services.catalog.service;
 
-import com.dbforge.common.core.error.NotFoundException;
+import com.DBArena.common.core.error.NotFoundException;
 
 public class ProblemNotFoundException extends NotFoundException {
 

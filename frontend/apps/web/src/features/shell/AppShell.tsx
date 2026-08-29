@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@dbforge/ui";
+import { Button } from "@DBArena/ui";
 import { Database, LayoutGrid, LogOut, Settings as SettingsIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -56,7 +56,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <aside className="flex w-60 shrink-0 flex-col border-r border-border bg-bg-elevated">
         <div className="flex items-center gap-2 px-5 py-5 font-mono text-lg font-semibold">
           <Database className="h-5 w-5 text-accent" aria-hidden />
-          DBForge
+          DBArena
         </div>
         <nav className="flex flex-1 flex-col gap-1 px-3">
           {NAV.map((item) => {

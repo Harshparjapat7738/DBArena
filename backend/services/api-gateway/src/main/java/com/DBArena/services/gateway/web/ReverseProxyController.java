@@ -1,7 +1,7 @@
-package com.dbforge.services.gateway.web;
+package com.DBArena.services.gateway.web;
 
-import com.dbforge.services.gateway.config.GatewayProperties;
-import com.dbforge.services.gateway.config.GatewayRouteResolver;
+import com.DBArena.services.gateway.config.GatewayProperties;
+import com.DBArena.services.gateway.config.GatewayRouteResolver;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpHeaders;

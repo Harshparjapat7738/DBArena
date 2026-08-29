@@ -12,8 +12,8 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@dbforge/api-client": "workspace:*",
-    "@dbforge/ui": "workspace:*",
+    "@DBArena/api-client": "workspace:*",
+    "@DBArena/ui": "workspace:*",
     "@hookform/resolvers": "5.9.1",
     "@tanstack/react-query": "5.102.8",
     "@tanstack/react-virtual": "3.14.10",
@@ -26,7 +26,7 @@
     "zustand": "5.0.15"
   },
   "devDependencies": {
-    "@dbforge/config": "workspace:*",
+    "@DBArena/config": "workspace:*",
     "@eslint/js": "10.0.1",
     "@next/eslint-plugin-next": "15.5.24",
     "@tailwindcss/postcss": "4.3.3",

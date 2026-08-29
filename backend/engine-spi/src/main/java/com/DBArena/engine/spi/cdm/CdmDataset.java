@@ -1,12 +1,12 @@
-package com.dbforge.engine.spi.cdm;
+package com.DBArena.engine.spi.cdm;
 
 import java.util.List;
 import java.util.Optional;
 
 /**
  * The Canonical Dataset Model root: a dataset authored once, engine-neutral,
- * materialized into every {@link com.dbforge.engine.spi.EngineType} by an
- * adapter's {@code materialize} (see {@link com.dbforge.engine.spi.DatabaseEngineAdapter}).
+ * materialized into every {@link com.DBArena.engine.spi.EngineType} by an
+ * adapter's {@code materialize} (see {@link com.DBArena.engine.spi.DatabaseEngineAdapter}).
  * There is deliberately no per-dataset "which engines this targets" field -
  * root CLAUDE.md's premise is that every dataset is materialized into all
  * three; which native type each {@link CdmType} becomes per engine is

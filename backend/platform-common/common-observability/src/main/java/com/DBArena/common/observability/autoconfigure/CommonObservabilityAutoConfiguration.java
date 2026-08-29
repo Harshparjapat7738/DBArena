@@ -1,7 +1,7 @@
-package com.dbforge.common.observability.autoconfigure;
+package com.DBArena.common.observability.autoconfigure;
 
-import com.dbforge.common.observability.metrics.CommonTagsMeterRegistryCustomizer;
-import com.dbforge.common.observability.web.CorrelationIdFilter;
+import com.DBArena.common.observability.metrics.CommonTagsMeterRegistryCustomizer;
+import com.DBArena.common.observability.web.CorrelationIdFilter;
 import jakarta.servlet.Filter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryCustomizer;

@@ -1,6 +1,6 @@
-package com.dbforge.services.ai.provider;
+package com.DBArena.services.ai.provider;
 
-import com.dbforge.services.ai.config.AiProviderProperties;
+import com.DBArena.services.ai.config.AiProviderProperties;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -46,7 +46,7 @@ public class GeminiCompletionClient implements AiCompletionClient {
     @Override
     public AiCompletionResult complete(AiCompletionRequest request) {
         if (!configured()) {
-            throw new AiProviderException(name(), "no API key configured (dbforge.ai.gemini.api-key)");
+            throw new AiProviderException(name(), "no API key configured (DBArena.ai.gemini.api-key)");
         }
         ObjectNode body = objectMapper.createObjectNode();
         body.putObject("systemInstruction").putArray("parts").addObject().put("text", request.systemPrompt());

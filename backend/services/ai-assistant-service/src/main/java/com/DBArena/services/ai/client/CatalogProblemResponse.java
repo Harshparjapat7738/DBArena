@@ -1,4 +1,4 @@
-package com.dbforge.services.ai.client;
+package com.DBArena.services.ai.client;
 
 import java.util.Set;
 

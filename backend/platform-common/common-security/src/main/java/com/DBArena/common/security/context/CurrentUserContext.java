@@ -1,12 +1,12 @@
-package com.dbforge.common.security.context;
+package com.DBArena.common.security.context;
 
-import com.dbforge.common.security.AuthenticatedUser;
+import com.DBArena.common.security.AuthenticatedUser;
 
 import java.util.Optional;
 
 /**
  * Request-scoped holder for the resolved {@link AuthenticatedUser}.
- * {@link com.dbforge.common.security.web.JwtAuthenticationFilter} sets
+ * {@link com.DBArena.common.security.web.JwtAuthenticationFilter} sets
  * this at the start of a request and clears it in a {@code finally} block
  * so it can never leak across virtual threads pooled by the servlet
  * container (root CLAUDE.md requires virtual threads enabled - see

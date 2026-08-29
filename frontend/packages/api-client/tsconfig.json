@@ -1,5 +1,5 @@
 {
-  "extends": "@dbforge/config/tsconfig.base.json",
+  "extends": "@DBArena/config/tsconfig.base.json",
   "compilerOptions": {
     "types": ["vitest/globals"]
   },

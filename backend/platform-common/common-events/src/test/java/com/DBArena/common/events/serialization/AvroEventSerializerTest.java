@@ -1,6 +1,6 @@
-package com.dbforge.common.events.serialization;
+package com.DBArena.common.events.serialization;
 
-import com.dbforge.common.events.avro.OutboxDispatchedEvent;
+import com.DBArena.common.events.avro.OutboxDispatchedEvent;
 import org.junit.jupiter.api.Test;
 
 import java.nio.ByteBuffer;

@@ -1,7 +1,7 @@
-package com.dbforge.services.identity.config;
+package com.DBArena.services.identity.config;
 
-import com.dbforge.common.core.id.IdGenerator;
-import com.dbforge.common.core.id.UlidIdGenerator;
+import com.DBArena.common.core.id.IdGenerator;
+import com.DBArena.common.core.id.UlidIdGenerator;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

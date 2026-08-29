@@ -1,10 +1,10 @@
-import type { Difficulty, EngineKind, ProblemListQuery } from "@dbforge/api-client";
+import type { Difficulty, EngineKind, ProblemListQuery } from "@DBArena/api-client";
 import { CatalogFilters } from "@/features/catalog/CatalogFilters";
 import { ProblemListClient } from "@/features/catalog/ProblemListClient";
 import { createServerCatalogApi } from "@/lib/api/clients";
 
 export const metadata = {
-  title: "Catalog · DBForge",
+  title: "Catalog · DBArena",
 };
 
 /**

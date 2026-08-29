@@ -1,9 +1,9 @@
-package com.dbforge.services.catalog.repository;
+package com.DBArena.services.catalog.repository;
 
-import com.dbforge.common.core.id.TypedId;
-import com.dbforge.services.catalog.domain.Difficulty;
-import com.dbforge.engine.spi.EngineType;
-import com.dbforge.services.catalog.domain.Problem;
+import com.DBArena.common.core.id.TypedId;
+import com.DBArena.services.catalog.domain.Difficulty;
+import com.DBArena.engine.spi.EngineType;
+import com.DBArena.services.catalog.domain.Problem;
 import org.bson.Document;
 import org.junit.jupiter.api.Test;
 

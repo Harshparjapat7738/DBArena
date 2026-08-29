@@ -1,20 +1,20 @@
-package com.dbforge.services.ai.service;
+package com.DBArena.services.ai.service;
 
-import com.dbforge.engine.spi.cdm.CdmDataset;
-import com.dbforge.services.ai.client.CatalogProblemResponse;
-import com.dbforge.services.ai.client.CatalogServiceClient;
-import com.dbforge.services.ai.config.AiProviderProperties;
-import com.dbforge.services.ai.context.AiContextBuilder;
-import com.dbforge.services.ai.context.HintContext;
-import com.dbforge.services.ai.dataset.DatasetContextLoader;
-import com.dbforge.services.ai.domain.HintCommand;
-import com.dbforge.services.ai.domain.HintResult;
-import com.dbforge.services.ai.domain.ProblemNotFoundException;
-import com.dbforge.services.ai.guard.OutputGuard;
-import com.dbforge.services.ai.prompt.HintPromptBuilder;
-import com.dbforge.services.ai.provider.AiCompletionRequest;
-import com.dbforge.services.ai.provider.AiCompletionResult;
-import com.dbforge.services.ai.provider.FallbackAiCompletionGateway;
+import com.DBArena.engine.spi.cdm.CdmDataset;
+import com.DBArena.services.ai.client.CatalogProblemResponse;
+import com.DBArena.services.ai.client.CatalogServiceClient;
+import com.DBArena.services.ai.config.AiProviderProperties;
+import com.DBArena.services.ai.context.AiContextBuilder;
+import com.DBArena.services.ai.context.HintContext;
+import com.DBArena.services.ai.dataset.DatasetContextLoader;
+import com.DBArena.services.ai.domain.HintCommand;
+import com.DBArena.services.ai.domain.HintResult;
+import com.DBArena.services.ai.domain.ProblemNotFoundException;
+import com.DBArena.services.ai.guard.OutputGuard;
+import com.DBArena.services.ai.prompt.HintPromptBuilder;
+import com.DBArena.services.ai.provider.AiCompletionRequest;
+import com.DBArena.services.ai.provider.AiCompletionResult;
+import com.DBArena.services.ai.provider.FallbackAiCompletionGateway;
 import feign.FeignException;
 import org.springframework.stereotype.Service;
 

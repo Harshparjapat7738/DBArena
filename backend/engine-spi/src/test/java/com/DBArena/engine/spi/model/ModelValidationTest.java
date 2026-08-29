@@ -1,7 +1,7 @@
-package com.dbforge.engine.spi.model;
+package com.DBArena.engine.spi.model;
 
-import com.dbforge.common.core.value.CdmValue;
-import com.dbforge.engine.spi.EngineType;
+import com.DBArena.common.core.value.CdmValue;
+import com.DBArena.engine.spi.EngineType;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
@@ -22,7 +22,7 @@ class ModelValidationTest {
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
-    // DatasetDescriptor was replaced by com.dbforge.engine.spi.cdm.CdmDataset
+    // DatasetDescriptor was replaced by com.DBArena.engine.spi.cdm.CdmDataset
     // in M02 - see that package's CdmModelTest for its coverage.
 
     @Test

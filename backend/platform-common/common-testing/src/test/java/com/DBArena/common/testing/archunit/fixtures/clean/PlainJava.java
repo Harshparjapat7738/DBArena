@@ -1,4 +1,4 @@
-package com.dbforge.common.testing.archunit.fixtures.clean;
+package com.DBArena.common.testing.archunit.fixtures.clean;
 
 /** Fixture for {@code ArchitectureRulesTest}: a framework-free class the rule should let through. */
 public class PlainJava {

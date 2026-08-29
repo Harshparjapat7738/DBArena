@@ -1,21 +1,21 @@
-package com.dbforge.engine.adapters.postgres;
+package com.DBArena.engine.adapters.postgres;
 
-import com.dbforge.common.core.id.IdGenerator;
-import com.dbforge.common.core.id.UlidIdGenerator;
-import com.dbforge.common.core.value.CdmValue;
-import com.dbforge.engine.spi.DatabaseEngineAdapter;
-import com.dbforge.engine.spi.EngineType;
-import com.dbforge.engine.spi.cdm.CdmDataset;
-import com.dbforge.engine.spi.cdm.CdmType;
-import com.dbforge.engine.spi.model.ColumnMeta;
-import com.dbforge.engine.spi.model.ExecutionError;
-import com.dbforge.engine.spi.model.ExecutionResult;
-import com.dbforge.engine.spi.model.ExplainPlan;
-import com.dbforge.engine.spi.model.MaterializationResult;
-import com.dbforge.engine.spi.model.ResultRow;
-import com.dbforge.engine.spi.model.SchemaSnapshot;
-import com.dbforge.engine.spi.model.SessionHandle;
-import com.dbforge.engine.spi.model.StatementRequest;
+import com.DBArena.common.core.id.IdGenerator;
+import com.DBArena.common.core.id.UlidIdGenerator;
+import com.DBArena.common.core.value.CdmValue;
+import com.DBArena.engine.spi.DatabaseEngineAdapter;
+import com.DBArena.engine.spi.EngineType;
+import com.DBArena.engine.spi.cdm.CdmDataset;
+import com.DBArena.engine.spi.cdm.CdmType;
+import com.DBArena.engine.spi.model.ColumnMeta;
+import com.DBArena.engine.spi.model.ExecutionError;
+import com.DBArena.engine.spi.model.ExecutionResult;
+import com.DBArena.engine.spi.model.ExplainPlan;
+import com.DBArena.engine.spi.model.MaterializationResult;
+import com.DBArena.engine.spi.model.ResultRow;
+import com.DBArena.engine.spi.model.SchemaSnapshot;
+import com.DBArena.engine.spi.model.SessionHandle;
+import com.DBArena.engine.spi.model.StatementRequest;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -47,7 +47,7 @@ import java.util.Optional;
  */
 public final class PostgresEngineAdapter implements DatabaseEngineAdapter {
 
-    private static final String DATABASE_NAME_PREFIX = "dbforge_";
+    private static final String DATABASE_NAME_PREFIX = "DBArena_";
 
     private final PostgresConnectionFactory connectionFactory;
     private final PostgresMaterializer materializer;

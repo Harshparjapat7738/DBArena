@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <include resource="dbforge/logback-json-base.xml"/>
+    <include resource="DBArena/logback-json-base.xml"/>
     <root level="INFO">
         <appender-ref ref="JSON_CONSOLE"/>
     </root>

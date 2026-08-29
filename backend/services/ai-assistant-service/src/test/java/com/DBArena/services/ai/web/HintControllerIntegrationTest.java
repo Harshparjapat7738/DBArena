@@ -1,4 +1,4 @@
-package com.dbforge.services.ai.web;
+package com.DBArena.services.ai.web;
 
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -38,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * {@link HttpServer}s - same pattern api-gateway's ReverseProxyIntegrationTest
  * (M14) and catalog-service's ProblemControllerIntegrationTest (M13) already
  * established, extended here to a third external dependency shape (an LLM
- * HTTP API rather than another DBForge service). No Testcontainers - this
+ * HTTP API rather than another DBArena service). No Testcontainers - this
  * service has no database of its own.
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
@@ -89,14 +89,14 @@ class HintControllerIntegrationTest {
 
     @DynamicPropertySource
     static void configure(DynamicPropertyRegistry registry) {
-        registry.add("dbforge.security.jwt.secret", () -> SECRET);
-        registry.add("dbforge.ai.datasets-root", () -> datasetsRoot.toString());
-        registry.add("dbforge.ai.catalog-service-uri", () -> "http://localhost:" + ensureCatalogServerRunning());
-        registry.add("dbforge.ai.groq.api-key", () -> "test-groq-key");
-        registry.add("dbforge.ai.groq.base-url", () -> "http://localhost:" + ensureGroqServerRunning() + "/chat");
-        registry.add("dbforge.ai.gemini.api-key", () -> "test-gemini-key");
-        registry.add("dbforge.ai.gemini.model", () -> GEMINI_MODEL);
-        registry.add("dbforge.ai.gemini.base-url", () -> "http://localhost:" + ensureGeminiServerRunning());
+        registry.add("dbarena.security.jwt.secret", () -> SECRET);
+        registry.add("dbarena.ai.datasets-root", () -> datasetsRoot.toString());
+        registry.add("dbarena.ai.catalog-service-uri", () -> "http://localhost:" + ensureCatalogServerRunning());
+        registry.add("dbarena.ai.groq.api-key", () -> "test-groq-key");
+        registry.add("dbarena.ai.groq.base-url", () -> "http://localhost:" + ensureGroqServerRunning() + "/chat");
+        registry.add("dbarena.ai.gemini.api-key", () -> "test-gemini-key");
+        registry.add("dbarena.ai.gemini.model", () -> GEMINI_MODEL);
+        registry.add("dbarena.ai.gemini.base-url", () -> "http://localhost:" + ensureGeminiServerRunning());
     }
 
     private static synchronized int ensureCatalogServerRunning() {

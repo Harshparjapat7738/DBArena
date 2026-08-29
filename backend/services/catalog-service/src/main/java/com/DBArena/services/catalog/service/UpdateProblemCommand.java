@@ -1,7 +1,7 @@
-package com.dbforge.services.catalog.service;
+package com.DBArena.services.catalog.service;
 
-import com.dbforge.services.catalog.domain.Difficulty;
-import com.dbforge.engine.spi.EngineType;
+import com.DBArena.services.catalog.domain.Difficulty;
+import com.DBArena.engine.spi.EngineType;
 
 import java.util.Set;
 

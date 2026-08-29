@@ -1,11 +1,11 @@
-package com.dbforge.services.ai.context;
+package com.DBArena.services.ai.context;
 
-import com.dbforge.common.core.value.CdmValue;
-import com.dbforge.engine.spi.cdm.CdmDataset;
-import com.dbforge.engine.spi.cdm.CdmEntity;
-import com.dbforge.engine.spi.cdm.CdmRow;
-import com.dbforge.services.ai.client.CatalogProblemResponse;
-import com.dbforge.services.ai.domain.HintCommand;
+import com.DBArena.common.core.value.CdmValue;
+import com.DBArena.engine.spi.cdm.CdmDataset;
+import com.DBArena.engine.spi.cdm.CdmEntity;
+import com.DBArena.engine.spi.cdm.CdmRow;
+import com.DBArena.services.ai.client.CatalogProblemResponse;
+import com.DBArena.services.ai.domain.HintCommand;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
