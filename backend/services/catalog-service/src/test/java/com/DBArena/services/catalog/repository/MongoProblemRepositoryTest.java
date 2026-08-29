@@ -106,17 +106,17 @@ class MongoProblemRepositoryTest {
             repository.insert(problem("p" + i, Difficulty.EASY, Set.of(), 1000L + i));
         }
 
-        CursorPage<Problem> firstPage = repository.findPage(ProblemFilter.publishedOnly(), PageRequest.first(2));
+        CursorPage<Problem> firstPage = repository.findPage(ProblemFilter.onlyPublished(), PageRequest.first(2));
         assertThat(firstPage.items()).extracting(Problem::slug).containsExactly("p0", "p1");
         assertThat(firstPage.hasMore()).isTrue();
 
         CursorPage<Problem> secondPage = repository.findPage(
-                ProblemFilter.publishedOnly(), PageRequest.after(firstPage.nextCursor().orElseThrow(), 2));
+                ProblemFilter.onlyPublished(), PageRequest.after(firstPage.nextCursor().orElseThrow(), 2));
         assertThat(secondPage.items()).extracting(Problem::slug).containsExactly("p2", "p3");
         assertThat(secondPage.hasMore()).isTrue();
 
         CursorPage<Problem> thirdPage = repository.findPage(
-                ProblemFilter.publishedOnly(), PageRequest.after(secondPage.nextCursor().orElseThrow(), 2));
+                ProblemFilter.onlyPublished(), PageRequest.after(secondPage.nextCursor().orElseThrow(), 2));
         assertThat(thirdPage.items()).extracting(Problem::slug).containsExactly("p4");
         assertThat(thirdPage.hasMore()).isFalse();
     }

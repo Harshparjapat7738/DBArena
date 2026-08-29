@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.DBArena</groupId>
+    <artifactId>services</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>user-service</artifactId>
+  <packaging>jar</packaging>
+
+  <name>DBArena :: user-service</name>
+  <description>
+    B02/B15 - per-user platform state that is NOT auth (identity-service owns
+    email/password/roles) and NOT gamification (gamification-service owns
+    XP/streak/badges/leaderboard). Starts with bookmarks. References the
+    acting user only via common-security's AuthenticatedUser id (TypedId),
+    never by copying identity-service's own record - see hard rule "no
+    duplicated user identity data" in this milestone's brief. Data-model
+    foundation only in B02: no controller yet, wired when B15 itself starts.
+  </description>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.DBArena</groupId>
+        <artifactId>platform-bom</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.DBArena</groupId>
+      <artifactId>common-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.DBArena</groupId>
+      <artifactId>common-security</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.DBArena</groupId>
+      <artifactId>common-web</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.DBArena</groupId>
+      <artifactId>common-observability</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-validation</artifactId>
+    </dependency>
+
+    <!-- Plain Mongo sync driver - same "no ORM" convention as catalog-service/identity-service. -->
+    <dependency>
+      <groupId>org.mongodb</groupId>
+      <artifactId>mongodb-driver-sync</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>io.mongock</groupId>
+      <artifactId>mongock-springboot</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.mongock</groupId>
+      <artifactId>mongodb-sync-v4-driver</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springdoc</groupId>
+      <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.DBArena</groupId>
+      <artifactId>common-testing</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>repackage</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

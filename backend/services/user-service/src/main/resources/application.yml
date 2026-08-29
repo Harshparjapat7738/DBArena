@@ -1,0 +1,34 @@
+spring:
+  application:
+    name: user-service
+  threads:
+    virtual:
+      enabled: true
+
+server:
+  port: ${PORT:8085}
+
+dbarena:
+  security:
+    jwt:
+      secret: ${DBArena_JWT_SECRET:}
+  user:
+    mongo-uri: ${DBArena_USER_MONGO_URI:mongodb://localhost:27017}
+    mongo-database: ${DBArena_USER_MONGO_DATABASE:DBArena_user}
+
+mongock:
+  migration-scan-package:
+    - com.DBArena.services.user.mongock
+  mongo-db:
+    uri: ${DBArena_USER_MONGO_URI:mongodb://localhost:27017}
+    database: ${DBArena_USER_MONGO_DATABASE:DBArena_user}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html

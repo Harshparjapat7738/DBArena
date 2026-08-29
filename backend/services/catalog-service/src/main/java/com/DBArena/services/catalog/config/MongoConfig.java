@@ -24,6 +24,9 @@ import org.springframework.context.annotation.Configuration;
 public class MongoConfig {
 
     public static final String PROBLEMS_COLLECTION = "problems";
+    public static final String TOPICS_COLLECTION = "topics";
+    public static final String DATASET_METADATA_COLLECTION = "dataset_metadata";
+    public static final String LEARNING_PATHS_COLLECTION = "learning_paths";
 
     @Bean(destroyMethod = "close")
     public MongoClient mongoClient(CatalogProperties properties) {
@@ -38,5 +41,20 @@ public class MongoConfig {
     @Bean
     public MongoCollection<Document> problemsCollection(MongoDatabase mongoDatabase) {
         return mongoDatabase.getCollection(PROBLEMS_COLLECTION);
+    }
+
+    @Bean
+    public MongoCollection<Document> topicsCollection(MongoDatabase mongoDatabase) {
+        return mongoDatabase.getCollection(TOPICS_COLLECTION);
+    }
+
+    @Bean
+    public MongoCollection<Document> datasetMetadataCollection(MongoDatabase mongoDatabase) {
+        return mongoDatabase.getCollection(DATASET_METADATA_COLLECTION);
+    }
+
+    @Bean
+    public MongoCollection<Document> learningPathsCollection(MongoDatabase mongoDatabase) {
+        return mongoDatabase.getCollection(LEARNING_PATHS_COLLECTION);
     }
 }

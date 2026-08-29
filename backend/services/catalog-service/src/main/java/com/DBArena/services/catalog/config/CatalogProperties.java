@@ -7,6 +7,8 @@ public class CatalogProperties {
 
     private String mongoUri = "mongodb://localhost:27017";
     private String mongoDatabase = "DBArena_catalog";
+    private String userServiceUri = "http://localhost:8085";
+    private String submissionServiceUri = "http://localhost:8087";
 
     public String getMongoUri() {
         return mongoUri;
@@ -22,5 +24,21 @@ public class CatalogProperties {
 
     public void setMongoDatabase(String mongoDatabase) {
         this.mongoDatabase = mongoDatabase;
+    }
+
+    public String getUserServiceUri() {
+        return userServiceUri;
+    }
+
+    public void setUserServiceUri(String userServiceUri) {
+        this.userServiceUri = userServiceUri;
+    }
+
+    public String getSubmissionServiceUri() {
+        return submissionServiceUri;
+    }
+
+    public void setSubmissionServiceUri(String submissionServiceUri) {
+        this.submissionServiceUri = submissionServiceUri;
     }
 }

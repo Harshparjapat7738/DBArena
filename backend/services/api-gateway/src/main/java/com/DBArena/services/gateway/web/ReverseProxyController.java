@@ -8,6 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClient;
@@ -39,7 +40,7 @@ public class ReverseProxyController {
     }
 
     @RequestMapping(value = "/api/v1/**",
-            method = {HttpMethod.GET, HttpMethod.POST, HttpMethod.PUT, HttpMethod.PATCH, HttpMethod.DELETE})
+            method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE})
     public void proxy(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String path = request.getRequestURI();
         GatewayProperties.RouteRule route = routeResolver.resolve(path)

@@ -1,17 +1,34 @@
 "use client";
 
-import { Button } from "@DBArena/ui";
-import { Database, LayoutGrid, LogOut, Settings as SettingsIcon } from "lucide-react";
+import { Avatar, Button } from "@DBArena/ui";
+import { Database, LogOut } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { authApi } from "@/lib/api/clients";
 import { useAuthStore } from "@/lib/auth/authStore";
+import { HeaderStatus } from "./HeaderStatus";
+import { PRIMARY_NAV, SECONDARY_NAV, type NavItem } from "./nav";
 
-const NAV = [
-  { href: "/catalog", label: "Catalog", icon: LayoutGrid },
-  { href: "/settings", label: "Settings", icon: SettingsIcon },
-];
+function isActive(pathname: string, item: NavItem): boolean {
+  return item.matchPrefix ? pathname.startsWith(item.href) : pathname === item.href;
+}
+
+function NavLink({ item, pathname }: { item: NavItem; pathname: string }) {
+  const active = isActive(pathname, item);
+  return (
+    <Link
+      href={item.href}
+      aria-current={active ? "page" : undefined}
+      className={`flex items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+        active ? "bg-accent text-accent-fg" : "text-fg-muted hover:bg-bg hover:text-fg"
+      }`}
+    >
+      <item.icon className="h-4 w-4 shrink-0" aria-hidden />
+      <span className="truncate">{item.label}</span>
+    </Link>
+  );
+}
 
 /**
  * The authed app shell: sidebar nav + top bar. `AuthProvider` (root
@@ -20,6 +37,12 @@ const NAV = [
  * and there's still no session, and never redirects while `status` is
  * still `"loading"` (that would bounce a genuinely logged-in user on
  * every page load, before their session has had a chance to resolve).
+ *
+ * `h-screen` (not `min-h-screen`) + `overflow-y-auto` on `<main>` only:
+ * every normal page scrolls inside `<main>`, but the Playground page can
+ * instead fill `<main>` edge-to-edge with its own internal panes (each
+ * scrolling independently) without the whole document also trying to
+ * scroll - the standard app-shell layout, not just a dashboard affectation.
  */
 export function AppShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -52,38 +75,41 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="flex min-h-screen bg-bg text-fg">
+    <div className="flex h-screen bg-bg text-fg">
       <aside className="flex w-60 shrink-0 flex-col border-r border-border bg-bg-elevated">
-        <div className="flex items-center gap-2 px-5 py-5 font-mono text-lg font-semibold">
+        <Link href="/dashboard" className="flex items-center gap-2 px-5 py-5 font-mono text-lg font-semibold">
           <Database className="h-5 w-5 text-accent" aria-hidden />
           DBArena
-        </div>
-        <nav className="flex flex-1 flex-col gap-1 px-3">
-          {NAV.map((item) => {
-            const active = pathname.startsWith(item.href);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`flex items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-                  active ? "bg-accent text-accent-fg" : "text-fg-muted hover:bg-bg hover:text-fg"
-                }`}
-              >
-                <item.icon className="h-4 w-4" aria-hidden />
-                {item.label}
-              </Link>
-            );
-          })}
+        </Link>
+
+        <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-3">
+          {PRIMARY_NAV.map((item) => (
+            <NavLink key={item.href} item={item} pathname={pathname} />
+          ))}
+          <div className="my-2 border-t border-border" />
+          {SECONDARY_NAV.map((item) => (
+            <NavLink key={item.href} item={item} pathname={pathname} />
+          ))}
         </nav>
+
         <div className="border-t border-border px-3 py-3">
-          <div className="mb-2 truncate px-2 text-sm font-medium">{user?.displayName}</div>
+          <Link href="/profile" className="mb-2 flex items-center gap-2 rounded-md px-2 py-1.5 hover:bg-bg">
+            <Avatar name={user?.displayName ?? "?"} size="sm" />
+            <span className="truncate text-sm font-medium">{user?.displayName}</span>
+          </Link>
           <Button variant="ghost" size="sm" className="w-full justify-start" onClick={handleLogout}>
             <LogOut className="h-4 w-4" aria-hidden />
             Log out
           </Button>
         </div>
       </aside>
-      <main className="flex-1 overflow-y-auto">{children}</main>
+
+      <div className="flex min-w-0 flex-1 flex-col">
+        <header className="flex h-14 shrink-0 items-center justify-end border-b border-border px-6">
+          <HeaderStatus />
+        </header>
+        <main className="flex-1 overflow-y-auto">{children}</main>
+      </div>
     </div>
   );
 }

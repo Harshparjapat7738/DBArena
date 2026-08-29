@@ -23,12 +23,12 @@ export default function GlobalError({ error, reset }: { error: Error & { digest?
       <AlertTriangle className="h-10 w-10 text-danger" aria-hidden />
       <h1 className="text-xl font-semibold text-fg">Something went wrong</h1>
       <p className="max-w-sm text-sm text-fg-muted">
-        An unexpected error occurred. You can try again, or head back to the catalog.
+        An unexpected error occurred. You can try again, or head back to your dashboard.
       </p>
       <div className="mt-2 flex gap-3">
         <Button onClick={reset}>Try again</Button>
-        <Link href="/catalog" className={buttonVariants({ variant: "secondary" })}>
-          Back to catalog
+        <Link href="/dashboard" className={buttonVariants({ variant: "secondary" })}>
+          Back to dashboard
         </Link>
       </div>
     </main>

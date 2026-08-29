@@ -32,7 +32,13 @@ final class PublicPaths {
             new PublicRoute(null, "/swagger-ui.html"),
             new PublicRoute("GET", "/api/v1/catalog/problems"),
             new PublicRoute("GET", "/api/v1/catalog/problems/**"),
-            new PublicRoute("GET", "/api/v1/catalog/tags"));
+            new PublicRoute("GET", "/api/v1/catalog/tags"),
+            // B03 - same GET-public pattern; catalog-service's own ProblemsController
+            // still 401s a bookmarked/status-filtered request made without a token.
+            new PublicRoute("GET", "/api/v1/problems"),
+            new PublicRoute("GET", "/api/v1/problems/**"),
+            new PublicRoute("GET", "/api/v1/datasets"),
+            new PublicRoute("GET", "/api/v1/datasets/**"));
 
     private static final AntPathMatcher MATCHER = new AntPathMatcher();
 

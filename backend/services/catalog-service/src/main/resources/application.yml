@@ -15,6 +15,9 @@ dbarena:
   catalog:
     mongo-uri: ${DBArena_CATALOG_MONGO_URI:mongodb://localhost:27017}
     mongo-database: ${DBArena_CATALOG_MONGO_DATABASE:DBArena_catalog}
+    # B03 - Feign targets, called directly, not through api-gateway (hard rule #2).
+    user-service-uri: ${DBArena_USER_SERVICE_URI:http://localhost:8085}
+    submission-service-uri: ${DBArena_SUBMISSION_SERVICE_URI:http://localhost:8087}
 
 # Mongock (Mongo migrations - see ChangeLog001CreateProblemsIndexes's Javadoc
 # for why this block carries above-average reconstructed-API risk).

@@ -1,0 +1,34 @@
+spring:
+  application:
+    name: submission-service
+  threads:
+    virtual:
+      enabled: true
+
+server:
+  port: ${PORT:8087}
+
+dbarena:
+  security:
+    jwt:
+      secret: ${DBArena_JWT_SECRET:}
+  submission:
+    mongo-uri: ${DBArena_SUBMISSION_MONGO_URI:mongodb://localhost:27017}
+    mongo-database: ${DBArena_SUBMISSION_MONGO_DATABASE:DBArena_submission}
+
+mongock:
+  migration-scan-package:
+    - com.DBArena.services.submission.mongock
+  mongo-db:
+    uri: ${DBArena_SUBMISSION_MONGO_URI:mongodb://localhost:27017}
+    database: ${DBArena_SUBMISSION_MONGO_DATABASE:DBArena_submission}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html

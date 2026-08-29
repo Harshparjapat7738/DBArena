@@ -1126,3 +1126,112 @@ dependency chain (`platform-bom`, `common-core`, `common-security`, `common-web`
 `catalog-service` can now also be started standalone via `mvn spring-boot:run` without
 hitting the same driver-triad crash, which was untested and unverified in every session
 that shipped it.
+
+### [2026-08-29] Session — fixed local `/register` returning ECONNREFUSED (run-all.ps1 bugs + a real ProblemFilter compile bug)
+
+**Type:** not a numbered milestone - a bug-fix session triggered by the human's own local
+dev environment (`pnpm dev` on the frontend) throwing `ECONNREFUSED`/500 on
+`/register` and `/auth/refresh`. Traced to the root cause rather than patched around it;
+three independent, real bugs were found and fixed, plus one environment-level (not
+code-level) blocker diagnosed and handed back to the human.
+
+**Root cause chain (each layer was hiding the next until fixed):**
+1. **`run-all.ps1` was silently killing every service on launch.** It spawned each
+   service via `Start-Process powershell -ArgumentList ..., "-Command", $cmd`, where
+   `$cmd` is a multi-line script containing embedded double quotes (the `.env` loader's
+   `Where-Object { $_ -match "=" ... }`). `Start-Process` has to flatten `-ArgumentList`
+   back into one command-line string, and its requoting mangled those embedded quotes -
+   the spawned `powershell` hit a parser error before `mvn` ever ran, so all four
+   services died in under a second with nothing but a `#< CLIXML` parse-error dump in
+   their `.err.log` and total silence in their `.log`. Every symptom the human actually
+   saw (`ECONNREFUSED` in the frontend) was three layers downstream of this. **Fixed:**
+   pass the script via `-EncodedCommand` (base64 UTF-16LE) instead of `-Command $cmd`,
+   which sidesteps command-line requoting entirely.
+2. **`mvn -pl <module> -am spring-boot:run` from the reactor root does not scope the
+   goal to that module.** `spring-boot:run` is a bare goal, not bound to a lifecycle
+   phase, so Maven runs it once per project in the resolved reactor, in build order -
+   and the root aggregator pom (artifactId `backend`, packaging `pom`, first in build
+   order) has no main class, so every service failed instantly with "Unable to find a
+   suitable main class" on project `backend`, never even reaching its own module.
+   Reproduced directly, standalone, to confirm before touching the script. **Fixed:**
+   `cd` into each service's own directory and run a plain `mvn spring-boot:run` there
+   (after one `mvn install` of the four services' dependency chain into the local repo,
+   so single-project builds resolve `DBArena_*` artifacts from `.m2` instead of a live
+   multi-module reactor) - matches the one invocation already proven to work in a past
+   session's manual smoke test.
+3. **`ProblemFilter` (catalog-service) had a real compile error**, invisible until this
+   session because `mvn compile` on catalog-service had apparently never actually been
+   run since it was written: a record component `publishedOnly` (boolean, implicit
+   accessor `publishedOnly()`) and a same-named `public static ProblemFilter
+   publishedOnly()` factory method coexisting in one record - `javac` rejects this
+   outright ("invalid accessor method in record ... return type of accessor method
+   publishedOnly() must match the type of record component publishedOnly"). **Fixed:**
+   renamed the static factory to `onlyPublished()`; updated its three test call sites
+   (`MongoProblemRepositoryTest`). Nothing in `main` called the static factory, so this
+   was a zero-blast-radius rename.
+   - api-gateway had an equivalent already-fixed compile bug in this same session
+     (`ReverseProxyController`'s `@RequestMapping(method = {HttpMethod.GET, ...})` -
+     `@RequestMapping.method` takes `RequestMethod[]`, not `HttpMethod[]`) - fixed
+     earlier in this same session, before context was summarized; noted here only so a
+     future reader of this entry isn't left wondering why it isn't in the Built list.
+4. **Once 1-3 were fixed, identity-service was reachable and correctly validated/
+   processed requests** (confirmed via a direct `POST /api/v1/auth/register` through
+   api-gateway: a malformed test payload got a real `422`, not a connection failure) -
+   but a *fully valid* register payload hung and timed out. Root cause:
+   `DBArena_IDENTITY_MONGO_URI` points at MongoDB Atlas, and Atlas is unreachable from
+   this machine - confirmed via `openssl s_client` direct to the shard host (bypassing
+   Java/JDK entirely): the TLS handshake gets a `tlsv1 alert internal error` from the
+   server immediately after ClientHello, with **no certificate ever presented**. Raw TCP
+   connectivity to the same host:port succeeds fine (both over real IPv4 and over the
+   NAT64-synthesized route this network uses for Atlas's IPv4-only shard hosts, per
+   `Resolve-DnsName`) - so this is not a routing/DNS/JDK problem, it's Atlas's own
+   connection proxy rejecting the handshake before ever reaching a cert exchange, which
+   is the characteristic signature of the client's public IP not being in the cluster's
+   Network Access / IP Access List. **Not fixed this session** - it requires the human to
+   add this machine's public IP to the Atlas cluster's IP Access List from the Atlas web
+   console (a cloud-account action outside this session's reach); the human explicitly
+   chose "keep Atlas, help me fix network access" over switching to the already-running,
+   already-proven-working local MongoDB for dev. This finding **supersedes** the
+   [2026-08-29] identity-service-store-swap entry's own Carried-forward note ("almost
+   certainly fine, since nothing about the code is Atlas-specific") - it is not fine on
+   this network, and the cause is now narrowed to a specific, actionable Atlas console
+   setting rather than an open question.
+
+**Key decisions:**
+- Diagnosed all the way to root cause rather than stopping at the first fix that made
+  the symptom disappear - `ECONNREFUSED` in the frontend was the human's literal report,
+  but blindly restarting the backend without finding bug #1 would have looked like a fix
+  and then failed identically on the next `run-all.ps1` invocation.
+- Did not silently switch `.env` to local MongoDB even though it would have unblocked
+  register immediately - asked the human first (`AskUserQuestion`), since which Mongo
+  target dev points at is a real environment decision or with real data-location
+  consequences, not a "plausible guess" gap.
+
+**Deviations from docs:** none beyond the standing note (docs/01-04 still don't exist).
+
+**Tests:** No new automated tests - this was a bug-fix/diagnostic session, not new
+business logic. Verified live instead: all four services now `mvn compile`- and
+boot-clean (`Started XxxApplication`, listening on 8081/8083/8084/8090); a real HTTP
+round trip through api-gateway to identity-service confirmed end-to-end (422 on an
+incomplete payload, hang-then-timeout on a valid one, root-caused to Atlas as above, not
+to anything in this reactor's own code).
+
+**Carried forward:**
+- Add this machine's public IP to the Atlas cluster's Network Access / IP Access List
+  (or switch `.env` to local MongoDB) - register cannot fully succeed against Atlas from
+  this network until one of those happens. Local MongoDB is already running and already
+  proven compatible with this exact code (see the identity-service store-swap entry).
+- `run-all.ps1`'s `mvn install` step means the very first `.\run-all.ps1` run after a
+  source change now takes noticeably longer (a real reactor install, not just a compile)
+  - acceptable dev-convenience tradeoff for actually working, not attempted to be
+  optimized further this session.
+- Everything else already carried forward from every prior entry (Testcontainers-npipe
+  gap, JaCoCo/JDK26 mismatch, DECIMAL precision ceiling, etc.) remains open exactly as
+  those entries describe - this session's scope was strictly the `ECONNREFUSED` chain
+  above, not a general audit.
+
+**Unblocks:** nothing new per the milestone dependency graph - this was a bug-fix pass on
+already-shipped M13/M14 code, not a new milestone. It does mean `mvn compile` across the
+whole reactor's runnable services is now a real, passing baseline for the first time -
+worth treating as the new floor for any future session's "was this ever actually
+compiled?" question, alongside B20's own standing note.

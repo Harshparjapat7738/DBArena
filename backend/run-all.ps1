@@ -112,6 +112,33 @@ Get-Content "__ENV_FILE__" | Where-Object { $_ -match "=" -and $_ -notmatch "^\s
 '@
 $loadEnv = $loadEnvTemplate.Replace("__ENV_FILE__", $envFile)
 
+# --- Pre-install every service + its dependency chain into the local repo. ---
+# `mvn -pl <module> -am spring-boot:run` looks like the obvious way to launch
+# one service without a full reactor build, but it isn't: `spring-boot:run`
+# is a bare goal (not bound to a lifecycle phase), and Maven executes a bare
+# goal against EVERY project in the resolved reactor - including the root
+# aggregator pom, which has no mainClass - so it fails instantly with
+# "Unable to find a suitable main class" before ever reaching the actual
+# service. (Every prior version of this script hit this - services died in
+# ~2s with the reactor root's name in the error, never their own; look for
+# that exact message in a service's log if this section is ever reverted.)
+# The fix: `mvn install` the reactor once so every module's jar is in the
+# local repo, then launch each service as a genuine single-project build
+# (`cd` into its own directory, no -pl/-am) - Maven resolves its DBArena_*
+# dependencies from the local repo instead of sibling reactor modules.
+Write-Host "Installing service dependencies into the local Maven repo (first run only takes a while)..."
+$installLog = Join-Path $PSScriptRoot "logs\install.log"
+if (-not (Test-Path (Join-Path $PSScriptRoot "logs"))) { New-Item -ItemType Directory -Path (Join-Path $PSScriptRoot "logs") | Out-Null }
+& mvn install -Dmaven.test.skip=true -Djacoco.skip=true -q `
+    -pl services/identity-service,services/catalog-service,services/api-gateway,services/ai-assistant-service `
+    *> $installLog
+if ($LASTEXITCODE -ne 0) {
+    Write-Error "mvn install failed - see $installLog for the real error. Not launching any service."
+    exit 1
+}
+Write-Host "Install complete."
+Write-Host ""
+
 # --- No visible windows: each service is a hidden background process, output
 # redirected to its own log file. PIDs are recorded so stop-all.ps1 can kill
 # the whole tree later (mvn spring-boot:run forks a child JVM by default -
@@ -128,11 +155,33 @@ foreach ($svc in $services) {
     # it always wins for that process regardless of what .env does or
     # doesn't say about PORT.
     $portOverride = if ($svc.Port) { "`$env:PORT = '$($svc.Port)'; " } else { "" }
-    $cmd = "$loadEnv; ${portOverride}mvn -pl $($svc.Path) -am spring-boot:run"
+    # `mvn -pl <module> -am spring-boot:run` from the reactor root does NOT scope
+    # spring-boot:run to just that module: invoked as a bare goal (not through a
+    # lifecycle phase), Maven runs it once per project in the resolved reactor, in
+    # build order - and the root aggregator pom (artifactId "backend", packaging
+    # "pom", first in build order) has no main class, so it fails there instantly
+    # and identity-service/etc. are never even reached (reproduced directly:
+    # "Failed to execute goal ... spring-boot-maven-plugin:run ... on project
+    # backend: Unable to find a suitable main class"). cd into the module's own
+    # directory instead, matching the one invocation already proven to work
+    # (identity-service started clean this way in a manual run) - Maven then
+    # resolves inter-module dependencies from the already-`mvn install`-ed .m2
+    # cache rather than from a live multi-module reactor.
+    $servicePath = Join-Path $PSScriptRoot $svc.Path
+    $cmd = "$loadEnv; ${portOverride}Set-Location '$servicePath'; mvn spring-boot:run"
     $outLog = Join-Path $logsDir "$($svc.Name).log"
     $errLog = Join-Path $logsDir "$($svc.Name).err.log"
+    # -EncodedCommand (base64 UTF-16LE), not -Command $cmd directly: $cmd is a
+    # multi-line script full of embedded double quotes (the Where-Object/
+    # ForEach-Object env loader above). Start-Process has to flatten
+    # -ArgumentList back into a single command-line string, and its quoting
+    # mangles embedded quotes in exactly this shape - the spawned powershell
+    # hit a parser error before mvn ever ran, so every service died instantly
+    # with no visible symptom besides "ECONNREFUSED" on whatever tried to call
+    # it later. Encoding sidesteps command-line requoting entirely.
+    $encodedCmd = [Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes($cmd))
     $proc = Start-Process powershell `
-        -ArgumentList "-NoLogo", "-NoProfile", "-Command", $cmd `
+        -ArgumentList "-NoLogo", "-NoProfile", "-EncodedCommand", $encodedCmd `
         -WorkingDirectory $PSScriptRoot `
         -WindowStyle Hidden -PassThru `
         -RedirectStandardOutput $outLog -RedirectStandardError $errLog
@@ -150,6 +199,7 @@ Write-Host ""
 Write-Host "Tail a service's log:  Get-Content backend\logs\<service-name>.log -Wait -Tail 50"
 Write-Host "Stop everything:       .\stop-all.ps1"
 Write-Host ""
-Write-Host "The database services keep running as normal Windows services until you stop"
-Write-Host "them yourself (services.msc, or 'Stop-Service $pgServiceName' etc. from an"
-Write-Host "elevated prompt) - stop-all.ps1 does not touch them."
+Write-Host "MySQL keeps running as a normal Windows service until you stop it yourself"
+Write-Host "(services.msc, or 'Stop-Service $mysqlServiceName' from an elevated prompt) -"
+Write-Host "stop-all.ps1 does not touch it. identity-service/catalog-service are on"
+Write-Host "MongoDB Atlas, not a local service, so there's nothing local to stop for them."

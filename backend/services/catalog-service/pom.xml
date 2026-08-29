@@ -91,6 +91,16 @@
       <artifactId>mongodb-sync-v4-driver</artifactId>
     </dependency>
 
+    <!-- B03: hard rule #2 - "bookmarked"/"status" filters on /api/v1/problems need
+         a slug set from user-service/submission-service respectively; OpenFeign,
+         never a module dependency. Version comes from spring-cloud-dependencies,
+         imported by platform-bom - nothing to pin locally (same posture as
+         ai-assistant-service's CatalogServiceClient). -->
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-openfeign</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>org.springdoc</groupId>
       <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>

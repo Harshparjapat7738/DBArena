@@ -5,6 +5,7 @@ import com.DBArena.common.core.pagination.CursorPage;
 import com.DBArena.common.core.pagination.PageRequest;
 import com.DBArena.services.catalog.domain.Problem;
 import com.DBArena.services.catalog.domain.ProblemFilter;
+import com.DBArena.services.catalog.domain.ProblemSort;
 import com.DBArena.services.catalog.domain.TagCount;
 import com.DBArena.services.catalog.repository.ProblemRepository;
 import org.springframework.stereotype.Service;
@@ -34,9 +35,18 @@ public class CatalogService {
     }
 
     public CursorPage<Problem> browsePublishedProblems(ProblemFilter filter, PageRequest pageRequest) {
-        ProblemFilter publishedFilter = new ProblemFilter(
-                filter.tag(), filter.difficulty(), filter.engine(), filter.titleSearch(), true);
-        return problemRepository.findPage(publishedFilter, pageRequest);
+        return problemRepository.findPage(forcePublished(filter), pageRequest);
+    }
+
+    /** B03: {@code /api/v1/problems}, with a caller-chosen sort and the fuller filter (dataset/slug-join clauses). */
+    public CursorPage<Problem> browsePublishedProblems(ProblemFilter filter, PageRequest pageRequest, ProblemSort sort) {
+        return problemRepository.findPage(forcePublished(filter), pageRequest, sort);
+    }
+
+    /** publishedOnly is forced true regardless of what a caller passed in - browsing never sees a draft. */
+    private static ProblemFilter forcePublished(ProblemFilter filter) {
+        return new ProblemFilter(filter.tag(), filter.difficulty(), filter.engine(), filter.titleSearch(),
+                true, filter.datasetSlug(), filter.slugIn(), filter.slugNotIn());
     }
 
     /**
@@ -85,17 +95,13 @@ public class CatalogService {
 
     public Problem updateProblem(String slug, UpdateProblemCommand command) {
         Problem existing = getAnyProblemBySlug(slug);
-        Problem updated = new Problem(
-                existing.id(),
-                existing.slug(),
+        Problem updated = existing.withRevisedContent(
                 command.title(),
                 command.statementMarkdown(),
                 command.difficulty(),
                 command.tags(),
                 command.allowedEngines(),
                 command.datasetSlug(),
-                existing.published(),
-                existing.createdAtEpochMillis(),
                 clock.millis());
         problemRepository.replace(updated);
         return updated;

@@ -29,6 +29,7 @@ public final class ProblemDocumentMapper {
     static final String PUBLISHED = "published";
     static final String CREATED_AT = "createdAt";
     static final String UPDATED_AT = "updatedAt";
+    static final String VERSION = "version";
 
     private ProblemDocumentMapper() {
     }
@@ -46,7 +47,8 @@ public final class ProblemDocumentMapper {
                 .append(PUBLISHED, problem.published())
                 // epoch millis, never a BSON Date - hard rule #9.
                 .append(CREATED_AT, problem.createdAtEpochMillis())
-                .append(UPDATED_AT, problem.updatedAtEpochMillis());
+                .append(UPDATED_AT, problem.updatedAtEpochMillis())
+                .append(VERSION, problem.version());
     }
 
     public static Problem fromDocument(Document document) {
@@ -66,6 +68,9 @@ public final class ProblemDocumentMapper {
                 document.getString(DATASET_SLUG),
                 Boolean.TRUE.equals(document.getBoolean(PUBLISHED)),
                 document.getLong(CREATED_AT),
-                document.getLong(UPDATED_AT));
+                document.getLong(UPDATED_AT),
+                // pre-B02 documents predate this field entirely - treat absence as version 1,
+                // not a mapping error.
+                document.getInteger(VERSION, 1));
     }
 }

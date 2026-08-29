@@ -129,6 +129,7 @@ class CatalogServiceTest {
         assertThat(updated.updatedAtEpochMillis()).isEqualTo(5000L);
         assertThat(updated.title()).isEqualTo("Two Sum (Revised)");
         assertThat(updated.difficulty()).isEqualTo(Difficulty.MEDIUM);
+        assertThat(updated.version()).isEqualTo(2); // sampleProblem() defaults to version 1
     }
 
     @Test
@@ -141,5 +142,26 @@ class CatalogServiceTest {
         ArgumentCaptor<ProblemFilter> captor = ArgumentCaptor.forClass(ProblemFilter.class);
         verify(repository).findPage(captor.capture(), any());
         assertThat(captor.getValue().publishedOnly()).isTrue();
+    }
+
+    @Test
+    void browsePublishedProblemsWithSortForcesPublishedOnlyAndPreservesDatasetAndSlugFilters() {
+        when(repository.findPage(any(), any(), any())).thenReturn(CursorPage.lastPage(java.util.List.of()));
+
+        ProblemFilter incoming = new ProblemFilter(
+                Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), false,
+                Optional.of("sales-dataset"), Optional.of(Set.of("two-sum")), Optional.empty());
+
+        service.browsePublishedProblems(incoming, PageRequest.first(), com.DBArena.services.catalog.domain.ProblemSort.NEWEST_FIRST);
+
+        ArgumentCaptor<ProblemFilter> filterCaptor = ArgumentCaptor.forClass(ProblemFilter.class);
+        ArgumentCaptor<com.DBArena.services.catalog.domain.ProblemSort> sortCaptor =
+                ArgumentCaptor.forClass(com.DBArena.services.catalog.domain.ProblemSort.class);
+        verify(repository).findPage(filterCaptor.capture(), any(), sortCaptor.capture());
+
+        assertThat(filterCaptor.getValue().publishedOnly()).isTrue();
+        assertThat(filterCaptor.getValue().datasetSlug()).contains("sales-dataset");
+        assertThat(filterCaptor.getValue().slugIn()).contains(Set.of("two-sum"));
+        assertThat(sortCaptor.getValue()).isEqualTo(com.DBArena.services.catalog.domain.ProblemSort.NEWEST_FIRST);
     }
 }

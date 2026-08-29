@@ -119,6 +119,8 @@ public final class PostgresEngineAdapter implements DatabaseEngineAdapter {
         try (Connection connection = connectionFactory.connectTo(session.connectionRef());
              Statement statement = connection.createStatement()) {
             statement.setQueryTimeout(timeoutSeconds(request));
+            // 0 is JDBC's "unlimited" sentinel - matches StatementRequest.maxRows()'s own Optional.empty() meaning.
+            statement.setMaxRows(request.maxRows().orElse(0));
             boolean hasResultSet = statement.execute(request.statementText());
             long elapsedMillis = System.currentTimeMillis() - startedAt;
 

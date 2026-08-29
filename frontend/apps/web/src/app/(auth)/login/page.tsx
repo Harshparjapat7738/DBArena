@@ -35,7 +35,7 @@ export default function LoginPage() {
     try {
       const res = await authApi.login(values);
       setSession(res.accessToken, res.user);
-      router.push("/catalog");
+      router.push("/dashboard");
     } catch (err) {
       setFormError(err instanceof ApiError ? err.message : "Something went wrong. Please try again.");
     }

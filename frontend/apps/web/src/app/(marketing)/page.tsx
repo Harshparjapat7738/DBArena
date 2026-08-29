@@ -75,7 +75,7 @@ export default function MarketingHomePage() {
           <Link href="/register">
             <Button size="lg">Start practicing</Button>
           </Link>
-          <Link href="/catalog">
+          <Link href="/practice">
             <Button variant="secondary" size="lg">
               Browse problems
             </Button>

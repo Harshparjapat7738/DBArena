@@ -26,6 +26,10 @@
     <module>api-gateway</module>
     <module>catalog-service</module>
     <module>ai-assistant-service</module>
+    <module>user-service</module>
+    <module>gamification-service</module>
+    <module>submission-service</module>
+    <module>execution-service</module>
   </modules>
 
   <dependencyManagement>

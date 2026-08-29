@@ -38,7 +38,7 @@ export default function RegisterPage() {
     try {
       const res = await authApi.register(values);
       setSession(res.accessToken, res.user);
-      router.push("/catalog");
+      router.push("/dashboard");
     } catch (err) {
       if (err instanceof ApiError && err.code === "auth.email_already_registered") {
         setFormError("An account with that email already exists.");

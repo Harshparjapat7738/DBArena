@@ -18,8 +18,14 @@ dbarena:
         uri: ${DBArena_IDENTITY_SERVICE_URI:http://localhost:8081}
       - prefix: /api/v1/catalog
         uri: ${DBArena_CATALOG_SERVICE_URI:http://localhost:8083} # catalog-service, M13
+      - prefix: /api/v1/problems
+        uri: ${DBArena_CATALOG_SERVICE_URI:http://localhost:8083} # catalog-service, B03 - same service as /api/v1/catalog
+      - prefix: /api/v1/datasets
+        uri: ${DBArena_CATALOG_SERVICE_URI:http://localhost:8083} # catalog-service, B03
       - prefix: /api/v1/ai
         uri: ${DBArena_AI_ASSISTANT_SERVICE_URI:http://localhost:8084} # ai-assistant-service, M16 - no PublicPaths entry, every route needs a token
+      - prefix: /api/v1/executions
+        uri: ${DBArena_EXECUTION_SERVICE_URI:http://localhost:8088} # execution-service, B04 - no PublicPaths entry, every route needs a token
 
 management:
   endpoints:

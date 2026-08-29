@@ -1,0 +1,54 @@
+spring:
+  application:
+    name: execution-service
+  threads:
+    virtual:
+      enabled: true # blocking JDBC by design (root CLAUDE.md) - virtual threads absorb the block
+
+server:
+  port: ${PORT:8088}
+
+dbarena:
+  security:
+    jwt:
+      secret: ${DBArena_JWT_SECRET:}
+  execution:
+    mongo-uri: ${DBArena_EXECUTION_MONGO_URI:mongodb://localhost:27017}
+    mongo-database: ${DBArena_EXECUTION_MONGO_DATABASE:DBArena_execution}
+    datasets-root: ${DBArena_EXECUTION_DATASETS_ROOT:../../../datasets} # same convention/caveat as ai-assistant-service's DatasetContextLoader
+    # Sandbox Postgres - a dedicated role (CREATEDB, NOSUPERUSER, NOCREATEROLE), never the
+    # platform's own credentials, never client-supplied (hard rule #7 / "no client-supplied
+    # credentials"). See SandboxProvider's Javadoc for what this role is and is not trusted with.
+    postgres:
+      host: ${DBArena_EXECUTION_POSTGRES_HOST:localhost}
+      port: ${DBArena_EXECUTION_POSTGRES_PORT:5432}
+      username: ${DBArena_EXECUTION_POSTGRES_USERNAME:dbarena_sandbox}
+      password: ${DBArena_EXECUTION_POSTGRES_PASSWORD:}
+    # Safe-default policy (B04) - none of this is client-overridable; every field here is a
+    # ceiling the API request body has no way to raise.
+    policy:
+      max-statement-length: 5000
+      max-result-rows: 500
+      max-result-bytes: 1048576 # 1 MiB
+      statement-timeout-seconds: 5
+      explain-timeout-seconds: 3
+      max-concurrent-per-user: 2
+      max-concurrent-global: 8
+      sandbox-connection-limit: 3
+
+mongock:
+  migration-scan-package:
+    - com.DBArena.services.execution.mongock
+  mongo-db:
+    uri: ${DBArena_EXECUTION_MONGO_URI:mongodb://localhost:27017}
+    database: ${DBArena_EXECUTION_MONGO_DATABASE:DBArena_execution}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html

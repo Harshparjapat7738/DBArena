@@ -82,6 +82,11 @@ class RoleAuthorizationAspectTest {
             return jp;
         } catch (NoSuchMethodException e) {
             throw new RuntimeException(e);
+        } catch (Throwable e) {
+            // ProceedingJoinPoint#proceed() declares a checked Throwable per AspectJ's API,
+            // but Mockito.when(...) never actually invokes it here - only stubs the return
+            // value - so this can't happen in practice. Satisfies the compiler, not a real path.
+            throw new RuntimeException(e);
         }
     }
 }

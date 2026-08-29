@@ -14,8 +14,8 @@ export default function NotFound() {
       <p className="max-w-sm text-sm text-fg-muted">
         The page you're looking for doesn't exist, or the problem may have been unpublished.
       </p>
-      <Link href="/catalog" className={buttonVariants({ className: "mt-2" })}>
-        Back to catalog
+      <Link href="/dashboard" className={buttonVariants({ className: "mt-2" })}>
+        Back to dashboard
       </Link>
     </main>
   );

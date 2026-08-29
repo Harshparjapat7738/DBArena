@@ -54,4 +54,25 @@ class ProblemDocumentMapperTest {
         assertThat(document.get("createdAt")).isInstanceOf(Long.class);
         assertThat(document.get("updatedAt")).isInstanceOf(Long.class);
     }
+
+    @Test
+    void aDocumentWithNoVersionFieldDefaultsToVersionOne() {
+        Document document = new Document()
+                .append("_id", "01J000PROBLEM3")
+                .append("slug", "no-version-yet")
+                .append("title", "Pre-B02 Problem")
+                .append("statementMarkdown", "...")
+                .append("difficulty", Difficulty.EASY.name())
+                .append("tags", java.util.List.of())
+                .append("allowedEngines", java.util.List.of(EngineType.POSTGRES.name()))
+                .append("datasetSlug", "some-dataset")
+                .append("published", true)
+                .append("createdAt", 1L)
+                .append("updatedAt", 2L);
+        // deliberately no "version" key - simulates a document written before B02.
+
+        Problem roundTripped = ProblemDocumentMapper.fromDocument(document);
+
+        assertThat(roundTripped.version()).isEqualTo(1);
+    }
 }
